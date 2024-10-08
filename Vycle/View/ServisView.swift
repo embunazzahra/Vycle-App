@@ -10,6 +10,7 @@ import SwiftUI
 struct ServisView: View {
     var body: some View {
         Text("Servis Page")
+        //coba tets gitignore
     }
 }
 
