@@ -7,46 +7,53 @@
 
 import SwiftUI
 
+enum Sparepart: String, CaseIterable {
+    case filterUdara = "Filter udara"
+    case oliMesin = "Oli mesin"
+    case oliGardan = "Oli Gardan"
+    case oliTransmisi = "Oli transmisi"
+    case filterOli = "Filter Oli"
+    case busi = "Busi"
+    case minyakRem = "Minyak rem"
+    case minyakKopling = "Minyak Kopling"
+    case coolant = "Coolant"
+}
+
 struct ScrollPicker: View {
-    @State private var selectedOption: String = "Pilih suku cadang"
-    @State private var tempSelectedOption: String = ""
+    @State private var selectedSparepart: Sparepart? = nil
     @State private var showSheet: Bool = true
-    private var options = [
-        "Filter udara", "Oli mesin", "Oli Gardan",
-        "Oli transmisi", "Filter Oli", "Busi",
-        "Minyak rem", "Minyak Kopling", "Coolant"
-    ]
     
     var body: some View {
         Button(action: {
             showSheet.toggle()
         }) {
-            Text(selectedOption)
-                .font(.title2)
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
+            Text(selectedSparepart?.rawValue ?? "Pilih suku cadang")
+                .subhead(.regular)
+                .padding(8)
+                .foregroundStyle(showSheet ? Color.accentColor : Color.neutral.shade300)
+                .background(Color.neutral.tint100)
+                .cornerRadius(12)
         }
-        .padding()
+       
         .sheet(isPresented: $showSheet) {
             VStack (alignment: .leading) {
-                Text("Bulan dan tahun")
+                Text("Suku Cadang")
                     .title3(.emphasized)
                     .foregroundStyle(Color.neutral.shade300)
                     .padding(.horizontal,16)
                     .padding(.vertical,14)
                 
-                Picker(selection: $tempSelectedOption, label: Text("Options")) {
-                    ForEach(options, id: \.self) { option in
-                        Text(option).tag(option)
+                Picker(selection: $selectedSparepart, label: Text("Options")) {
+                    ForEach(Sparepart.allCases, id: \.self) { option in
+                        Text(option.rawValue)
+                            .title3(.regular)
+                            .tag(option as Sparepart?)
                     }
                 }
                 .pickerStyle(WheelPickerStyle())
                 .padding(.horizontal, 16)
                 Spacer()
                 CustomButton(title: "Pilih"){
-                    selectedOption = tempSelectedOption
                     showSheet = false
                 }
     
@@ -66,7 +73,6 @@ struct ScrollPickerExample: View {
 
 #Preview {
     ZStack{
-        Color.black.ignoresSafeArea()
         ScrollPickerExample()
     }
 }
