@@ -9,71 +9,74 @@ import SwiftUI
 
 struct TambahServisView: View {
     @State private var odometerValue: String = ""
+    @State private var choosenSpart: [String] = []
+    @State private var isPickerPresented: Bool = false
+    @State private var selectedSparePart: SukuCadang = .filterOli // Default selected part
     
     init() {
         setupNavigationBar()
     }
     
     var body: some View {
-            Form {
-                Section{
-                    tanggalServisView()
-                        .listRowInsets(.init(top: 8,
-                                             leading: 0,
-                                             bottom: 16,
-                                             trailing: 0))
+        Form {
+            Section{
+                tanggalServisView()
+                    .listRowInsets(.init(top: 8,
+                                         leading: 0,
+                                         bottom: 16,
+                                         trailing: 0))
+            }
+            Section{
+                odometerServisView()
+                    .listRowInsets(.init(top: 0,
+                                         leading: 0,
+                                         bottom: 1,
+                                         trailing: 0))
+            }
+            
+            Section{
+                Text("Nama suku cadang")
+                    .headline()
+                    .listRowInsets(.init(top: 0,
+                                         leading: 0,
+                                         bottom: 0,
+                                         trailing: 0))
+            }
+            
+            Section{
+                if (choosenSpart.isEmpty){
+                    SukuCadangCard(title: "Pilih suku cadang")
                 }
-                Section{
-                    odometerServisView()
-                        .listRowInsets(.init(top: 0,
-                                             leading: 0,
-                                             bottom: 0,
-                                             trailing: 0))
+                else{
+                    ForEach(choosenSpart, id: \.self) { spart in
+                        SukuCadangCard(title: spart)
+                    }
                 }
                 
-                Section{
-                    Text("Nama suku cadang")
-                        .headline()
-                        .listRowInsets(.init(top: 0,
-                                             leading: 0,
-                                             bottom: 0,
-                                             trailing: 0))
-                }
-                
-                Section{
+                Button(action: {
+                    isPickerPresented = true // Show picker when button is clicked
+                }) {
                     HStack {
-                        Image(systemName: "minus.circle.fill")
+                        Image(systemName: "plus.circle.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 23, height: 23)
-                            .foregroundStyle(.persianRed500)
-                        Text("Pilih suku cadang")
+                            .foregroundStyle(.green)
+                        Text("Tambahkan suku cadang lain")
                             .font(.subheadline)
-                    }
-                    
-                    Button(action: {
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 23, height: 23)
-                                .foregroundStyle(.green)
-                            Text("Tambahkan suku cadang lain")
-                                .font(.subheadline)
-                                .foregroundStyle(.blue)
-                        }
+                            .foregroundStyle(.blue)
                     }
                 }
-                .listRowBackground(Color.neutral.tint300)
-                
-                Section{
-                    inputFotoView()
-                }
-         
             }
-            .scrollContentBackground(.hidden) //hapus warna background
-            .listSectionSpacing(0) //spacing antar section
+            .listRowBackground(Color.neutral.tint300)
+            
+            Section{
+                inputFotoView()
+            }
+            
+        }
+        .scrollContentBackground(.hidden) //hapus warna background
+        .listSectionSpacing(0) //spacing antar section
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .navigationTitle("Tambahkan servis")
         .navigationBarBackButtonHidden(false)
