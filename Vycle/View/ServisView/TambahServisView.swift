@@ -23,7 +23,8 @@ struct TambahServisView: View {
                 
                 Button(action: {}){
                     Text("23 September 2024")
-                        .padding()
+                        .padding(.vertical,9)
+                        .padding(.horizontal,12)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(Color.neutral.shade300,lineWidth: 1)
@@ -50,13 +51,42 @@ struct TambahServisView: View {
             VStack(alignment: .leading) {
                 Text("Nama suku cadang")
                     .headline()
-                Text("Berdasarkan tracking kilometer dari kendaraanmu")
-                    .font(.footnote)
-                    .foregroundStyle(.grayShade100)
-                
+
+                            
+                //List
+                List {
+                    HStack {
+                        Image(systemName: "minus.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 23, height: 23)
+                            .foregroundStyle(.persianRed500)
+                        Text("Pilih suku cadang")
+                            .font(.subheadline)
+                    }
+                    .listRowBackground(Color.neutral.tint300)
+                    Button(action: {
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 23, height: 23)
+                                .foregroundStyle(.green)
+                            Text("Tambahkan suku cadang lain")
+                                .font(.subheadline)
+                                .foregroundStyle(.blue)
+                        }
+                    }.listRowBackground(Color.neutral.tint300)
+                }
+//                .frame(height: 160)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, -20)
+                .padding(.vertical, -35)
             }
             
             //masukkan foto view
+            Text("bagian foto view")
             
             
         }

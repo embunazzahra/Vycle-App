@@ -20,7 +20,7 @@ struct NoServiceView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 232, height: 232)
-                .foregroundColor(.yellow)
+                .foregroundStyle(.yellow)
             Text("Kamu belum pernah mencatat servis nih 🙁").font(.headline)
                 .padding(.bottom,4)
             Text("Tambahkan catatan dengan tombol di bawah ini yuk").font(.footnote)
