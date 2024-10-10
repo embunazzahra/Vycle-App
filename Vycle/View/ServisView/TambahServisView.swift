@@ -8,75 +8,27 @@
 import SwiftUI
 
 struct TambahServisView: View {
-    @State private var odometerValue: String = ""
-    @State private var choosenSpart: [String] = []
-    @State private var isPickerPresented: Bool = false
-    @State private var selectedSparePart: SukuCadang = .filterOli // Default selected part
+    
+    // For vehicle mileage
+    @State private var odometerValue: String = "" // track user input in textfield
+    @State private var userOdometer: Int = 78250
+    
+    // For date selection
+    @State private var showDatePicker = false
+    @State private var selectedDate = Date() // Default selected part
     
     init() {
         setupNavigationBar()
     }
     
     var body: some View {
-        Form {
-            Section{
-                tanggalServisView()
-                    .listRowInsets(.init(top: 8,
-                                         leading: 0,
-                                         bottom: 16,
-                                         trailing: 0))
-            }
-            Section{
-                odometerServisView()
-                    .listRowInsets(.init(top: 0,
-                                         leading: 0,
-                                         bottom: 1,
-                                         trailing: 0))
-            }
-            
-            Section{
-                Text("Nama suku cadang")
-                    .headline()
-                    .listRowInsets(.init(top: 0,
-                                         leading: 0,
-                                         bottom: 0,
-                                         trailing: 0))
-            }
-            
-            Section{
-                if (choosenSpart.isEmpty){
-                    SukuCadangCard(title: "Pilih suku cadang")
-                }
-                else{
-                    ForEach(choosenSpart, id: \.self) { spart in
-                        SukuCadangCard(title: spart)
-                    }
-                }
-                
-                Button(action: {
-                    isPickerPresented = true // Show picker when button is clicked
-                }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 23, height: 23)
-                            .foregroundStyle(.green)
-                        Text("Tambahkan suku cadang lain")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-                    }
-                }
-            }
-            .listRowBackground(Color.neutral.tint300)
-            
-            Section{
-                inputFotoView()
-            }
-            
+        VStack(alignment: .leading, spacing: 20) {
+            tanggalServisView()
+            odometerServisView()
+            inputFotoView()
         }
-        .scrollContentBackground(.hidden) //hapus warna background
-        .listSectionSpacing(0) //spacing antar section
+        .padding()
+        .padding(.top,8)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .navigationTitle("Tambahkan servis")
         .navigationBarBackButtonHidden(false)
@@ -87,8 +39,10 @@ struct TambahServisView: View {
             Text("Tanggal servis")
                 .headline()
             
-            Button(action: {}){
-                Text("23 September 2024")
+            Button(action: {
+                showDatePicker = true
+            }){
+                Text(selectedDate.formattedDate())
                     .padding(.vertical,9)
                     .padding(.horizontal,12)
                     .background(
@@ -96,6 +50,23 @@ struct TambahServisView: View {
                             .stroke(Color.neutral.shade300,lineWidth: 1)
                     )
                     .foregroundStyle(.grayShade300)
+            }
+            .sheet(isPresented: $showDatePicker) {
+                VStack{
+                    DatePicker(
+                        "Select Date",
+                        selection: $selectedDate,
+                        displayedComponents: .date
+                    )
+                    .datePickerStyle(.graphical)
+                    .padding()
+                    CustomButton(title:"Pilih") {
+                        showDatePicker = false
+                    }
+                }
+                .presentationDetents([.height(527)]) // Set the sheet height
+                .presentationDragIndicator(.visible) // Adds a drag indicator for the sheet
+                .background(Color.background)
             }
         }
     }
@@ -106,7 +77,7 @@ struct TambahServisView: View {
             Text("Kilometer kendaraan")
                 .headline()
             
-            OdometerServisTextField(text: $odometerValue, placeholder: "78.250")
+            OdometerServisTextField(text: $odometerValue, placeholder: userOdometer.formattedWithSeparator())
             
             Text("Berdasarkan tracking kilometer dari kendaraanmu")
                 .font(.footnote)
