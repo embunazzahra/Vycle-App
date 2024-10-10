@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PengingatView: View {
+    @EnvironmentObject var routes: Routes
     var body: some View {
         Text("Pengingat Page")
     }
