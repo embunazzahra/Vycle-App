@@ -26,15 +26,22 @@ struct TambahServisView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            tanggalServisView()
-            odometerServisView()
-            pilihSukuCadangView()
-            inputFotoView()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Group {
+                    tanggalServisView()
+                    odometerServisView()
+                    pilihSukuCadangView()
+                    inputFotoView()
+                    saveButton()
+                }
+                .padding(.horizontal,16)
+                .padding(.top,8)
+                
+                
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .padding()
-        .padding(.top,8)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .navigationTitle("Tambahkan servis")
         .navigationBarBackButtonHidden(false)
     }
@@ -143,6 +150,7 @@ struct TambahServisView: View {
             Text("Masukkan foto bukti pembayaran")
         }
         .padding()
+        .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(
@@ -155,6 +163,12 @@ struct TambahServisView: View {
         )
         .foregroundColor(.grayTone200) // Text color
         
+        
+    }
+    
+    func saveButton() -> some View {
+        CustomButton(title: "Simpan Catatan", iconName: "save_icon", iconPosition: .left, buttonType: selectedParts.isEmpty ? .disabled : .primary, horizontalPadding: 0, action: {} )
+            .padding(.top,48)
     }
 }
 

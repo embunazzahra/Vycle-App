@@ -26,7 +26,7 @@ struct NoServiceView: View {
             Text("Tambahkan catatan dengan tombol di bawah ini yuk").font(.footnote)
                 .padding(.bottom,12)
             
-            NavigationLink(destination: TambahServisView()){
+            NavigationLink(destination: TambahServisView().toolbar(.hidden, for: .tabBar)){
                 CustomButtonAlternative(title: "Mulai mencatat")
             }
             
