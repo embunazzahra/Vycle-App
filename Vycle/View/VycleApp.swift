@@ -13,7 +13,9 @@ struct VycleApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+//            ContentView()
+//            OdometerInput()
+            CustomButtonExample()
         }
     }
 }
