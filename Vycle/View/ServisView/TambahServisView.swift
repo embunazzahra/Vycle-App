@@ -154,7 +154,26 @@ struct TambahServisView: View {
     }
     
     func inputFotoView() -> some View {
-        Text("bagian foto view")
+        HStack {
+            Image("photo_logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 21, height: 21)
+            Text("Masukkan foto bukti pembayaran")
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(
+                    style: StrokeStyle(
+                        lineWidth: 1,
+                        dash: [4] // Adjust the dash size
+                    )
+                )
+                .foregroundColor(.grayTone300) // Set the color of the border
+        )
+        .foregroundColor(.grayTone200) // Text color
+        
     }
 }
 
