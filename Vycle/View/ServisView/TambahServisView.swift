@@ -17,6 +17,10 @@ struct TambahServisView: View {
     @State private var showDatePicker = false
     @State private var selectedDate = Date() // Default selected part
     
+    // For spareparts selection
+    @State private var selectedParts: Set<SukuCadang> = [] // Track selected parts
+    
+    
     init() {
         setupNavigationBar()
     }
@@ -25,6 +29,7 @@ struct TambahServisView: View {
         VStack(alignment: .leading, spacing: 20) {
             tanggalServisView()
             odometerServisView()
+            pilihSukuCadangView()
             inputFotoView()
         }
         .padding()
@@ -87,40 +92,45 @@ struct TambahServisView: View {
     
     func pilihSukuCadangView() -> some View {
         VStack(alignment: .leading) {
-            Text("Nama suku cadang")
+            Text("Suku cadang")
                 .headline()
-            
-            
-            //List
-            List {
-                HStack {
-                    Image(systemName: "minus.circle.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 23, height: 23)
-                        .foregroundStyle(.persianRed500)
-                    Text("Pilih suku cadang")
-                        .font(.subheadline)
-                }
-                .listRowBackground(Color.neutral.tint300)
+            Text("Dapat memilih lebih dari satu suku cadang")
+                .font(.footnote)
+            WrappingHStack(models: SukuCadang.allCases, viewGenerator: { part in
                 Button(action: {
-                }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 23, height: 23)
-                            .foregroundStyle(.green)
-                        Text("Tambahkan suku cadang lain")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
+                    // Toggle selection
+                    if selectedParts.contains(part) {
+                        selectedParts.remove(part) // Deselect if already selected
+                    } else {
+                        selectedParts.insert(part) // Select the part
                     }
-                }.listRowBackground(Color.neutral.tint300)
-            }
-            .frame(height: 160)
-            .scrollContentBackground(.hidden)
-            .padding(.horizontal, -20)
-            .padding(.vertical, -35)
+                }) {
+                    HStack(spacing:0) {
+                        Text(part.rawValue)
+                            .padding(.vertical, 12)
+                            .foregroundStyle(selectedParts.contains(part) ? .white : Color.primary.shade300) // Change text color based on selection
+                        
+                        if selectedParts.contains(part) {
+                            Image(systemName: "minus.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 17, height: 17)
+                                .foregroundStyle(.white)
+                                .padding(.leading,4)
+                            
+                        }
+                    }
+                    .padding(.horizontal,8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(selectedParts.contains(part) ? Color.primary.shade200 : Color.clear)                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.primary.shade200, lineWidth: 1)
+                            )
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            },horizontalSpacing: 4, verticalSpacing: 4)
         }
     }
     
