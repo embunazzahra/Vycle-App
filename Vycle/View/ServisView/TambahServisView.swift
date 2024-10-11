@@ -44,7 +44,7 @@ struct TambahServisView: View {
                     odometerServisView()
                     pilihSukuCadangView()
                     inputFotoView()
-                    saveButton()
+//                    saveButton()
                 }
                 .padding(.horizontal,16)
                 .padding(.top,8)
@@ -53,6 +53,9 @@ struct TambahServisView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
+        .safeAreaInset(edge: .bottom, content: {
+            saveButton()
+        })
         .navigationTitle("Tambahkan servis")
         .navigationBarBackButtonHidden(false)
     }
@@ -177,21 +180,6 @@ struct TambahServisView: View {
         .onTapGesture {
             isShowingDialog = true
         }
-        //        .actionSheet(isPresented: $showAlert) {
-        //            ActionSheet(
-        //                title: .none,
-        //                buttons: [
-        //                    .default(Text("Kamera")) {
-        //                        checkCameraPermission()
-        //                    },
-        //                    .default(Text("Galeri")) {
-        //                        checkGalleryPermission()
-        //                    },
-        //                    .cancel()
-        //                ]
-        //            )
-        //
-        //        }
         .confirmationDialog("", isPresented: $isShowingDialog, titleVisibility: .hidden) {
             Button("Kamera") {
                 checkCameraPermission()
@@ -215,7 +203,8 @@ struct TambahServisView: View {
     
     func saveButton() -> some View {
         CustomButton(title: "Simpan Catatan", iconName: "save_icon", iconPosition: .left, buttonType: selectedParts.isEmpty ? .disabled : .primary, horizontalPadding: 0, action: {} )
-            .padding(.top,48)
+            .frame(maxWidth: .infinity)
+            .background(Color.neutral.tint300)
     }
     
     // Check and request camera permission
