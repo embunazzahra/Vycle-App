@@ -11,7 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
-    @StateObject var routes = Routes()
+//    @StateObject var routes = Routes()
+    @EnvironmentObject var routes: Routes
     enum Tab: String {
         case dashboard = "Dashboard"
         case servis = "Service"
@@ -30,7 +31,7 @@ struct ContentView: View {
                         Image(systemName: "house.fill")
                         Text("Dashboard")
                     }.tag(Tab.dashboard)
-                    ServisView().tabItem {
+                    ServiceView().tabItem {
                         Image(systemName: "list.bullet.rectangle.fill")
                         Text("Servis")
                     }.tag(Tab.servis)
@@ -46,12 +47,17 @@ struct ContentView: View {
                     case .PengingatView:
                         PengingatView()
                     case .ServisView:
-                        ServisView()
+                        ServiceView()
                     case .DashboardView:
                         DashboardView()
+                    case .AddServiceView:
+                        AddServiceView()
+                    case .NoServiceView:
+                        NoServiceView()
                     }
                 }
-                .environmentObject(routes)
+                
+//                .environmentObject(routes)
         }.tint(.white)
     }
 }

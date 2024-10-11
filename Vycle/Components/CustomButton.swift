@@ -15,7 +15,7 @@ enum ButtonStyleType {
     func backgroundColor() -> Color {
         switch self {
         case .primary:
-            return Color.accentColor
+            return Color.primary.base
         case .secondary:
             return Color.clear
         case .disabled:
@@ -28,7 +28,7 @@ enum ButtonStyleType {
         case .primary, .disabled:
             return Color.neutral.tint300
         case .secondary:
-            return Color.accentColor
+            return Color.primary.base
         }
     }
     
@@ -51,14 +51,15 @@ struct CustomButton: View {
     var verticalPadding: CGFloat = 24
 //    var isNavigating: Bool
     @EnvironmentObject var routes: Routes
-    var destination: Routes.Destination
+//    var destination: Routes.Destination
+    var action: () -> Void
     
     var body: some View {
         Button(action: {
-//            if !buttonType.isDisabled() {
-//                action()
-//            }
-            routes.navigate(to: .PengingatView)
+            if !buttonType.isDisabled() {
+                action()
+            }
+//            routes.navigate(to: destination)
         }) {
             HStack {
                 if let symbol = iconName, iconPosition == .left {
@@ -86,7 +87,7 @@ struct CustomButton: View {
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(buttonType == .secondary ? Color.accentColor : Color.clear, lineWidth: 1)
+                    .stroke(buttonType == .secondary ? Color.primary.base : Color.clear, lineWidth: 1)
             )
         }
         .padding(.horizontal, horizontalPadding)

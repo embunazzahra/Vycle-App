@@ -12,7 +12,7 @@ import SwiftUI
     var navPath = NavigationPath()
     
     public enum Destination {
-        case DashboardView, PengingatView, ServisView
+        case DashboardView, PengingatView, ServisView, AddServiceView, NoServiceView
     }
     
     func navigate(to destination: Destination) {
