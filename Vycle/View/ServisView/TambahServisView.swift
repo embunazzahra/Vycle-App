@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import AVFoundation
+import PhotosUI
 
 struct TambahServisView: View {
     
@@ -19,6 +21,15 @@ struct TambahServisView: View {
     
     // For spareparts selection
     @State private var selectedParts: Set<SukuCadang> = [] // Track selected parts
+    
+    // For the camera and image picker
+    @State private var isShowingCamera = false
+    @State private var selectedImage: UIImage?
+    @State private var isShowingPermissionAlert = false // show alert if user had denied permission
+    //    @State private var showAlert = false
+    @State private var showCamera = false
+    @State private var showGallery = false
+    @State private var isShowingDialog: Bool = false
     
     
     init() {
@@ -142,6 +153,7 @@ struct TambahServisView: View {
     }
     
     func inputFotoView() -> some View {
+        
         HStack {
             Image("photo_logo")
                 .resizable()
@@ -162,6 +174,41 @@ struct TambahServisView: View {
                 .foregroundColor(.grayTone300) // Set the color of the border
         )
         .foregroundColor(.grayTone200) // Text color
+        .onTapGesture {
+            isShowingDialog = true
+        }
+        //        .actionSheet(isPresented: $showAlert) {
+        //            ActionSheet(
+        //                title: .none,
+        //                buttons: [
+        //                    .default(Text("Kamera")) {
+        //                        checkCameraPermission()
+        //                    },
+        //                    .default(Text("Galeri")) {
+        //                        checkGalleryPermission()
+        //                    },
+        //                    .cancel()
+        //                ]
+        //            )
+        //
+        //        }
+        .confirmationDialog("", isPresented: $isShowingDialog, titleVisibility: .hidden) {
+            Button("Kamera") {
+                checkCameraPermission()
+            }
+            Button("Galeri") {
+                checkGalleryPermission()
+            }
+            Button("Cancel", role: .cancel) {
+            }
+        }
+        .sheet(isPresented: $showCamera) {
+            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+        }
+        .sheet(isPresented: $showGallery) {
+            ImagePicker(selectedImage: $selectedImage, sourceType: .photoLibrary)
+        }
+        
         
         
     }
@@ -170,6 +217,47 @@ struct TambahServisView: View {
         CustomButton(title: "Simpan Catatan", iconName: "save_icon", iconPosition: .left, buttonType: selectedParts.isEmpty ? .disabled : .primary, horizontalPadding: 0, action: {} )
             .padding(.top,48)
     }
+    
+    // Check and request camera permission
+    func checkCameraPermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            showCamera = true
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                if granted {
+                    DispatchQueue.main.async {
+                        showCamera = true
+                    }
+                }
+            }
+        default:
+            // Handle denied/restricted by showing a message or doing nothing
+            print("Camera access denied or restricted")
+        }
+    }
+    
+    // Check and request gallery permission
+    func checkGalleryPermission() {
+        let status = PHPhotoLibrary.authorizationStatus()
+        switch status {
+        case .authorized, .limited:
+            showGallery = true
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization { newStatus in
+                if newStatus == .authorized || newStatus == .limited {
+                    DispatchQueue.main.async {
+                        showGallery = true
+                    }
+                }
+            }
+        default:
+            // Handle denied/restricted by showing a message or doing nothing
+            print("Gallery access denied or restricted")
+        }
+    }
+    
+    
 }
 
 #Preview {

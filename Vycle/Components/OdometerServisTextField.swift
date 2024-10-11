@@ -20,7 +20,7 @@ struct OdometerServisTextField: View {
                 .frame(width: 22, height: 22) // Set your desired frame
                 .padding()
             TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
-                .disabled(true) // Disables the TextField
+//                .disabled(true) // Disables the TextField
                 .foregroundColor(.black)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
