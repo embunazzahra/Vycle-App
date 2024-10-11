@@ -11,26 +11,37 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
+    @StateObject var routes = Routes()
     
     var body: some View {
-        TabView {
-            DashboardView().tabItem {
-                Image(systemName: "house.fill")
-                Text("Dashboard")
+        NavigationStack (path: $routes.navPath) {
+                TabView {
+                    DashboardView().tabItem {
+                        Image(systemName: "house.fill")
+                        Text("Dashboard")
+                    }
+                    ServiceView().tabItem {
+                        Image(systemName: "list.bullet.rectangle.fill")
+                        Text("Servis")
+                    }
+                    PengingatView().tabItem {
+                        Image(systemName: "bell.fill")
+                        Text("Pengingat")
+                    }
+                }
+                .navigationDestination(for: Routes.Destination.self) { destination in
+                    switch destination {
+                    case .PengingatView:
+                        PengingatView()
+                    case .ServisView:
+                        ServiceView()
+                    case .DashboardView:
+                        DashboardView()
+                    }
+                }
+                
+                .environmentObject(routes)
             }
-            ServiceView().tabItem {
-                Image(systemName: "list.bullet.rectangle.fill")
-                Text("Servis")
-            }
-            PengingatView().tabItem {
-                Image(systemName: "bell.fill")
-                Text("Pengingat")
-            }
-        }
     }
 }
 
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
-}

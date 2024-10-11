@@ -29,17 +29,13 @@ struct AddServiceView: View {
     @State private var isShowingDialog: Bool = false
     
     
-    init() {
-        setupNavigationBar()
-    }
-    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
                 ChooseSparepartView(selectedParts: $selectedParts)
-                if let selectedImage = selectedImage {
+                if selectedImage != nil {
                     ImagePreviewView(selectedImage: $selectedImage)
                 } else {
                     PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)

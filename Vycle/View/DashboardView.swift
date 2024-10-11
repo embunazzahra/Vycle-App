@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct DashboardView: View {
+    @EnvironmentObject var routes: Routes
     var body: some View {
-        Text("Dashboard Page")
+        Button(action: {
+            routes.navigate(to: .PengingatView)
+        }) {
+            Image(systemName: "doc.text")
+                .foregroundStyle(Color.black)
+        }
     }
 }
 

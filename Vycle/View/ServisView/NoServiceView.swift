@@ -9,12 +9,9 @@ import SwiftUI
 import UIKit
 
 struct NoServiceView: View {
-    init() {
-        setupNavigationBar()
-    }
+
     
     var body: some View {
-        
         VStack {
             Image(systemName: "star.fill")
                 .resizable()

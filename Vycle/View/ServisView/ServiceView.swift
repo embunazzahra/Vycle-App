@@ -11,15 +11,14 @@ struct ServiceView: View {
     @State var isHavingRecord: Bool = false
     
     var body: some View {
-        NavigationStack {
-            if (isHavingRecord) {
-                ServiceHistoryView()
-            }
-            else {
-                NoServiceView()
-            }
+        
+        if (isHavingRecord) {
+            ServiceHistoryView()
         }
-        .tint(.white)
+        else {
+            NoServiceView()
+        }
+        
     }
 }
 
