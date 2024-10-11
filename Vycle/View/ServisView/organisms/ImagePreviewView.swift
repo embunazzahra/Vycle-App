@@ -19,15 +19,16 @@ struct ImagePreviewView: View {
                         .scaledToFill()
                         .frame(maxWidth: .infinity, maxHeight: 120)
                         .clipped()
+                        .contentShape(Rectangle())
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .overlay( // Add the border
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(Color.grayShade300, lineWidth: 0.5)
-                                .fill(Color.black.opacity(0.2))
+                                .fill(Color.black.opacity(0.5))
                         )
                     
                     // Checkmark icon in the center
-                    Image(systemName: "checkmark")
+                    Image("white_square_checklist")
                         .resizable()
                         .frame(width: 41, height: 41)
                         .foregroundColor(Color.black)
