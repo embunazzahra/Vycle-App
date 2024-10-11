@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ServiceView: View {
     @State var isHavingRecord: Bool = false
+    @EnvironmentObject var routes: Routes
     
     var body: some View {
         

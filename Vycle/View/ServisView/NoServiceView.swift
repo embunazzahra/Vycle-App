@@ -10,6 +10,7 @@ import UIKit
 
 struct NoServiceView: View {
 
+    @EnvironmentObject var routes: Routes
     
     var body: some View {
         VStack {
@@ -23,8 +24,8 @@ struct NoServiceView: View {
             Text("Tambahkan catatan dengan tombol di bawah ini yuk").font(.footnote)
                 .padding(.bottom,12)
             
-            NavigationLink(destination: AddServiceView().toolbar(.hidden, for: .tabBar)){
-                CustomButtonAlternative(title: "Mulai mencatat")
+            CustomButton(title: "Mulai mencatat") {
+                routes.navigate(to: .AddServiceView)
             }
             
         }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AddServiceView: View {
+    @EnvironmentObject var routes: Routes
     
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in textfield
@@ -27,6 +28,8 @@ struct AddServiceView: View {
     @State private var showCamera = false
     @State private var showGallery = false
     @State private var isShowingDialog: Bool = false
+    
+    
     
     
     var body: some View {
@@ -53,7 +56,9 @@ struct AddServiceView: View {
     }
     
     func saveButton() -> some View {
-        CustomButton(title: "Simpan Catatan", iconName: "save_icon", iconPosition: .left, buttonType: selectedParts.isEmpty ? .disabled : .primary, horizontalPadding: 0, action: {} )
+        CustomButton(title: "Simpan Catatan", iconName: "save_icon", iconPosition: .left, buttonType: selectedParts.isEmpty ? .disabled : .primary, horizontalPadding: 0) {
+            routes.navigateToRoot()
+        }
             .frame(maxWidth: .infinity)
             .background(Color.neutral.tint300)
     }

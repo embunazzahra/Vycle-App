@@ -53,9 +53,9 @@ struct ScrollPicker: View {
                 .pickerStyle(WheelPickerStyle())
                 .padding(.horizontal, 16)
                 Spacer()
-                CustomButton(title: "Pilih"){
-                    showSheet = false
-                }
+//                CustomButton(title: "Pilih"){
+//                    showSheet = false
+//                }
     
             }
             .presentationDetents([.height(404)]) // Set the sheet height to 404 points
