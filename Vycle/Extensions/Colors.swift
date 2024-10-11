@@ -19,6 +19,7 @@ extension Color {
 }
 
 struct Primary {
+    let base = Color("AccentColor")
     let shade100 = Color("BlueLoyaltyShade100")
     let shade200 = Color("BlueLoyaltyShade200")
     let shade300 = Color("BlueLoyaltyShade300")

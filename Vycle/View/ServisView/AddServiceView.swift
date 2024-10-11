@@ -39,10 +39,14 @@ struct AddServiceView: View {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
                 ChooseSparepartView(selectedParts: $selectedParts)
-                PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)
+                if let selectedImage = selectedImage {
+                    ImagePreviewView(selectedImage: $selectedImage)
+                } else {
+                    PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)
+                }
             }
             .padding(.horizontal,16)
-            .padding(.top,8)
+            .padding(.vertical,24)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .safeAreaInset(edge: .bottom, content: {
@@ -51,7 +55,7 @@ struct AddServiceView: View {
         .navigationTitle("Tambahkan servis")
         .navigationBarBackButtonHidden(false)
     }
-       
+    
     func saveButton() -> some View {
         CustomButton(title: "Simpan Catatan", iconName: "save_icon", iconPosition: .left, buttonType: selectedParts.isEmpty ? .disabled : .primary, horizontalPadding: 0, action: {} )
             .frame(maxWidth: .infinity)
