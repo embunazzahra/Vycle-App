@@ -7,18 +7,29 @@
 
 import SwiftUI
 
+
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
+    
     var body: some View {
-//        Button(action: {
-//            routes.navigate(to: .PengingatView)
-//        }) {
-//            Image(systemName: "doc.text")
-//                .foregroundStyle(Color.black)
-//        }
-        CustomButton(title: "test", destination: .PengingatView)
+        NavigationView {
+            VStack{
+                HStack{
+                    Image("bt")
+                    Text("IoT Tersambung")
+                        .padding()
+                        .background(Color.background)
+                        .foregroundColor(Color.lima500)
+                        .cornerRadius(8)
+                }
+                  
+//                    .navigationTitle("Dashboard")
+            }
+        }.ignoresSafeArea()
     }
 }
+
+
 
 #Preview {
     DashboardView()

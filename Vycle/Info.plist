@@ -2,14 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict/>
+	</array>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>We use notifications to alert you about significant location changes.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter.ttf</string>
 		<string>Inter-Italic.ttf</string>
 	</array>
-	<key>CFBundleURLTypes</key>
+	<key>UIBackgroundModes</key>
 	<array>
-		<dict/>
+		<string>location</string>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>processing</string>
 	</array>
 </dict>
 </plist>
