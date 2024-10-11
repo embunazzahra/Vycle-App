@@ -18,7 +18,7 @@ import SwiftUI
     func navigate(to destination: Destination) {
         navPath.append(destination)
     }
-    
+
     func navigateBack() {
         navPath.removeLast()
     }

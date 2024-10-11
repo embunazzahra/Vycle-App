@@ -49,13 +49,16 @@ struct CustomButton: View {
     var buttonType: ButtonStyleType = .primary
     var horizontalPadding: CGFloat = 16
     var verticalPadding: CGFloat = 24
-    var action: () -> Void
+//    var isNavigating: Bool
+    @EnvironmentObject var routes: Routes
+    var destination: Routes.Destination
     
     var body: some View {
         Button(action: {
-            if !buttonType.isDisabled() {
-                action()
-            }
+//            if !buttonType.isDisabled() {
+//                action()
+//            }
+            routes.navigate(to: .PengingatView)
         }) {
             HStack {
                 if let symbol = iconName, iconPosition == .left {
@@ -95,17 +98,17 @@ struct CustomButton: View {
 struct CustomButtonExample: View {
     var body: some View {
         ZStack {
-            VStack {
-                CustomButton(title: "Primary",  iconName: "selesai", buttonType: .primary) {
-                    print("Tes")
-                }
-                CustomButton(title: "Disabled",  iconName: "lanjutkan", buttonType: .disabled) {
-                    print("Tes")
-                }
-                CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
-                    print("Tes")
-                }
-            }
+//            VStack {
+//                CustomButton(title: "Primary",  iconName: "selesai", buttonType: .primary) {
+//                    print("Tes")
+//                }
+//                CustomButton(title: "Disabled",  iconName: "lanjutkan", buttonType: .disabled) {
+//                    print("Tes")
+//                }
+//                CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
+//                    print("Tes")
+//                }
+//            }
         }
     }
 }
