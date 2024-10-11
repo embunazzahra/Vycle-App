@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct ServisView: View {
+struct ServiceView: View {
     @State var isHavingRecord: Bool = false
     
     var body: some View {
         NavigationStack {
             if (isHavingRecord) {
-                HistoriServisView()
+                ServiceHistoryView()
             }
             else {
                 NoServiceView()
@@ -25,5 +25,5 @@ struct ServisView: View {
 
 
 #Preview {
-    ServisView()
+    ServiceView()
 }

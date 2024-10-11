@@ -18,7 +18,7 @@ struct ContentView: View {
                 Image(systemName: "house.fill")
                 Text("Dashboard")
             }
-            ServisView().tabItem {
+            ServiceView().tabItem {
                 Image(systemName: "list.bullet.rectangle.fill")
                 Text("Servis")
             }

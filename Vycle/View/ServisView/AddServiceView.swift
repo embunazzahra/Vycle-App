@@ -6,10 +6,8 @@
 //
 
 import SwiftUI
-import AVFoundation
-import PhotosUI
 
-struct TambahServisView: View {
+struct AddServiceView: View {
     
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in textfield
@@ -62,5 +60,5 @@ struct TambahServisView: View {
 }
 
 #Preview {
-    TambahServisView()
+    AddServiceView()
 }
