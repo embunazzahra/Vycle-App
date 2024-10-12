@@ -6,6 +6,7 @@
 	<array>
 		<string>Inter.ttf</string>
 		<string>Inter-Italic.ttf</string>
+		<string>Technology-Bold.ttf</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>

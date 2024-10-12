@@ -95,17 +95,17 @@ struct CustomButton: View {
 struct CustomButtonExample: View {
     var body: some View {
         ZStack {
-            VStack {
-                CustomButton(title: "Primary",  iconName: "selesai", buttonType: .primary) {
-                    print("Tes")
-                }
-                CustomButton(title: "Disabled",  iconName: "lanjutkan", buttonType: .disabled) {
-                    print("Tes")
-                }
-                CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
-                    print("Tes")
-                }
-            }
+//            VStack {
+//                CustomButton(title: "Primary",  iconName: "selesai", buttonType: .primary) {
+//                    print("Tes")
+//                }
+//                CustomButton(title: "Disabled",  iconName: "lanjutkan", buttonType: .disabled) {
+//                    print("Tes")
+//                }
+//                CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
+//                    print("Tes")
+//                }
+//            }
         }
     }
 }

@@ -9,12 +9,17 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
+    @State var number: Int = 0
     var body: some View {
-        Button(action: {
-            routes.navigate(to: .PengingatView)
-        }) {
-            Image(systemName: "doc.text")
-                .foregroundStyle(Color.black)
+        VStack {
+            Text("Angka Hokimu: \(number)")
+//            CustomButton(title: "Tambah"){
+//                number += 1
+//            }
+//            CustomButton(title: "Pergi", routes: routes, destination: .PengingatView)
+//            CustomButton(title: "Tambah & Pergi", routes: routes, destination: .PengingatView) {
+//                number += 10
+//            }
         }
     }
 }

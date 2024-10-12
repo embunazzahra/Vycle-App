@@ -37,6 +37,8 @@ struct ContentView: View {
                         ServisView()
                     case .DashboardView:
                         DashboardView()
+                    case .MerkKendaraan:
+                        MerkKendaraan()
                     }
                 }
                 .environmentObject(routes)
