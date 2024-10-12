@@ -10,6 +10,7 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
+    
     var body: some View {
         NavigationView {
             VStack{
