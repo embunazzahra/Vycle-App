@@ -44,7 +44,7 @@ struct DatePickerSheet: View {
     @Binding var isMonthYearChosen: Bool
     
     private let months = Calendar.current.monthSymbols
-    private let years = Array(2000...Calendar.current.component(.year, from: Date()) + 2)
+    private let years = Array(2000...Calendar.current.component(.year, from: Date()))
     
     var body: some View {
         VStack {

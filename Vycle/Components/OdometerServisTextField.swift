@@ -17,19 +17,21 @@ struct OdometerServisTextField: View {
             Image("odometer_logo_textfield")
                 .resizable() // Makes the image resizable
                 .scaledToFit() // Maintains the aspect ratio
-                .frame(width: 22, height: 22) // Set your desired frame
-                .padding()
+                .frame(width: 18, height: 15) // Set your desired frame
+                .padding(12)
             TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
+//                .disabled(true) // Disables the TextField
                 .foregroundColor(.black)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.neutral.tint200) // Gray background
+                        
                 )
             Image("KM_text_logo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 27,height: 22)
-                .padding()
+                .padding(12)
         }
         .background(
             RoundedRectangle(cornerRadius: 12)

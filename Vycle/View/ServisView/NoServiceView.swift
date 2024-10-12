@@ -9,12 +9,10 @@ import SwiftUI
 import UIKit
 
 struct NoServiceView: View {
-    init() {
-        setupNavigationBar()
-    }
+
+    @EnvironmentObject var routes: Routes
     
     var body: some View {
-        
         VStack {
             Image(systemName: "star.fill")
                 .resizable()
@@ -26,8 +24,8 @@ struct NoServiceView: View {
             Text("Tambahkan catatan dengan tombol di bawah ini yuk").font(.footnote)
                 .padding(.bottom,12)
             
-            NavigationLink(destination: TambahServisView()){
-                CustomButtonAlternative(title: "Mulai mencatat")
+            CustomButton(title: "Mulai mencatat") {
+                routes.navigate(to: .AddServiceView)
             }
             
         }

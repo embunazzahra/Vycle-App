@@ -8,9 +8,12 @@
 		<string>Inter-Italic.ttf</string>
 		<string>Technology-Bold.ttf</string>
 	</array>
-	<key>CFBundleURLTypes</key>
+	<key>UIBackgroundModes</key>
 	<array>
-		<dict/>
+		<string>bluetooth-peripheral</string>
+		<string>processing</string>
+		<string>location</string>
+		<string>bluetooth-central</string>
 	</array>
 </dict>
 </plist>

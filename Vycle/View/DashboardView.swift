@@ -7,22 +7,28 @@
 
 import SwiftUI
 
+
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
-    @State var number: Int = 0
     var body: some View {
-        VStack {
-            Text("Angka Hokimu: \(number)")
-//            CustomButton(title: "Tambah"){
-//                number += 1
-//            }
-//            CustomButton(title: "Pergi", routes: routes, destination: .PengingatView)
-//            CustomButton(title: "Tambah & Pergi", routes: routes, destination: .PengingatView) {
-//                number += 10
-//            }
-        }
+        NavigationView {
+            VStack{
+                HStack{
+                    Image("bt")
+                    Text("IoT Tersambung")
+                        .padding()
+                        .background(Color.background)
+                        .foregroundColor(Color.lima500)
+                        .cornerRadius(8)
+                }
+                  
+//                    .navigationTitle("Dashboard")
+            }
+        }.ignoresSafeArea()
     }
 }
+
+
 
 #Preview {
     DashboardView()
