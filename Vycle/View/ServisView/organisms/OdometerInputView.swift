@@ -10,13 +10,14 @@ import SwiftUI
 struct OdometerInputView: View {
     @Binding var odometerValue: String
     var userOdometer: Int
+    var enable: Bool = true
 
     var body: some View {
         VStack(alignment: .leading) {
             Text("Kilometer kendaraan")
                 .headline()
 
-            OdometerServisTextField(text: $odometerValue, placeholder: userOdometer.formattedWithSeparator())
+            OdometerServisTextField(text: $odometerValue, placeholder: userOdometer.formattedWithSeparator(), enable: enable)
 
             Text("Berdasarkan tracking kilometer dari kendaraanmu")
                 .font(.footnote)

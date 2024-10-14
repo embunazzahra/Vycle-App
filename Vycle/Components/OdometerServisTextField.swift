@@ -10,6 +10,7 @@ import SwiftUI
 struct OdometerServisTextField: View {
     @Binding var text: String
     var placeholder: String
+    var enable: Bool = true
     
     
     var body: some View {
@@ -20,7 +21,7 @@ struct OdometerServisTextField: View {
                 .frame(width: 18, height: 15) // Set your desired frame
                 .padding(12)
             TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
-//                .disabled(true) // Disables the TextField
+                .disabled(!enable) // Disables the TextField
                 .foregroundColor(.black)
                 .background(
                     RoundedRectangle(cornerRadius: 12)

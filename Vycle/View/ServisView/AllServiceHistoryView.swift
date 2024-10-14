@@ -9,9 +9,9 @@ import SwiftUI
 
 struct AllServiceHistoryView: View {
     let serviceHistories = [
-        ServiceHistory(title: "Minyak rem", mileage: "78.250", date: "01/10/2024"),
-        ServiceHistory(title: "Oli mesin", mileage: "65.100", date: "15/09/2024"),
-        ServiceHistory(title: "Filter udara", mileage: "60.500", date: "30/08/2024")
+        ServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil),
+        ServiceHistory(title: "Oli mesin", mileage: 65100, date: "15/09/2024", imageData: nil),
+        ServiceHistory(title: "Filter udara", mileage: 60500, date: "30/08/2024", imageData: nil)
     ]
     
     var body: some View {
@@ -21,7 +21,9 @@ struct AllServiceHistoryView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 ForEach(serviceHistories) { history in
-                    ServiceHistoryCard(service: history)
+                    ServiceHistoryCard(service: history) {
+                        //
+                    }
                 }
                 
             }

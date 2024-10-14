@@ -9,6 +9,8 @@ import Foundation
 struct ServiceHistory: Identifiable {
     let id = UUID() // Unique identifier
     let title: String
-    let mileage: String
+    let mileage: Int
     let date: String
+    var imageData: Data?
+    var spareparts: [SukuCadang] = [.minyakRem,.filterOli]
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ServiceHistoryCard: View {
     let service: ServiceHistory // Accept service data
+    var onCardTap: () -> Void
 
     var body: some View {
         ZStack {
@@ -32,7 +33,7 @@ struct ServiceHistoryCard: View {
                     Text(service.title)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                    Text("Diservis pada KM \(service.mileage)")
+                    Text("Diservis pada KM \(service.mileage.formattedWithSeparator())")
                         .font(.caption)
                     Spacer()
                     Text(service.date)
@@ -49,5 +50,8 @@ struct ServiceHistoryCard: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 2)
         .padding(.vertical, 4)
+        .onTapGesture {
+            onCardTap() // Call the closure when the card is tapped
+        }
     }
 }
