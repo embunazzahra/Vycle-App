@@ -39,6 +39,7 @@ struct ReminderHeader: View {
             }
 
         }
+        .padding(.top, 24)
         .background(Color.primary.tone100)
         .foregroundColor(Color.neutral.tint300)
     }

@@ -9,7 +9,13 @@ import SwiftUI
 
 struct ReminderContentNoData: View {
     var body: some View {
-        VStack (alignment: .center, spacing: 16) {
+        VStack (alignment: .center) {
+            Spacer()
+            Image(systemName: "folder.badge.plus")
+                .font(.system(size: 100))
+                .padding(8)
+                .foregroundColor(Color.blue)
+            
             HStack {
                 Spacer()
                 Text("Tambahkan pengingat dengan tombol di bawah ini yuk")
@@ -18,15 +24,22 @@ struct ReminderContentNoData: View {
                     .padding(.horizontal, 20)
                     .foregroundColor(Color.neutral.shade300)
                 Spacer()
+            } .padding(.bottom, -8)
+        
+            CustomButton(title: "Tambahkan Pengingat", iconName: "", iconPosition: .left, buttonType: .primary) {
+                NavigationLink(destination: AddReminderView()) {
+                    Text("")
+                }
             }
-
             
-            CustomButton(title: "Tambahkan Pengingat",  symbolName: "folder.badge.plus", isEnabled: true) {
-                print("Tes")
-            }
+            Spacer()
+            
+//            CustomButton(title: "Tambahkan Pengingat",  symbolName: "folder.badge.plus", isEnabled: true) {
+//                print("Tes")
+//            }
             
 //            Button {
-//                
+//
 //            } label: {
 //                HStack {
 //                    Spacer()
@@ -34,12 +47,12 @@ struct ReminderContentNoData: View {
 //                    Text("Tambahkan pengingat")
 //                    Spacer()
 //                }
-//                .padding(.vertical, 16)
+//                .padding(.vertical, 26)
 //                .foregroundColor(Color.white)
 //            }
 //            .background(Color.blue)
 //            .cornerRadius(12)
-//            .padding(.horizontal, 16)
+//            .padding(.horizontal, 24)
             
         }
     }
