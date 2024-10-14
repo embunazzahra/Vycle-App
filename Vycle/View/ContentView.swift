@@ -15,7 +15,7 @@ struct ContentView: View {
     @EnvironmentObject var routes: Routes
     enum Tab: String {
         case dashboard = "Dashboard"
-        case servis = "Service"
+        case servis = "Servis"
         case pengingat = "Pengingat"
     }
     
@@ -54,6 +54,8 @@ struct ContentView: View {
                         AddServiceView()
                     case .NoServiceView:
                         NoServiceView()
+                    case .AllServiceHistoryView:
+                        AllServiceHistoryView()
                     }
                 }
                 

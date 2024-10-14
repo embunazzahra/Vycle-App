@@ -1,36 +1,22 @@
 //
-//  HistoriServisView.swift
+//  AllServiceHistoryView.swift
 //  Vycle
 //
-//  Created by Dhau Embun Azzahra on 08/10/24.
+//  Created by Dhau Embun Azzahra on 14/10/24.
 //
 
 import SwiftUI
 
-struct ServiceHistoryView: View {
-    @EnvironmentObject var routes: Routes
-    
+struct AllServiceHistoryView: View {
     let serviceHistories = [
         ServiceHistory(title: "Minyak rem", mileage: "78.250", date: "01/10/2024"),
         ServiceHistory(title: "Oli mesin", mileage: "65.100", date: "15/09/2024"),
         ServiceHistory(title: "Filter udara", mileage: "60.500", date: "30/08/2024")
     ]
-
-  
+    
     var body: some View {
-        ScrollView {
+        ScrollView{
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Histori servis")
-                        .font(.headline)
-                    Spacer()
-                    Text("Lihat selengkapnya")
-                        .font(.subheadline)
-                        .foregroundStyle(.accent)
-                        .onTapGesture {
-                            routes.navigate(to: .AllServiceHistoryView)
-                        }
-                }
                 Text("Tahun ini")
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -41,11 +27,11 @@ struct ServiceHistoryView: View {
             }
             .padding()
         }
-        .navigationTitle("Servis")
+        .navigationTitle("Histori servis")
+        
     }
-    
 }
 
 #Preview {
-    ServiceHistoryView()
+    AllServiceHistoryView()
 }
