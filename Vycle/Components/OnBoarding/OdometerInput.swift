@@ -38,13 +38,14 @@ struct OdometerModifier: ViewModifier {
 }
 
 struct OdometerInput: View {
+    @Binding var odometer: Int?
     @FocusState private var fieldFocusState: Bool
     @State var fieldOne: String = ""
     @State var fieldTwo: String = ""
     @State var fieldThree: String = ""
     @State var fieldFour: String = ""
     @State var fieldFive: String = ""
-    @State var fieldSix: String = "" // The input field
+    @State var fieldSix: String = ""
     
     // Helper to manage all fields
     private var allFields: [Binding<String>] {
@@ -66,7 +67,7 @@ struct OdometerInput: View {
                     .modifier(OdometerModifier(field: $fieldSix))
                     .focused($fieldFocusState)
                     .onChange(of: fieldSix) { newVal in
-                        handleInputChange(newVal)
+                        handleInputChange(newVal) // Handle the input change
                     }
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
@@ -77,7 +78,6 @@ struct OdometerInput: View {
                         }
                     }
             }
-            .padding(.vertical)
             .onTapGesture {
                 fieldFocusState = true
             }
@@ -86,17 +86,28 @@ struct OdometerInput: View {
     
     // Function to handle digit entry and deletion
     private func handleInputChange(_ newValue: String) {
+        guard !newValue.isEmpty else {
+            // Shift all digits to the right when the last digit is deleted
+            updateOdometer()
+            shiftRightOnDeletion()
+            if fieldSix.isEmpty {
+                odometer = nil
+            }
+            return
+        }
+        
         if newValue.count > 1 {
             if !areAllFieldsFilled() {
                 // Move all digits left when a new digit is added
-                shiftLeftAndInsertLastDigit(newValue)
+                updateOdometer()
+                shiftLeftAndInsertLastDigit(String(newValue.last!)) // Use only the last entered digit
             } else {
                 // If all fields are filled, don't allow overwriting the sixth field
                 fieldSix = String(newValue.first!)
             }
-        } else if newValue.isEmpty {
-            // Shift all digits to the right when the last digit is deleted
-            shiftRightOnDeletion()
+        }
+        if newValue.count == 1 && fieldFive.isEmpty {
+            updateOdometer()
         }
     }
     
@@ -106,11 +117,11 @@ struct OdometerInput: View {
     }
     
     // Shift all digits left and insert the last digit in the sixth field
-    private func shiftLeftAndInsertLastDigit(_ newValue: String) {
+    private func shiftLeftAndInsertLastDigit(_ lastDigit: String) {
         for i in 0..<5 {
             allFields[i].wrappedValue = allFields[i + 1].wrappedValue
         }
-        fieldSix = String(newValue.last!) // Keep the last entered digit in the sixth field
+        fieldSix = lastDigit // Set the last entered digit into the sixth field
     }
     
     // Shift all digits to the right when a digit is deleted
@@ -120,10 +131,36 @@ struct OdometerInput: View {
         }
         allFields[0].wrappedValue = "" // Clear the first field
     }
+    
+    // Function to update the odometer from field values
+    private func updateOdometer() {
+        let odometerString = allFields.prefix(5).map { $0.wrappedValue }.joined() + fieldSix
+        odometer = Int(odometerString) ?? 0
+    }
+    
+    private func updateFieldsFromOdometer(_ newValue: Int) {
+        let odometerString = String(format: "%d", newValue) // Get the string representation of the number
+        let count = odometerString.count
+
+        for index in 0..<6 {
+            if index < 6 - count {
+                // For leading empty fields
+                allFields[index].wrappedValue = ""
+            } else {
+                // Set the actual digits in the remaining fields
+                let digitIndex = index - (6 - count) // Calculate the index for digits
+                if digitIndex < count {
+                    allFields[index].wrappedValue = String(odometerString[odometerString.index(odometerString.startIndex, offsetBy: digitIndex)])
+                }
+            }
+        }
+        updateOdometer()
+    }
 }
 
 
-#Preview {
-    OdometerInput()
-}
+
+//#Preview {
+//    OdometerInput()
+//}
 
