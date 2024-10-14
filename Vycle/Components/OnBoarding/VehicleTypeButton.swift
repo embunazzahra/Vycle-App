@@ -35,12 +35,12 @@ struct VehicleTypeButton: View {
                 .animation(.easeInOut(duration: 0.3), value: isSelected)
             
             Text(vehicleType == .motor ? "Motor" : "Mobil")
-                .font(.headline)
+                .title3(.emphasized)
                 .foregroundStyle(isSelected ? Color.neutral.tint300 : Color.neutral.shade300)
                 .padding(.leading, 250)
                 .animation(.easeInOut, value: isSelected)
         }
-        .padding(.bottom, 6)
+        .padding(.bottom, 18)
         .onTapGesture {
             onSelect()
         }

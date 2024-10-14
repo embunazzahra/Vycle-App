@@ -14,6 +14,26 @@ enum VehicleBrand: Hashable {
     case daihatsu
     case mitsubishi
     case custom(String)
+    
+    var stringValue: String {
+        switch self {
+        case .honda: return "Honda"
+        case .suzuki: return "Suzuki"
+        case .toyota: return "Toyota"
+        case .daihatsu: return "Daihatsu"
+        case .mitsubishi: return "Mitsubishi"
+        case .custom(let name): return name
+        }
+    }
+}
+
+extension VehicleBrand {
+    var isCustomBrand: Bool {
+        if case .custom(_) = self {
+            return true
+        }
+        return false
+    }
 }
 
 struct VehicleBrandButton: View {
@@ -28,58 +48,24 @@ struct VehicleBrandButton: View {
                 .frame(width: 361, height: 64)
                 .foregroundStyle(isSelected ? Color.primary.shade200 : Color.neutral.tint200)
                 .padding(.horizontal, 12)
-                .animation(.easeInOut, value: isSelected)
+                .animation(.easeInOut(duration: 0.3), value: isSelected)
 
             HStack {
-                Image("placeholder")
+                Image(brand.isCustomBrand ? "merk_kendaraan" : "placeholder")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
                     .padding(.leading, 24)
-                Text(brandText)
+                Text(brand.stringValue)
                     .headline()
                     .foregroundStyle(isSelected ? Color.neutral.tint300 : Color.neutral.shade300)
-                    .animation(.easeInOut, value: isSelected)
                     .padding(.leading, 4)
+                    .animation(.easeInOut(duration: 0.3), value: isSelected)
             }
         }
         .padding(.bottom, 2)
         .onTapGesture {
             onSelect()
-        }
-    }
-    
-    private var brandImage: String {
-        switch brand {
-        case .honda:
-            return "honda"
-        case .suzuki:
-            return "suzuki"
-        case .toyota:
-            return "toyota"
-        case .daihatsu:
-            return "daihatsu"
-        case .mitsubishi:
-            return "mitsubishi"
-        case .custom(let name):
-            return name
-        }
-    }
-    
-    private var brandText: String {
-        switch brand {
-        case .honda:
-            return "Honda"
-        case .suzuki:
-            return "Suzuki"
-        case .toyota:
-            return "Toyota"
-        case .daihatsu:
-            return "Daihatsu"
-        case .mitsubishi:
-            return "Mitsubishi"
-        case .custom(let name):
-            return name
         }
     }
 }

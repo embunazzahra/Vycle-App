@@ -11,7 +11,7 @@ struct OnBoardingView: View {
     @State private var currentPage = 1
     @State private var vehicleType: VehicleType? = nil
     @State private var vehicleBrand: VehicleBrand? = nil
-    @State var odometer: Int? = nil
+    @State private var odometer: Int? = nil
     @State private var serviceHistory: [ServiceHistory] = [ServiceHistory(sparepart: .filterUdara, month: 9, year: 24)]
     
     private var backButtonText: String {
@@ -122,4 +122,3 @@ struct OnBoardingView: View {
 #Preview {
     OnBoardingView()
 }
-

@@ -11,19 +11,24 @@ struct VehicleBrandView: View {
     @Binding var vehicleType: VehicleType?
     @Binding var vehicleBrand: VehicleBrand?
     @State private var showAddBrandSheet: Bool = false
-    @State private var otherBrand: String = ""
-    var action: () -> Void
-    
-    var brands: [VehicleBrand] {
+    @State private var otherBrandsList: [String] = []
+
+    var brandsList: [VehicleBrand] {
+        let predefinedBrands: [VehicleBrand]
         switch vehicleType {
         case .mobil:
-            return [.honda, .suzuki, .toyota, .daihatsu, .mitsubishi]
+            predefinedBrands = [.honda, .suzuki, .toyota, .daihatsu, .mitsubishi]
         case .motor:
-            return [.honda, .suzuki, .toyota]
+            predefinedBrands = [.honda, .suzuki, .toyota]
         case .none:
-            return []
+            predefinedBrands = []
         }
+
+        let customBrandObjects = otherBrandsList.map { VehicleBrand.custom($0) }
+            return predefinedBrands + customBrandObjects
     }
+    
+    var action: () -> Void
     
     @ViewBuilder
     func vehicleBrandButtons(from brands: [VehicleBrand]) -> some View {
@@ -48,7 +53,7 @@ struct VehicleBrandView: View {
                 .padding(.bottom, 24)
             
             ScrollView {
-                vehicleBrandButtons(from: brands)
+                vehicleBrandButtons(from: brandsList)
                 
                 
                 ZStack(alignment: .leading) {
@@ -73,7 +78,7 @@ struct VehicleBrandView: View {
                     showAddBrandSheet = true
                 }
                 .sheet(isPresented: $showAddBrandSheet) {
-                    AddBrandSheet(vehicleBrand: $vehicleBrand, otherBrand: $otherBrand, action: action)
+                    AddBrandSheet(vehicleBrand: $vehicleBrand, otherBrandsList: $otherBrandsList, brandsList: brandsList, action: action)
                 }
             }
             
@@ -86,7 +91,10 @@ struct VehicleBrandView: View {
 struct AddBrandSheet: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var vehicleBrand: VehicleBrand?
-    @Binding var otherBrand: String
+    @Binding var otherBrandsList: [String]
+    @State var otherBrand: String = ""
+    @State var showError: Bool = false
+    var brandsList: [VehicleBrand]
     var action: () -> Void
     
     var body: some View {
@@ -112,23 +120,42 @@ struct AddBrandSheet: View {
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 16)
+            .padding(.vertical, 12)
             .overlay(
               RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray, lineWidth: 1)
+                .stroke(showError ? Color.persianRed.red500 : Color.neutral.tone100, lineWidth: 1)
             )
             .padding(.horizontal, 16)
+            
+            if showError {
+                HStack {
+                    Image("warning")
+                    Text("Merk kendaraan sudah tersedia di pilihan!")
+                        .footnote(.regular)
+                        .foregroundColor(Color.persianRed.red500)
+                        .padding(.top, 2)
+                }.padding(.horizontal, 16)
+            }
        
             Spacer()
             
             CustomButton(title: "Lanjutkan", iconName: "lanjutkan", buttonType: otherBrand.isEmpty ? .disabled : .primary) {
                 if !otherBrand.isEmpty {
-                    vehicleBrand = .custom(otherBrand)
-                    presentationMode.wrappedValue.dismiss()
-                    action()
+                    if !isBrandDuplicate(otherBrand) {
+                        otherBrandsList.append(otherBrand)
+                        vehicleBrand = .custom(otherBrand)
+                        presentationMode.wrappedValue.dismiss()
+                        action()
+                    } else {
+                        showError = true
+                    }
                 }
             }
         }.background(Color.background)
+    }
+    
+    private func isBrandDuplicate(_ brand: String) -> Bool {
+        return brandsList.contains { $0.stringValue.lowercased() == brand.lowercased() }
     }
 }
 
