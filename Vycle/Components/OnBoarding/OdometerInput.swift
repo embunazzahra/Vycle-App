@@ -81,6 +81,9 @@ struct OdometerInput: View {
             .onTapGesture {
                 fieldFocusState = true
             }
+            .onAppear(){
+                updateFieldsFromOdometer(odometer)
+            }
         }
     }
     
@@ -138,8 +141,9 @@ struct OdometerInput: View {
         odometer = Int(odometerString) ?? 0
     }
     
-    private func updateFieldsFromOdometer(_ newValue: Int) {
-        let odometerString = String(format: "%d", newValue) // Get the string representation of the number
+    private func updateFieldsFromOdometer(_ newValue: Int?) {
+        
+        let odometerString = newValue.map { String(format: "%d", $0) } ?? ""
         let count = odometerString.count
 
         for index in 0..<6 {

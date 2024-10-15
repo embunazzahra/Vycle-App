@@ -77,24 +77,19 @@ struct OnBoardingView: View {
                         .foregroundStyle(Color.background)
                     
                     VStack (alignment: .center) {
-                        TabView(selection: $currentPage) {
-                            VehicleTypeView(vehicleType: $vehicleType)
-                                .tag(1)
-                                .gesture(DragGesture())
-                            VehicleBrandView(vehicleType: $vehicleType, vehicleBrand: $vehicleBrand) {
-                                currentPage += 1
-                            }   .tag(2)
-                                .gesture(DragGesture())
-                            VehicleOdometerView(odometer: $odometer)
-                                .tag(3)
-                                .gesture(DragGesture())
-                            VehicleServiceHistoryView(serviceHistory: $serviceHistory)
-                                .tag(4)
-                                .gesture(DragGesture())
-                        }
-                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                        .onAppear {
-                              UIScrollView.appearance().isScrollEnabled = false
+                        switch currentPage {
+                            case 1:
+                                VehicleTypeView(vehicleType: $vehicleType)
+                            case 2:
+                                VehicleBrandView(vehicleType: $vehicleType, vehicleBrand: $vehicleBrand) {
+                                    currentPage += 1
+                                }
+                            case 3:
+                                VehicleOdometerView(odometer: $odometer)
+                            case 4:
+                                VehicleServiceHistoryView(serviceHistory: $serviceHistory)
+                            default:
+                                EmptyView() // A fallback if no view matches the currentPage
                         }
                         
                         CustomButton(
@@ -105,6 +100,10 @@ struct OnBoardingView: View {
                             verticalPadding: 0
                         ) {
                             if isButtonEnabled {
+                                print("vehicle type: \(vehicleType)")
+                                print("vehicle brand: \(vehicleBrand)")
+                                print("odometer:\(odometer)")
+                                print("histori: \(serviceHistory)")
                                 if currentPage < 4 {
                                     currentPage += 1
                                 } else {
@@ -115,7 +114,7 @@ struct OnBoardingView: View {
                     }
                 }
             }
-        }
+        }.ignoresSafeArea(.keyboard)
     }
 }
 
