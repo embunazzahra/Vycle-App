@@ -24,7 +24,6 @@ struct OdometerModifier: ViewModifier {
         content
             .multilineTextAlignment(.center)
             .keyboardType(.numberPad)
-            .onReceive(Just(field)) { _ in limitText(textLimit) }
             .padding(.top,4)
             .frame(width: 32, height: 44)
             .font(.custom("Technology-Bold", size: 32))
@@ -34,6 +33,7 @@ struct OdometerModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.neutral.shade300, lineWidth: 2)
             )
+            .onReceive(Just(field)) { _ in limitText(textLimit) }
     }
 }
 
@@ -138,7 +138,9 @@ struct OdometerInput: View {
     // Function to update the odometer from field values
     private func updateOdometer() {
         let odometerString = allFields.prefix(5).map { $0.wrappedValue }.joined() + fieldSix
-        odometer = Int(odometerString) ?? 0
+        if !odometerString.isEmpty {
+            odometer = Int(odometerString)
+        }
     }
     
     private func updateFieldsFromOdometer(_ newValue: Int?) {

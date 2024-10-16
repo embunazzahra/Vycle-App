@@ -32,4 +32,3 @@ struct VehicleOdometerView: View {
         }
     }
 }
-

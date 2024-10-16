@@ -10,8 +10,8 @@ import SwiftUI
 struct VehicleBrandView: View {
     @Binding var vehicleType: VehicleType?
     @Binding var vehicleBrand: VehicleBrand?
+    @Binding var otherBrandsList: [String]
     @State private var showAddBrandSheet: Bool = false
-    @State private var otherBrandsList: [String] = []
 
     var brandsList: [VehicleBrand] {
         let predefinedBrands: [VehicleBrand]
@@ -78,7 +78,12 @@ struct VehicleBrandView: View {
                     showAddBrandSheet = true
                 }
                 .sheet(isPresented: $showAddBrandSheet) {
-                    AddBrandSheet(vehicleBrand: $vehicleBrand, otherBrandsList: $otherBrandsList, brandsList: brandsList, action: action)
+                    AddBrandSheet(
+                        vehicleBrand: $vehicleBrand,
+                        otherBrandsList: $otherBrandsList,
+                        brandsList: brandsList,
+                        action: action
+                    )
                 }
             }
             
@@ -139,7 +144,11 @@ struct AddBrandSheet: View {
        
             Spacer()
             
-            CustomButton(title: "Lanjutkan", iconName: "lanjutkan", buttonType: otherBrand.isEmpty ? .disabled : .primary) {
+            CustomButton(
+                title: "Lanjutkan",
+                iconName: "lanjutkan",
+                buttonType: otherBrand.isEmpty ? .disabled : .primary
+            ) {
                 if !otherBrand.isEmpty {
                     if !isBrandDuplicate(otherBrand) {
                         otherBrandsList.append(otherBrand)
