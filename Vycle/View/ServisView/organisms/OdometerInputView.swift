@@ -17,7 +17,7 @@ struct OdometerInputView: View {
             Text("Kilometer kendaraan")
                 .font(.headline)
 
-            OdometerServisTextField(text: $odometerValue, placeholder: enable ? "masukkan KM saat servis" : userOdometer.formattedWithSeparator(), enable: enable)
+            OdometerServisTextField(text: $odometerValue, placeholder: enable ? odometerValue : userOdometer.formattedWithSeparator(), enable: enable)
 
             Text("Berdasarkan tracking kilometer dari kendaraanmu")
                 .font(.footnote)

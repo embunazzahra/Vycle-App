@@ -25,7 +25,7 @@ struct PengingatView: View {
     }
     
     var body: some View {
-//        NavigationStack {
+        NavigationStack {
             VStack {
                 VStack {
                     if isHavingRecord {
@@ -77,7 +77,7 @@ struct PengingatView: View {
                     }
                 }
             }
-//        }
+        }
 //        .accentColor(Color.white)
     }
 }
