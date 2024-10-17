@@ -24,4 +24,3 @@ class Vehicle {
         self.brand = brand
     }
 }
-

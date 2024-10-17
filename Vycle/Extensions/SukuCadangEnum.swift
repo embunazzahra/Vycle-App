@@ -5,7 +5,7 @@
 //  Created by Dhau Embun Azzahra on 09/10/24.
 //
 
-enum SukuCadang: String, CaseIterable, Hashable {
+enum SukuCadang: String, CaseIterable, Hashable, Identifiable {
     case filterUdara = "Filter udara"
     case oliMesin = "Oli mesin"
     case oliGardan = "Oli gardan"
