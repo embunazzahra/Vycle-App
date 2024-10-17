@@ -7,16 +7,17 @@
 import SwiftUI
 
 struct SparepartWheelPicker: View {
-    @State private var selectedValue: SukuCadang = .busi
     @State private var showSheet = false
     @Binding var isPartChosen: Bool
-    
+    @Binding var selectedSparepart: SukuCadang
+    var reminders: [SparepartReminder]
+
     var body: some View {
         VStack {
             Button(action: {
                 showSheet.toggle()
             }) {
-                Text(isPartChosen ? selectedValue.rawValue : "Pilih suku cadang")
+                Text(isPartChosen ? selectedSparepart.rawValue : "Pilih suku cadang")
                     .subhead(.regular)
                     .padding(8)
                     .background(Color.neutral.tint200)
@@ -24,7 +25,7 @@ struct SparepartWheelPicker: View {
                     .cornerRadius(10)
             }
             .sheet(isPresented: $showSheet) {
-                SparepartPickerSheet(selectedValue: $selectedValue, isPartChosen: $isPartChosen)
+                SparepartPickerSheet(isPartChosen: $isPartChosen, selectedSparepart: $selectedSparepart, reminders: reminders)
                     .presentationDetents([.medium])
             }
         }
@@ -33,10 +34,11 @@ struct SparepartWheelPicker: View {
 }
 
 struct SparepartPickerSheet: View {
-    @Binding var selectedValue: SukuCadang
     @Environment(\.dismiss) var dismiss
     @Binding var isPartChosen: Bool
-    
+    @Binding var selectedSparepart: SukuCadang
+    var reminders: [SparepartReminder]
+
     var body: some View {
         VStack {
             HStack {
@@ -47,8 +49,10 @@ struct SparepartPickerSheet: View {
                 Spacer()
             }
             
-            Picker("Select a spare part", selection: $selectedValue) {
-                ForEach(SukuCadang.allCases) { part in
+            Picker("Select a spare part", selection: $selectedSparepart) {
+                ForEach(SukuCadang.allCases.filter { part in
+                    !reminders.contains(where: { $0.sparepartName == part.rawValue })
+                }) { part in
                     Text(part.rawValue).tag(part)
                 }
             }

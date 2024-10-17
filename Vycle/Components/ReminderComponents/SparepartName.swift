@@ -13,8 +13,11 @@ struct SparepartName: View {
 
     @Binding var selectedDate: Date
     
+    @Binding var selectedSparepart: SukuCadang
+    var reminders: [SparepartReminder]
+
     var body: some View {
-        VStack (alignment: .leading) {
+        VStack(alignment: .leading) {
             Text("Nama suku cadang")
                 .headline()
                 .padding(.horizontal, 16)
@@ -28,7 +31,8 @@ struct SparepartName: View {
                     .padding(.horizontal, 16)
                 
                 HStack {
-                    SparepartWheelPicker(isPartChosen: $isPartChosen)
+                    SparepartWheelPicker(isPartChosen: $isPartChosen, selectedSparepart: $selectedSparepart, reminders: reminders)
+                    
                     Spacer()
                     
                     DateWheelPicker(selectedDate: $selectedDate,isMonthYearChosen: $isMonthYearChosen)
@@ -40,5 +44,6 @@ struct SparepartName: View {
         .padding(.top, 24)
     }
 }
+
 
 

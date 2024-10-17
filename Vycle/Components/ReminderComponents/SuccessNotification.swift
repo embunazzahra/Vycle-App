@@ -8,14 +8,17 @@
 import SwiftUI
 
 public struct AddSuccessNotification: View {
+    @Binding var reminders: [SparepartReminder]
+    @EnvironmentObject var routes: Routes
+    
     public var body: some View {
         ZStack {
             Rectangle()
                 .frame(width: 241, height: 290)
                 .cornerRadius(12)
                 .foregroundStyle(Color.neutral.tint300)
-            
-            VStack (spacing: 4){
+
+            VStack(spacing: 4) {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(Color.lima500)
                     .font(.system(size: 45))
@@ -26,36 +29,39 @@ public struct AddSuccessNotification: View {
                     .frame(width: 150)
                     .foregroundColor(Color.neutral.tone100)
                     .multilineTextAlignment(.center)
-                
-                Button(action: {
-                    print("back to pengingat page")
-                }, label: {
-                    NavigationLink (destination: PengingatView()) {
-                        ZStack {
-                            Rectangle()
-                                .frame(width: 164, height: 44)
-                                .cornerRadius(12)
-                                .foregroundColor(Color.blue)
-                            Text("Kembali ke pengingat")
-                                .subhead(.regular)
-                                .foregroundColor(Color.neutral.tint300)
-                        } .padding(.top)
+
+                // Directly use NavigationLink without Button
+//                NavigationLink(destination: PengingatView(reminders: reminders)) {
+                    ZStack {
+                        Rectangle()
+                            .frame(width: 164, height: 44)
+                            .cornerRadius(12)
+                            .foregroundColor(Color.blue)
+                        Text("Kembali ke pengingat")
+                            .subhead(.regular)
+                            .foregroundColor(Color.neutral.tint300)
                     }
-                })
+                    .padding(.top)
+                    .onTapGesture {
+                        routes.navigateBack()
+                    }
+//                }
             }
         }
     }
 }
 
 public struct EditSuccessNotification: View {
+    @Binding var reminders: [SparepartReminder] 
+
     public var body: some View {
         ZStack {
             Rectangle()
                 .frame(width: 241, height: 290)
                 .cornerRadius(12)
                 .foregroundStyle(Color.neutral.tint300)
-            
-            VStack (spacing: 4){
+
+            VStack(spacing: 4) {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(Color.lima500)
                     .font(.system(size: 45))
@@ -66,25 +72,24 @@ public struct EditSuccessNotification: View {
                     .frame(width: 150)
                     .foregroundColor(Color.neutral.tone100)
                     .multilineTextAlignment(.center)
-                
-                Button(action: {
-                    print("back to pengingat page")
-                }, label: {
-                    NavigationLink (destination: PengingatView()) {
-                        ZStack {
-                            Rectangle()
-                                .frame(width: 164, height: 44)
-                                .cornerRadius(12)
-                                .foregroundColor(Color.blue)
-                            Text("Kembali ke pengingat")
-                                .subhead(.regular)
-                                .foregroundColor(Color.neutral.tint300)
-                        } .padding(.top)
+
+                // Directly use NavigationLink without Button
+                NavigationLink(destination: PengingatView(reminders: reminders)) {
+                    ZStack {
+                        Rectangle()
+                            .frame(width: 164, height: 44)
+                            .cornerRadius(12)
+                            .foregroundColor(Color.blue)
+                        Text("Kembali ke pengingat")
+                            .subhead(.regular)
+                            .foregroundColor(Color.neutral.tint300)
                     }
-                })
+                    .padding(.top)
+                }
             }
         }
     }
 }
+
 
 

@@ -10,7 +10,7 @@ import SwiftUI
 struct ProgressBar: View {
     var currentKilometer: Double
     var maxKilometer: Double
-    
+
     private var kilometerDifference: Double {
         return maxKilometer - currentKilometer
     }
@@ -20,9 +20,13 @@ struct ProgressBar: View {
     }
     
     var body: some View {
-        VStack (alignment: .leading) {
-            if progress >= 0.66 {
+        VStack(alignment: .leading) {
+            if progress >= 1.0 {
                 Text("Sudah tiba bulannya nih!")
+                    .footnote(.emphasized)
+                    .foregroundColor(Color.persianRed600)
+            } else if progress >= 0.66 {
+                Text("\(Int(kilometerDifference)) Kilometer lagi")
                     .footnote(.emphasized)
                     .foregroundColor(Color.persianRed600)
             } else if progress <= 0 {
@@ -50,7 +54,6 @@ struct ProgressBar: View {
         }
     }
 }
-
 
 #Preview {
     ProgressBar(currentKilometer: 0, maxKilometer: 15000)

@@ -16,8 +16,8 @@ struct ReminderHeaderNoData: View {
             Text("Belum ada pengingat terdaftar")
                 .body(.emphasized)
             
-            Text("Tambahin pengingat dulu yuk!")
-                .caption1(.regular)
+//            Text("Tambahin pengingat dulu yuk!")
+//                .caption1(.regular)
         }
         .padding(.top, 24)
         .foregroundColor(Color.neutral.tint300)
