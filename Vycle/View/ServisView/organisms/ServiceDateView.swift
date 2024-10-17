@@ -44,8 +44,9 @@ struct ServiceDateView: View {
                 }
                 .presentationDetents([.height(527)])
                 .presentationDragIndicator(.visible)
-                .background(Color.background)
+//                .background(Color.background)
             }
         }
+        .tint(.accentColor)
     }
 }

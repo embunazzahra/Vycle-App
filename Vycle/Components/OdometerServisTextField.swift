@@ -21,12 +21,13 @@ struct OdometerServisTextField: View {
                 .frame(width: 18, height: 15) // Set your desired frame
                 .padding(12)
             TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
+                .keyboardType(.numberPad)
                 .disabled(!enable) // Disables the TextField
-                .foregroundColor(.black)
+                .foregroundColor(.grayShade300)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.neutral.tint200) // Gray background
-                        
+                        .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
+                    
                 )
             Image("KM_text_logo")
                 .resizable()
@@ -36,7 +37,11 @@ struct OdometerServisTextField: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.neutral.tint200) // Gray background
+                .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(enable ? Color.neutral.tone100 : Color.neutral.tint200, lineWidth: 1) // Adds a border around the view
         )
         
     }
