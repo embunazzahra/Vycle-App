@@ -23,7 +23,7 @@ struct ContentView: View {
     @State private var reminders: [SparepartReminder] = []
     
     init(){
-        setupNavigationBar()
+        setupNavigationBarWithoutScroll()
     }
     var body: some View {
         NavigationStack (path: $routes.navPath) {
@@ -41,6 +41,7 @@ struct ContentView: View {
                         Text("Pengingat")
                     }.tag(Tab.pengingat)
                 
+                
             }.tint(.blue)
             .navigationTitle(selectedTab.rawValue)
                 .navigationDestination(for: Routes.Destination.self) { destination in
@@ -57,6 +58,17 @@ struct ContentView: View {
                         NoServiceView()
                     case .AddReminderView:
                         AddReminderView(reminders: $reminders)
+                    }
+                }
+                .toolbar {
+                    ToolbarItem {
+    //                    NavigationLink(destination: AddReminderView(reminders: $reminders)) {
+                            Image(systemName: "plus.square.fill")
+                                .foregroundColor(Color.white)
+                                .onTapGesture {
+                                    routes.navigate(to: .AddReminderView)
+                                }.opacity(selectedTab.rawValue == "Pengingat" ? 1 : 0).disabled(selectedTab.rawValue == "Pengingat" ? false : true)
+    //                    }
                     }
                 }
                 

@@ -71,6 +71,7 @@ struct SparepartReminderListView: View {
                 .onDelete(perform: deleteReminder)
             }
             .listStyle(PlainListStyle())
+            .listRowSeparator(.hidden)
         }
     }
     

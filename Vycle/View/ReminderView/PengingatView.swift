@@ -22,44 +22,43 @@ struct PengingatView: View {
     @EnvironmentObject var routes: Routes
 
     var body: some View {
-        NavigationStack {
+//        NavigationStack {
             VStack {
                 VStack {
                     if !reminders.isEmpty {
-                        ReminderHeader(reminders: reminders)
+                        ReminderHeader(reminders: $reminders)
                     } else {
                         ReminderHeaderNoData()
                     }
                 }
                 .padding(.bottom, 40)
                 .background(Color.primary.tone100)
-                
+
                 ZStack {
                     Rectangle()
-                        .frame(width: .infinity , height: .infinity)
+                        .frame(width: .infinity, height: .infinity)
                         .clipShape(RoundedCornersShape(corners: [.topLeft, .topRight], radius: 20))
                         .foregroundStyle(.white)
                         .ignoresSafeArea()
-                    
+
                     VStack {
-                        // Get filtered reminders that meet the progress criteria
-                        let filteredReminders = reminders.filter { reminder in
-                            let progress = getProgress(currentKilometer: 15000, targetKilometer: reminder.sparepartTargetKilometer)
-                            return progress >= 0.66
-                        }
-                        
+                        let filteredReminders = self.filteredReminders
+
                         if !filteredReminders.isEmpty {
                             ReminderContentNear()
                                 .frame(width: 390)
                                 .padding(.vertical, 8)
-                            
+
                             SparepartReminderListView(reminders: .constant(filteredReminders))
+                            
+//                            SparepartReminderListView(reminders: $reminders)
+                            
                         } else {
                             ReminderContentNoData()
                                 .frame(width: 390)
                                 .padding(.vertical, 8)
                         }
-                        
+
                         Spacer()
                     }
                 }
@@ -68,25 +67,24 @@ struct PengingatView: View {
             .background(Color.primary.tone100)
             .navigationBarBackButtonHidden(true)
             .navigationTitle("Pengingat")
-            .toolbar {
-                ToolbarItem {
-                    NavigationLink(destination: AddReminderView(reminders: $reminders)) {
-                        Image(systemName: "plus.square.fill")
-                            .foregroundColor(Color.white)
-                    }
-                }
-            }
-            .onAppear {
-                setupNavigationBarWithoutScroll()
-            }
+           
+//            .onAppear {
+//                setupNavigationBarWithoutScroll()
+//            }
+//        }
+    }
+
+    private var filteredReminders: [SparepartReminder] {
+        return reminders.filter { reminder in
+            let progress = getProgress(currentKilometer: 15000, targetKilometer: reminder.sparepartTargetKilometer)
+            return progress >= 0.66
         }
     }
-    
+
     private func getProgress(currentKilometer: Double, targetKilometer: Double) -> Double {
         return min(currentKilometer / targetKilometer, 1.0)
     }
 }
-
 
 #Preview {
     PengingatView()

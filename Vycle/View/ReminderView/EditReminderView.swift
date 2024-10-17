@@ -35,9 +35,6 @@ struct EditReminderView: View {
         .environmentObject(Routes())
 }
 
-
-
-
 //import SwiftUI
 //
 //struct EditReminderView: View {
