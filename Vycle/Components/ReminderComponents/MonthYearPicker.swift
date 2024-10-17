@@ -7,18 +7,16 @@
 import SwiftUI
 
 struct DateWheelPicker: View {
-    @Binding var selectedMonth: Int
-    @Binding var selectedYear: Int
-    @Binding var isMonthYearChosen: Bool
-    
+    @Binding var selectedDate: Date
     @State private var showSheet = false
+    @Binding var isMonthYearChosen: Bool
     
     var body: some View {
         VStack {
             Button(action: {
                 showSheet.toggle()
             }) {
-                Text(isMonthYearChosen ? String(format: "%02d/%d", selectedMonth + 1, selectedYear + 2000) : "MM/YYYY")
+                Text(isMonthYearChosen ? formattedSelectedDate : "MM/YYYY")
                     .subhead(.regular)
                     .padding(8)
                     .background(Color.neutral.tint200)
@@ -26,29 +24,40 @@ struct DateWheelPicker: View {
                     .cornerRadius(10)
             }
             .sheet(isPresented: $showSheet) {
-                DatePickerSheet(selectedMonth: $selectedMonth, selectedYear: $selectedYear, isMonthYearChosen: $isMonthYearChosen)
+                DatePickerSheet(selectedDate: $selectedDate, isMonthYearChosen: $isMonthYearChosen)
                     .presentationDetents([.medium])
             }
         }
         .padding()
     }
+    
+    private var formattedSelectedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/yyyy"
+        return formatter.string(from: selectedDate)
+    }
 }
 
 struct DatePickerSheet: View {
-    @Binding var selectedMonth: Int
-    @Binding var selectedYear: Int
+    @Binding var selectedDate: Date
     @Environment(\.dismiss) var dismiss
     @Binding var isMonthYearChosen: Bool
     
     private let months = Calendar.current.monthSymbols
-    private let years = Array(2000...Calendar.current.component(.year, from: Date()) + 2)
+    private var years: [Int] {
+       let currentYear = Calendar.current.component(.year, from: Date())
+        return Array(currentYear...currentYear + 5)
+   }
+    
+    @State private var selectedMonth = Calendar.current.component(.month, from: Date())
+    @State private var selectedYear = Calendar.current.component(.year, from: Date())
     
     var body: some View {
         VStack {
             HStack {
                 Text("Bulan dan tahun")
                     .title3(.emphasized)
-                    .padding(.top, 16)
+                    .padding(.top, 32)
                     .padding(.leading, 16)
                 Spacer()
             }
@@ -56,7 +65,7 @@ struct DatePickerSheet: View {
             ZStack {
                 HStack {
                     Picker("Bulan", selection: $selectedMonth) {
-                        ForEach(0..<months.count, id: \.self) { index in
+                        ForEach(filteredMonths(), id: \.self) { index in
                             Text(months[index]).tag(index)
                         }
                     }
@@ -65,8 +74,8 @@ struct DatePickerSheet: View {
                     .clipped()
                     
                     Picker("Tahun", selection: $selectedYear) {
-                        ForEach(0..<years.count, id: \.self) { index in
-                            Text(String(format: "%d", years[index])).tag(index)
+                        ForEach(years, id: \.self) { year in
+                            Text(String(year)).tag(year)
                         }
                     }
                     .pickerStyle(.wheel)
@@ -75,7 +84,7 @@ struct DatePickerSheet: View {
                 }
                 .padding(.horizontal)
                 
-                HStack (spacing: 110) {
+                HStack (spacing: 110){
                     Rectangle()
                         .foregroundColor(Color.grayTint300)
                         .frame(width: 60, height: 32)
@@ -91,13 +100,35 @@ struct DatePickerSheet: View {
             }
             
             CustomButton(title: "Pilih", iconPosition: .left, buttonType: .primary) {
+                updateSelectedDate()
                 isMonthYearChosen = true
                 dismiss()
+                print("Selected Year: \(selectedYear), Selected Month: \(selectedMonth + 1), New Date: \(selectedDate)")
             }
             .padding(.top, 10)
             
             Spacer()
         }
+        .onAppear {
+            let calendar = Calendar.current
+            selectedMonth = calendar.component(.month, from: selectedDate) - 1
+            selectedYear = calendar.component(.year, from: selectedDate)
+        }
+    }
+    
+    private func filteredMonths() -> [Int] {
+        if selectedYear == Calendar.current.component(.year, from: Date()) {
+            return Array(Calendar.current.component(.month, from: Date())...11)
+        }
+        return Array(0..<months.count)
+    }
+    
+    private func updateSelectedDate() {
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month], from: selectedDate)
+        components.year = selectedYear
+        components.month = selectedMonth + 1
+        components.day = 2
+        selectedDate = calendar.date(from: components) ?? Date().startOfMonth()
     }
 }
-

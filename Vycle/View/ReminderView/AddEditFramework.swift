@@ -16,8 +16,7 @@ struct AddEditFramework: View {
     @State private var isKilometerChosen = false
     @State private var isNotificationShowed = false
 
-    @State private var selectedMonth = 0
-    @State private var selectedYear = Calendar.current.component(.year, from: Date()) - 2000
+    @State private var selectedDate: Date = Date().startOfMonth()
     
     @State private var selectedNumber = 1000
     @State private var showSheet = false
@@ -36,8 +35,8 @@ struct AddEditFramework: View {
         let currentYear = currentComponents.year ?? 0
         let currentMonth = currentComponents.month ?? 0
 
-        let selectedFullYear = selectedYear + 2000
-        let selectedFullMonth = selectedMonth + 1
+        let selectedFullYear = Calendar.current.component(.year, from: selectedDate)
+        let selectedFullMonth = Calendar.current.component(.month, from: selectedDate)
 
         let yearDifference = selectedFullYear - currentYear
         let monthDifference = selectedFullMonth - currentMonth
@@ -55,7 +54,7 @@ struct AddEditFramework: View {
         ZStack {
             NavigationStack {
                 VStack {
-                    SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedMonth: $selectedMonth, selectedYear: $selectedYear)
+                    SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate)
 
                     NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
                     

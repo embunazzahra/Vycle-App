@@ -11,8 +11,7 @@ struct SparepartName: View {
     @Binding var isPartChosen: Bool
     @Binding var isMonthYearChosen: Bool
 
-    @Binding var selectedMonth: Int
-    @Binding var selectedYear: Int
+    @Binding var selectedDate: Date
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -32,7 +31,7 @@ struct SparepartName: View {
                     SparepartWheelPicker(isPartChosen: $isPartChosen)
                     Spacer()
                     
-                    DateWheelPicker(selectedMonth: $selectedMonth, selectedYear: $selectedYear, isMonthYearChosen: $isMonthYearChosen)
+                    DateWheelPicker(selectedDate: $selectedDate,isMonthYearChosen: $isMonthYearChosen)
                 }
                 .padding(.horizontal, 8)
             }
