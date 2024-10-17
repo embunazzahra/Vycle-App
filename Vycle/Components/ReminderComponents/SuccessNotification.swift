@@ -31,7 +31,7 @@ public struct AddSuccessNotification: View {
                     .multilineTextAlignment(.center)
 
                 // Directly use NavigationLink without Button
-//                NavigationLink(destination: PengingatView(reminders: reminders)) {
+                NavigationLink(destination: PengingatView(reminders: reminders)) {
                     ZStack {
                         Rectangle()
                             .frame(width: 164, height: 44)
@@ -42,10 +42,10 @@ public struct AddSuccessNotification: View {
                             .foregroundColor(Color.neutral.tint300)
                     }
                     .padding(.top)
-                    .onTapGesture {
-                        routes.navigateBack()
-                    }
-//                }
+//                    .onTapGesture {
+//                        routes.navigateBack()
+//                    }
+                }
             }
         }
     }
