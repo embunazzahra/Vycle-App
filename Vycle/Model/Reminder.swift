@@ -11,8 +11,6 @@ import Foundation
 
 @Model
 class Reminder {
-    // MARK: - Attributes
-    @Attribute(.unique) var reminderID: UUID
     var date: Date
     var sparepart: Sparepart
     var targetKM: Float = 1000 
@@ -23,9 +21,7 @@ class Reminder {
     var isRepeat: Bool
     var isDraft: Bool
     
-    // MARK: - Initialization
-    init(reminderID: UUID = UUID(), date: Date, sparepart: Sparepart, targetKM: Float = 1000, kmInterval: Float = 1000, dueDate: Date = Date(), timeInterval: Int = 0, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
-        self.reminderID = reminderID
+    init(date: Date, sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
         self.date = date
         self.sparepart = sparepart
         self.targetKM = targetKM

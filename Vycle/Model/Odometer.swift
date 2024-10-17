@@ -12,14 +12,11 @@ import Foundation
 @Model
 final class Odometer {
    
-    @Attribute(.unique) var recordID: UUID
     var date: Date = Date()
     var currentKM: Float
     @Relationship(deleteRule: .cascade) var vehicle: Vehicle
-    
-    
-    init(recordID: UUID = UUID(), currentKM: Float, vehicle: Vehicle) {
-        self.recordID = recordID
+    init(date: Date, currentKM: Float, vehicle: Vehicle) {
+        self.date = date
         self.currentKM = currentKM
         self.vehicle = vehicle
     }
