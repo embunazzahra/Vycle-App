@@ -8,17 +8,30 @@
 import SwiftUI
 
 struct AddReminderView: View {
-    init() {
-        setupNavigationBarWithoutScroll()
+    @Binding var reminders: [SparepartReminder]
+    @EnvironmentObject var routes: Routes
+
+    init(reminders: Binding<[SparepartReminder]>) {
+        self._reminders = reminders
     }
 
     var body: some View {
-        AddEditFramework(title: "Tambahkan pengingat") {
-            AnyView(AddSuccessNotification())
+        AddEditFramework(
+            title: "Tambahkan pengingat",
+            reminders: $reminders,
+            selectedSparepart: .busi 
+        ) {
+            AnyView(AddSuccessNotification(reminders: $reminders))
+        }
+        .onAppear {
+            setupNavigationBarWithoutScroll()
         }
     }
 }
 
 #Preview {
-    AddReminderView()
+    let reminders: [SparepartReminder] = []
+    return AddReminderView(reminders: .constant(reminders))
+        .environmentObject(Routes())
 }
+

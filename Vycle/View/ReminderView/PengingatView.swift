@@ -18,25 +18,22 @@ struct RoundedCornersShape: Shape {
 }
 
 struct PengingatView: View {
-    @State var isHavingRecord: Bool = true
-    
-    init() {
-        setupNavigationBarWithoutScroll()
-    }
-    
+    @State var reminders: [SparepartReminder] = []
+    @EnvironmentObject var routes: Routes
+
     var body: some View {
         NavigationStack {
             VStack {
                 VStack {
-                    if isHavingRecord {
-                        ReminderHeader()
+                    if !reminders.isEmpty {
+                        ReminderHeader(reminders: reminders)
                     } else {
                         ReminderHeaderNoData()
                     }
                 }
                 .padding(.bottom, 40)
                 .background(Color.primary.tone100)
-            
+                
                 ZStack {
                     Rectangle()
                         .frame(width: .infinity , height: .infinity)
@@ -45,12 +42,18 @@ struct PengingatView: View {
                         .ignoresSafeArea()
                     
                     VStack {
-                        if isHavingRecord {
+                        // Get filtered reminders that meet the progress criteria
+                        let filteredReminders = reminders.filter { reminder in
+                            let progress = getProgress(currentKilometer: 15000, targetKilometer: reminder.sparepartTargetKilometer)
+                            return progress >= 0.66
+                        }
+                        
+                        if !filteredReminders.isEmpty {
                             ReminderContentNear()
                                 .frame(width: 390)
                                 .padding(.vertical, 8)
                             
-                            SparepartReminderCard()
+                            SparepartReminderListView(reminders: .constant(filteredReminders))
                         } else {
                             ReminderContentNoData()
                                 .frame(width: 390)
@@ -67,21 +70,25 @@ struct PengingatView: View {
             .navigationTitle("Pengingat")
             .toolbar {
                 ToolbarItem {
-                    Button(action: {
-                        
-                    }) {
-                        NavigationLink(destination: AddReminderView()) {
-                            Image(systemName: "plus.square.fill")
-                                .foregroundColor(Color.white)
-                        }
+                    NavigationLink(destination: AddReminderView(reminders: $reminders)) {
+                        Image(systemName: "plus.square.fill")
+                            .foregroundColor(Color.white)
                     }
                 }
             }
+            .onAppear {
+                setupNavigationBarWithoutScroll()
+            }
         }
-//        .accentColor(Color.white)
+    }
+    
+    private func getProgress(currentKilometer: Double, targetKilometer: Double) -> Double {
+        return min(currentKilometer / targetKilometer, 1.0)
     }
 }
 
+
 #Preview {
     PengingatView()
+        .environmentObject(Routes())
 }

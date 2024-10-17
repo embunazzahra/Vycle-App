@@ -20,6 +20,7 @@ struct ContentView: View {
     }
     
     @State private var selectedTab: Tab = .dashboard
+    @State private var reminders: [SparepartReminder] = []
     
     init(){
         setupNavigationBar()
@@ -35,7 +36,7 @@ struct ContentView: View {
                         Image(systemName: "list.bullet.rectangle.fill")
                         Text("Servis")
                     }.tag(Tab.servis)
-                    PengingatView().tabItem {
+                PengingatView(reminders: reminders).tabItem {
                         Image(systemName: "bell.fill")
                         Text("Pengingat")
                     }.tag(Tab.pengingat)
@@ -45,7 +46,7 @@ struct ContentView: View {
                 .navigationDestination(for: Routes.Destination.self) { destination in
                     switch destination {
                     case .PengingatView:
-                        PengingatView()
+                        PengingatView(reminders: reminders)
                     case .ServisView:
                         ServiceView()
                     case .DashboardView:
@@ -54,6 +55,8 @@ struct ContentView: View {
                         AddServiceView()
                     case .NoServiceView:
                         NoServiceView()
+                    case .AddReminderView:
+                        AddReminderView(reminders: $reminders)
                     }
                 }
                 
