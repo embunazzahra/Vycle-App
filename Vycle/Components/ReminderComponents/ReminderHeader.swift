@@ -4,18 +4,19 @@
 //
 //  Created by Clarissa Alverina on 08/10/24.
 //
-
 import SwiftUI
 
 struct ReminderHeader: View {
+    @Binding var reminders: [SparepartReminder]
+
     var body: some View {
         VStack {
-            VStack (alignment: .center, spacing: 8){
+            VStack(alignment: .center, spacing: 8) {
                 Image(systemName: "bell.fill")
                     .font(.system(size: 20, weight: .bold))
                 
                 HStack {
-                    Text("0")
+                    Text("\(reminders.count)")
                         .body(.emphasized)
                     
                     Text("pengingat terdaftar")
@@ -26,7 +27,7 @@ struct ReminderHeader: View {
                     .caption1(.regular)
             }
             
-            NavigationLink(destination: AllReminderView()) {
+            NavigationLink(destination: AllReminderView(reminders: $reminders)) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(.white, lineWidth: 1)
@@ -37,7 +38,6 @@ struct ReminderHeader: View {
                 }
                 .padding(.top, 8)
             }
-
         }
         .padding(.top, 24)
         .background(Color.primary.tone100)
@@ -46,5 +46,18 @@ struct ReminderHeader: View {
 }
 
 #Preview {
-    ReminderHeader()
+    struct PreviewContainer: View {
+        @State var reminders = [
+            SparepartReminder(sparepartName: "Oli Mesin", sparepartTargetKilometer: 5000, monthInterval: 6),
+            SparepartReminder(sparepartName: "Filter Udara", sparepartTargetKilometer: 15000, monthInterval: 12)
+        ]
+        
+        var body: some View {
+            ReminderHeader(reminders: $reminders)
+        }
+    }
+    
+    return PreviewContainer()
 }
+
+
