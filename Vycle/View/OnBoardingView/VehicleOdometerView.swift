@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct VehicleOdometerView: View {
-    @Binding var odometer: Int?
+    @Binding var odometer: Float?
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -16,8 +16,7 @@ struct VehicleOdometerView: View {
                 .title1(.emphasized)
                 .foregroundStyle(Color.neutral.shade300)
                 .padding(.horizontal, 16)
-                .padding(.top, 24)
-                .padding(.bottom, 24)
+                .padding(.vertical, 24)
             
             ZStack (alignment: .center){
                 Image("odometer")

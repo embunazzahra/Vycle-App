@@ -38,7 +38,7 @@ struct OdometerModifier: ViewModifier {
 }
 
 struct OdometerInput: View {
-    @Binding var odometer: Int?
+    @Binding var odometer: Float?
     @FocusState private var fieldFocusState: Bool
     @State var fieldOne: String = ""
     @State var fieldTwo: String = ""
@@ -139,14 +139,26 @@ struct OdometerInput: View {
     private func updateOdometer() {
         let odometerString = allFields.prefix(5).map { $0.wrappedValue }.joined() + fieldSix
         if !odometerString.isEmpty {
-            odometer = Int(odometerString)
+            odometer = Float(odometerString)
         }
     }
     
-    private func updateFieldsFromOdometer(_ newValue: Int?) {
-        
-        let odometerString = newValue.map { String(format: "%d", $0) } ?? ""
+    private func updateFieldsFromOdometer(_ newValue: Float?) {
+        guard let newValue = newValue else {
+            // If there's no value, clear all fields
+            allFields.forEach { $0.wrappedValue = "" }
+            return
+        }
+
+        // Convert the float to a string without scientific notation, and format with no decimals
+        let odometerString = String(format: "%.0f", newValue)
         let count = odometerString.count
+
+        // Ensure we don't exceed 6 digits
+        guard count <= 6 else {
+            print("Odometer value exceeds field limit.")
+            return
+        }
 
         for index in 0..<6 {
             if index < 6 - count {
@@ -156,11 +168,11 @@ struct OdometerInput: View {
                 // Set the actual digits in the remaining fields
                 let digitIndex = index - (6 - count) // Calculate the index for digits
                 if digitIndex < count {
-                    allFields[index].wrappedValue = String(odometerString[odometerString.index(odometerString.startIndex, offsetBy: digitIndex)])
+                    let character = odometerString[odometerString.index(odometerString.startIndex, offsetBy: digitIndex)]
+                    allFields[index].wrappedValue = String(character)
                 }
             }
         }
-        updateOdometer()
     }
 }
 
