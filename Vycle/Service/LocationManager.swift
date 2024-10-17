@@ -26,6 +26,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let beaconMajor: CLBeaconMajorValue = 5
     private let beaconMinor: CLBeaconMinorValue = 88
     
+    let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .bmw))
+    
     override init() {
         super.init()
         locationManager.delegate = self
@@ -101,12 +103,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 //                context?.insert(newLocation)
                 isInsideBeaconRegion = true
                 if let currentLocation = currentLocation {
-                        let newLocation = LocationHistory(
-                            latitude: currentLocation.latitude,
-                            longitude: currentLocation.longitude,
-                            distanceFromLastLocation:11,
-                            bleStatus: true
-                        )
+//                        let newLocation = LocationHistory(
+//                            latitude: currentLocation.latitude,
+//                            longitude: currentLocation.longitude,
+//                            distanceFromLastLocation:11,
+//                            bleStatus: true
+//                        )
+                    let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
                         context?.insert(newLocation)
                 }
                 
@@ -117,12 +120,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 //                let newLocation = LocationHistory(latitude: currentLocation?.latitude ?? 11, longitude: currentLocation?.longitude ?? 11, distanceFromLastLocation: 4, bleStatus: true)
 //                context?.insert(newLocation)
                 if let currentLocation = currentLocation {
-                        let newLocation = LocationHistory(
-                            latitude: currentLocation.latitude,
-                            longitude: currentLocation.longitude,
-                            distanceFromLastLocation:11,
-                            bleStatus: true
-                        )
+//                        let newLocation = LocationHistory(
+//                            latitude: currentLocation.latitude,
+//                            longitude: currentLocation.longitude,
+//                            distanceFromLastLocation:11,
+//                            bleStatus: true
+//                        )
+                    let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
                         context?.insert(newLocation)
                     }
 
@@ -140,12 +144,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("Entered beacon region")
             handleBeaconConnection(isConnected: true)
             if let currentLocation = currentLocation {
-                    let newLocation = LocationHistory(
-                        latitude: currentLocation.latitude,
-                        longitude: currentLocation.longitude,
-                        distanceFromLastLocation:11,
-                        bleStatus: true
-                    )
+//                    let newLocation = LocationHistory(
+//                        distance: 11, latitude: currentLocation.latitude, longitude: currentLocation.latitude, vehicle: <#T##Vehicle#>, trip: <#T##Trip#>
+//                    )
+                let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
                     context?.insert(newLocation)
             }
 //            startBackgroundTask()
@@ -168,12 +170,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 //            context?.insert(newLocation)
             
             if let currentLocation = currentLocation {
-                    let newLocation = LocationHistory(
-                        latitude: currentLocation.latitude,
-                        longitude: currentLocation.longitude,
-                        distanceFromLastLocation:12,
-                        bleStatus: true
-                    )
+//                    let newLocation = LocationHistory(
+//                        latitude: currentLocation.latitude,
+//                        longitude: currentLocation.longitude,
+//                        distanceFromLastLocation:12,
+//                        bleStatus: true
+//                    )
+                let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
                     context?.insert(newLocation)
             }
             
@@ -258,7 +261,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func storeLocation(latitude: Double, longitude: Double, distanceFromLastLocation: Double?) {
         guard let context = context else { return }
 
-        let newLocation = LocationHistory(latitude: latitude, longitude: longitude, distanceFromLastLocation: distanceFromLastLocation)
+//        let newLocation = LocationHistory(latitude: latitude, longitude: longitude, distanceFromLastLocation: distanceFromLastLocation)
+        let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: testTrip)
         context.insert(newLocation)
 
         do {

@@ -11,10 +11,26 @@ import SwiftData
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
     @ObservedObject var locationManager: LocationManager  // Add LocationManager to DashboardView
+    @Query var trips: [Trip]
+    @Query var vehicles : [Vehicle]
+    @Query var reminders : [Reminder]
     
     var body: some View {
         NavigationView {
             ScrollView{
+                Button(action: {
+                    SwiftDataService.shared.insertReminder()
+                    print("Reminders count after insertion: \(reminders.count)")
+                   
+                }){
+                    Text("insert reminder")
+                }
+                
+                ForEach(vehicles) { vehicle in
+                    ForEach(vehicle.reminders){ reminder in
+                        Text("\(reminder.sparepart)")
+                    }
+                }
                 
                 ZStack{
                     VStack{

@@ -28,7 +28,7 @@ struct MapView: UIViewRepresentable {
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
             annotation.title = "Saved Location"
-            annotation.subtitle = "Distance: \(location.distanceFromLastLocation ?? 0.0) km"
+            annotation.subtitle = "Distance: \(location.distance ?? 0.0) km"
             uiView.addAnnotation(annotation)
             
             coordinates.append(annotation.coordinate)

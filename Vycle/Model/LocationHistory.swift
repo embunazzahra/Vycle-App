@@ -29,22 +29,17 @@ import SwiftData
 
 @Model
 final class LocationHistory {
-    @Attribute(.unique) var locationID: UUID
-    var distance: Float
-    var latitude: Float
-    var longitude: Float
+    var distance: Double?
+    var latitude: Double
+    var longitude: Double
     var time: Date
-    @Relationship(deleteRule: .cascade) var vehicle: Vehicle
     @Relationship(deleteRule: .cascade) var trip: Trip
     
-    // MARK: - Initialization
-    init(locationID: UUID = UUID(), distance: Float, latitude: Float, longitude: Float, time: Date, vehicle: Vehicle, trip: Trip) {
-        self.locationID = locationID
+    init(distance: Double? = nil, latitude: Double, longitude: Double, time: Date, trip: Trip) {
         self.distance = distance
         self.latitude = latitude
         self.longitude = longitude
         self.time = time
-        self.vehicle = vehicle
         self.trip = trip
     }
 }

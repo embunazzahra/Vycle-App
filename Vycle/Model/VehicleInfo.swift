@@ -6,7 +6,7 @@
 //
 
 
-enum Sparepart: String, CaseIterable {
+enum Sparepart: String, Codable, CaseIterable {
     case filterUdara = "Filter udara"
     case oliMesin = "Oli mesin"
     case oliGardan = "Oli Gardan"
