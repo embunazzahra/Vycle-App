@@ -56,5 +56,5 @@ struct ServiceDetailView: View {
 }
 
 #Preview {
-    ServiceDetailView(service: ServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil))
+    ServiceDetailView(service: ServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil, spareparts: [.minyakRem,.oliMesin]))
 }

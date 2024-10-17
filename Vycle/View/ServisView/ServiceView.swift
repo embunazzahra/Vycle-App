@@ -17,7 +17,8 @@ struct ServiceView: View {
             ServiceHistoryView()
         }
         else {
-            NoServiceView()
+//            NoServiceView()
+            ServiceHistoryView()
         }
         
     }

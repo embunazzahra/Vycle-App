@@ -56,6 +56,8 @@ struct ContentView: View {
                         NoServiceView()
                     case .AllServiceHistoryView:
                         AllServiceHistoryView()
+                    case .ServiceDetailView(let service):
+                        ServiceDetailView(service: service)
                     }
                 }
                 

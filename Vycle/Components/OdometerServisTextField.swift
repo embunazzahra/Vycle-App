@@ -11,6 +11,7 @@ struct OdometerServisTextField: View {
     @Binding var text: String
     var placeholder: String
     var enable: Bool = true
+    @FocusState var isInputActive: Bool
     
     
     var body: some View {
@@ -22,6 +23,8 @@ struct OdometerServisTextField: View {
                 .padding(12)
             TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
                 .keyboardType(.numberPad)
+                .tint(.grayShade300)
+                .focused($isInputActive)
                 .disabled(!enable) // Disables the TextField
                 .foregroundColor(.grayShade300)
                 .background(
@@ -29,6 +32,19 @@ struct OdometerServisTextField: View {
                         .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
                     
                 )
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        
+                        Button(action: {
+                            isInputActive = false // Dismiss the keyboard
+                        }) {
+                            Text("Done")
+                                .foregroundStyle(Color.primary.base) // Change the button color here
+                        }
+                        
+                    }
+                }
             Image("KM_text_logo")
                 .resizable()
                 .scaledToFit()
