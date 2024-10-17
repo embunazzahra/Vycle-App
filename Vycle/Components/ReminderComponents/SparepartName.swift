@@ -17,7 +17,7 @@ struct SparepartName: View {
     var body: some View {
         VStack (alignment: .leading) {
             Text("Nama suku cadang")
-                .headline()
+                .font(.headline)
                 .padding(.horizontal, 16)
                 .padding(.bottom, -4)
             

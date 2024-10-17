@@ -13,7 +13,7 @@ struct ChooseSparepartView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("Suku cadang")
-                .headline()
+                .font(.headline)
             Text("Dapat memilih lebih dari satu suku cadang")
                 .font(.footnote)
 

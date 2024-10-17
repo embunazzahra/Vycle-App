@@ -15,27 +15,34 @@ struct ServiceDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text("Tanggal servis")
-                    .headline()
-                Text(service.date)
+                VStack(alignment: .leading) {
+                    Text("Tanggal servis")
+                        .font(.headline)
+                    Text(service.date)
+                        .padding(.vertical, 9)
+                        .padding(.horizontal,12)
+                }
+                
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: service.mileage, enable: false)
-                Text("Nama suku cadang")
-                    .headline()
-                //                ChooseSparepartView(selectedParts: $selectedParts)
-                WrappingHStack(models: service.spareparts, viewGenerator: { part in
-                    Text(part.rawValue)
-                        .padding(8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.grayTint200)
-                        )
-                })
+                VStack(alignment: .leading) {
+                    Text("Nama suku cadang")
+                        .font(.headline)
+                    WrappingHStack(models: service.spareparts, viewGenerator: { part in
+                        Text(part.rawValue)
+                            .padding(8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.grayTint200)
+                            )
+                    })
+                }
+                
                 if service.imageData != nil {
                     if let imageData = service.imageData, let uiImage = UIImage(data: imageData) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: 120)
+                            .frame(maxWidth: .infinity, maxHeight: 142)
                             .clipped()
                             .contentShape(Rectangle())
                             .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -44,12 +51,28 @@ struct ServiceDetailView: View {
                                     .stroke(Color.grayShade300, lineWidth: 0.5)
                             )
                     }
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.neutral.shade100)
+                            .frame(maxWidth: .infinity, minHeight: 142)
+                        Image("image_icon")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 36, height: 36)
+                            .cornerRadius(8)
+                    }
                 }
             }
             .padding(.horizontal,16)
             .padding(.vertical,24)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
+        .safeAreaInset(edge: .bottom, content: {
+            CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0) {
+                
+            }
+        })
         .navigationTitle("Catatan servis")
         
     }

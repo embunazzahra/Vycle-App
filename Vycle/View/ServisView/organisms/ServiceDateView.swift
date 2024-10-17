@@ -14,7 +14,7 @@ struct ServiceDateView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("Tanggal servis")
-                .headline()
+                .font(.headline)
             
             Button(action: {
                 showDatePicker = true

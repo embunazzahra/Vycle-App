@@ -25,7 +25,7 @@ struct PengingatView: View {
     }
     
     var body: some View {
-        NavigationStack {
+//        NavigationStack {
             VStack {
                 VStack {
                     if isHavingRecord {
@@ -39,7 +39,7 @@ struct PengingatView: View {
             
                 ZStack {
                     Rectangle()
-                        .frame(width: .infinity , height: .infinity)
+//                        .frame(maxWidth: .infinity)
                         .clipShape(RoundedCornersShape(corners: [.topLeft, .topRight], radius: 20))
                         .foregroundStyle(.white)
                         .ignoresSafeArea()
@@ -77,7 +77,7 @@ struct PengingatView: View {
                     }
                 }
             }
-        }
+//        }
 //        .accentColor(Color.white)
     }
 }
