@@ -20,19 +20,19 @@ struct VehicleTypeView: View {
                 .padding(.vertical, 24)
             
             VehicleTypeButton(
-               vehicleType: .motor,
-               isSelected: vehicleType == .motor,
+                vehicleType: .motorcycle,
+                isSelected: vehicleType == .motorcycle,
                height: 94
             ) {
-               vehicleType = .motor
+                vehicleType = .motorcycle
             }
 
             VehicleTypeButton(
-               vehicleType: .mobil,
-               isSelected: vehicleType == .mobil,
+               vehicleType: .car,
+               isSelected: vehicleType == .car,
                height: 86
             ) {
-               vehicleType = .mobil
+               vehicleType = .car
             }
             
             Spacer()

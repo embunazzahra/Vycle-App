@@ -6,10 +6,6 @@
 //
 import SwiftUI
 
-enum VehicleType {
-    case motor
-    case mobil
-}
 
 struct VehicleTypeButton: View {
     let vehicleType: VehicleType
@@ -26,15 +22,15 @@ struct VehicleTypeButton: View {
                 .padding(.horizontal, 16)
                 .animation(.easeInOut, value: isSelected)
             
-            Image(vehicleType == .motor ? "motor" : "mobil")
+            Image(vehicleType == .motorcycle ? "motor" : "mobil")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: height)
                 .scaleEffect(isSelected ? 1.4 : 1)
-                .padding(.leading, vehicleType == .motor ? 56 : 36)
+                .padding(.leading, vehicleType == .motorcycle ? 56 : 36)
                 .animation(.easeInOut(duration: 0.3), value: isSelected)
             
-            Text(vehicleType == .motor ? "Motor" : "Mobil")
+            Text(vehicleType == .motorcycle ? "Motor" : "Mobil")
                 .title3(.emphasized)
                 .foregroundStyle(isSelected ? Color.neutral.tint300 : Color.neutral.shade300)
                 .padding(.leading, 250)

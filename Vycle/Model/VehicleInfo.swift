@@ -21,9 +21,6 @@ enum Sparepart: String, Codable, CaseIterable {
 enum VehicleType: String, Codable, CaseIterable {
     case car
     case motorcycle
-    case bicycle
-    case truck
-    case bus
 }
 
 enum Brand: String, Codable, CaseIterable {

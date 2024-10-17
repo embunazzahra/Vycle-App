@@ -16,9 +16,9 @@ struct VehicleBrandView: View {
     var brandsList: [VehicleBrand] {
         let predefinedBrands: [VehicleBrand]
         switch vehicleType {
-        case .mobil:
+        case .car:
             predefinedBrands = [.honda, .suzuki, .toyota, .daihatsu, .mitsubishi]
-        case .motor:
+        case .motorcycle:
             predefinedBrands = [.honda, .suzuki, .toyota]
         case .none:
             predefinedBrands = []

@@ -25,7 +25,7 @@ struct OBSparepartWheelPicker: View {
                     .cornerRadius(10)
             }
             .sheet(isPresented: $showSheet) {
-                SparepartPickerSheet(selectedValue: $selectedValue, isPartChosen: $isPartChosen, availableParts: availableParts)
+                OBSparepartPickerSheet(selectedValue: $selectedValue, isPartChosen: $isPartChosen, availableParts: availableParts)
                     .presentationDetents([.medium])
             }
         }
@@ -33,7 +33,7 @@ struct OBSparepartWheelPicker: View {
     }
 }
 
-struct SparepartPickerSheet: View {
+struct OBSparepartPickerSheet: View {
     @Binding var selectedValue: SukuCadang
     @Environment(\.dismiss) var dismiss
     @Binding var isPartChosen: Bool

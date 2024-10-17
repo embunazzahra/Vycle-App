@@ -25,7 +25,7 @@ struct OBDateWheelPicker: View {
                     .cornerRadius(10)
             }
             .sheet(isPresented: $showSheet) {
-                DatePickerSheet(selectedDate: $selectedDate, isMonthYearChosen: $isMonthYearChosen)
+                OBDatePickerSheet(selectedDate: $selectedDate, isMonthYearChosen: $isMonthYearChosen)
                     .presentationDetents([.medium])
             }
         }
@@ -43,7 +43,7 @@ struct OBDateWheelPicker: View {
 //    }
 }
 
-struct DatePickerSheet: View {
+struct OBDatePickerSheet: View {
     @Binding var selectedDate: Date
     @Environment(\.dismiss) var dismiss
     @Binding var isMonthYearChosen: Bool
