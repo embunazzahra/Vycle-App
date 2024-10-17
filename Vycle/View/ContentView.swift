@@ -9,10 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-//    @StateObject var routes = Routes()
+    
+//    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
+    @StateObject var locationManager = LocationManager()
     enum Tab: String {
         case dashboard = "Dashboard"
         case servis = "Service"
@@ -28,7 +29,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack (path: $routes.navPath) {
             TabView(selection: $selectedTab) {
-                    DashboardView().tabItem {
+                DashboardView(locationManager: locationManager).tabItem {
                         Image(systemName: "house.fill")
                         Text("Dashboard")
                     }.tag(Tab.dashboard)
@@ -51,7 +52,7 @@ struct ContentView: View {
                     case .ServisView:
                         ServiceView()
                     case .DashboardView:
-                        DashboardView()
+                        DashboardView(locationManager: locationManager)
                     case .AddServiceView:
                         AddServiceView()
                     case .NoServiceView:
@@ -71,9 +72,12 @@ struct ContentView: View {
     //                    }
                     }
                 }
-                
 //                .environmentObject(routes)
         }.tint(.white)
+            .onAppear {
+                locationManager.setContext(context)
+                       locationManager.startTracking()  // Start tracking the location and beacons
+                   }
     }
 }
 
