@@ -17,8 +17,7 @@ struct VehicleTypeView: View {
                 .title1(.emphasized)
                 .foregroundStyle(Color.neutral.shade300)
                 .padding(.horizontal,16)
-                .padding(.top, 24)
-                .padding(.bottom, 24)
+                .padding(.vertical, 24)
             
             VehicleTypeButton(
                vehicleType: .motor,
