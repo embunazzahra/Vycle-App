@@ -60,7 +60,7 @@ struct AddEditFramework: View {
         ZStack {
 //            NavigationStack {
                 VStack {
-                    SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedMonth: $selectedMonth, selectedYear: $selectedYear, selectedSparepart: $selectedSparepart, reminders: reminders)
+                    SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart, reminders: reminders)
                     NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
                     
                     VStack (alignment: .leading) {
