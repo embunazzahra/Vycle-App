@@ -2,18 +2,25 @@
 //  Vehicle.swift
 //  Vycle
 //
-//  Created by Brendan Alexander Soendjojo on 13/10/24.
+//  Created by Vincent Senjaya on 17/10/24.
 //
 
-import Foundation
+
 import SwiftData
+import Foundation
 
 @Model
-final class Vehicle {
-    var id: UUID
- 
+class Vehicle {
+    // MARK: - Attributes
+    @Attribute(.unique) var vehicleID: UUID
+    var vehicleType: VehicleType
+    var brand: Brand
+    @Relationship(inverse: \Servis.vehicle) var services: [Servis] = []
     
-    init() {
-        self.id = UUID()
+    // MARK: - Initialization
+    init(vehicleID: UUID = UUID(), vehicleType: VehicleType, brand: Brand) {
+        self.vehicleID = vehicleID
+        self.vehicleType = vehicleType
+        self.brand = brand
     }
 }

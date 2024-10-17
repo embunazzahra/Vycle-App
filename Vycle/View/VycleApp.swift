@@ -11,11 +11,12 @@ import SwiftData
 @main
 struct VycleApp: App {
     @StateObject var routes = Routes()
+    
     var body: some Scene {
         WindowGroup {
-//            ContentView()
-//                .environmentObject(routes)
-            OnBoardingView()
+            ContentView()
+                .environmentObject(routes)
+                .modelContainer(for: [LocationHistory.self])
         }
     }
 }
