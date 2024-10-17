@@ -10,8 +10,7 @@ import SwiftUI
 struct ServiceHistory: Identifiable {
     var id = UUID()
     var sparepart: SukuCadang
-    var month: Int
-    var year: Int
+    var date: Date
     var isPartChosen: Bool = false
     var isMonthYearChosen: Bool = false
 }
@@ -46,8 +45,7 @@ struct ServiceHistoryList: View {
                         Spacer()
                         
                         OBDateWheelPicker(
-                            selectedMonth: $items[index].month,
-                            selectedYear: $items[index].year,
+                            selectedDate: $items[index].date,
                             isMonthYearChosen: $items[index].isMonthYearChosen
                         )
                         .buttonStyle(PlainButtonStyle())
@@ -89,7 +87,7 @@ struct ServiceHistoryList: View {
     
     private func addItem() {
         if let firstAvailablePart = availableSpareparts(excluding: -1).first {
-            items.append(ServiceHistory(sparepart: firstAvailablePart, month: 9, year: 24))
+            items.append(ServiceHistory(sparepart: firstAvailablePart, date: Date().startOfMonth()))
         }
     }
     

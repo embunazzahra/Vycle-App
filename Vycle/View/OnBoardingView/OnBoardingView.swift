@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct OnBoardingView: View {
-    @State private var currentPage = 1
+    @State private var currentPage = 4
     @State private var vehicleType: VehicleType? = nil
     @State private var vehicleBrand: VehicleBrand? = nil
     @State private var otherBrandsList: [String] = []
     @State private var odometer: Float? = nil
-    @State private var serviceHistory: [ServiceHistory] = [ServiceHistory(sparepart: .filterUdara, month: 9, year: 24)]
+    @State private var serviceHistory: [ServiceHistory] = [ServiceHistory(sparepart: .filterUdara, date: Date().startOfMonth())]
     
     @StateObject private var keyboardResponder = KeyboardResponder()
     

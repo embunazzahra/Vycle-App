@@ -44,7 +44,7 @@ struct SparepartPickerSheet: View {
             HStack {
                 Text("Suku cadang")
                     .title3(.emphasized)
-                    .padding(.top, 16)
+                    .padding(.top, 32)
                     .padding(.leading, 16)
                 Spacer()
             }
