@@ -23,7 +23,7 @@ struct ContentView: View {
     
     @State private var isShowSplash = true
     @State private var selectedTab: Tab = .dashboard
-    @State private var reminders: [SparepartReminder] = []
+    @State private var reminders: [Reminder] = []
     
     init(){
         setupNavigationBarWithoutScroll()
@@ -49,33 +49,34 @@ struct ContentView: View {
                         Image(systemName: "house.fill")
                         Text("Dashboard")
                     }.tag(Tab.dashboard)
-                    ServiceView().tabItem {
-                        Image(systemName: "list.bullet.rectangle.fill")
-                        Text("Servis")
-                    }.tag(Tab.servis)
-                    PengingatView(reminders: reminders).tabItem {
+                ServiceView().tabItem {
+                    Image(systemName: "list.bullet.rectangle.fill")
+                    Text("Servis")
+                }.tag(Tab.servis)
+                PengingatView(locationManager: locationManager).tabItem {
                         Image(systemName: "bell.fill")
                         Text("Pengingat")
                     }.tag(Tab.pengingat)
-                    
-                    
-                }.tint(.blue)
-                    .navigationTitle(selectedTab.rawValue)
-                    .navigationDestination(for: Routes.Destination.self) { destination in
-                        switch destination {
-                        case .PengingatView:
-                            PengingatView(reminders: reminders)
-                        case .ServisView:
-                            ServiceView()
-                        case .DashboardView:
-                            DashboardView(locationManager: locationManager)
-                        case .AddServiceView:
-                            AddServiceView()
-                        case .NoServiceView:
-                            NoServiceView()
-                        case .AddReminderView:
-                            AddReminderView(reminders: $reminders)
-                        }
+                
+                
+            }.tint(.blue)
+            .navigationTitle(selectedTab.rawValue)
+                .navigationDestination(for: Routes.Destination.self) { destination in
+                    switch destination {
+                    case .PengingatView:
+                        PengingatView(locationManager: locationManager)
+                    case .ServisView:
+                        ServiceView()
+                    case .DashboardView:
+                        DashboardView(locationManager: locationManager)
+                    case .AddServiceView:
+                        AddServiceView()
+                    case .NoServiceView:
+                        NoServiceView()
+                    case .AddReminderView:
+                        AddReminderView(reminders: $reminders)
+                    case .AllReminderView:
+                        AllReminderView()
                     }
                     .toolbar {
                         ToolbarItem {
