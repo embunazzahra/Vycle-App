@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ServiceView: View {
-    @State var isHavingRecord: Bool = false
     @EnvironmentObject var routes: Routes
+    @Query var services : [Servis]
     
     var body: some View {
         
-        if (isHavingRecord) {
+        if (!services.isEmpty) {
             ServiceHistoryView()
         }
         else {
@@ -22,6 +23,7 @@ struct ServiceView: View {
         
     }
 }
+
 
 
 #Preview {

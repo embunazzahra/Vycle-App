@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct ChooseSparepartView: View {
-    @Binding var selectedParts: Set<SukuCadang>
+    @Binding var selectedParts: Set<Sparepart>
 
     var body: some View {
         VStack(alignment: .leading) {
             Text("Suku cadang")
-                .headline()
+                .font(.headline)
             Text("Dapat memilih lebih dari satu suku cadang")
                 .font(.footnote)
 
-            WrappingHStack(models: SukuCadang.allCases, viewGenerator: { part in
+            WrappingHStack(models: Sparepart.allCases, viewGenerator: { part in
                 Button(action: {
                     // Toggle selection
                     if selectedParts.contains(part) {
