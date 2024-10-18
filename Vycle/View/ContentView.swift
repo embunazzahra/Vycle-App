@@ -14,12 +14,14 @@ struct ContentView: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
     @StateObject var locationManager = LocationManager()
+    @Query(sort: \Vehicle.vehicleID) var vehicleData: [Vehicle]
     enum Tab: String {
         case dashboard = "Dashboard"
         case servis = "Service"
         case pengingat = "Pengingat"
     }
     
+    @State private var isShowSplash = true
     @State private var selectedTab: Tab = .dashboard
     @State private var reminders: [Reminder] = []
     
@@ -28,8 +30,22 @@ struct ContentView: View {
     }
     var body: some View {
         NavigationStack (path: $routes.navPath) {
-            TabView(selection: $selectedTab) {
-                DashboardView(locationManager: locationManager).tabItem {
+            if isShowSplash{
+                SplashView()
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        withAnimation {
+                            isShowSplash = false
+                        }
+                    }
+                }
+            }
+            else if vehicleData.isEmpty {
+                OnBoardingView()
+            } else {
+
+                TabView(selection: $selectedTab) {
+                    DashboardView(locationManager: locationManager).tabItem {
                         Image(systemName: "house.fill")
                         Text("Dashboard")
                     }.tag(Tab.dashboard)
@@ -62,18 +78,18 @@ struct ContentView: View {
                     case .AllReminderView:
                         AllReminderView()
                     }
-                }
-                .toolbar {
-                    ToolbarItem {
-    //                    NavigationLink(destination: AddReminderView(reminders: $reminders)) {
+                    .toolbar {
+                        ToolbarItem {
+                            //                    NavigationLink(destination: AddReminderView(reminders: $reminders)) {
                             Image(systemName: "plus.square.fill")
                                 .foregroundColor(Color.white)
                                 .onTapGesture {
                                     routes.navigate(to: .AddReminderView)
                                 }.opacity(selectedTab.rawValue == "Pengingat" ? 1 : 0).disabled(selectedTab.rawValue == "Pengingat" ? false : true)
-    //                    }
+                            //                    }
+                        }
                     }
-                }
+            }
 //                .environmentObject(routes)
         }.tint(.white)
             .onAppear {
