@@ -43,7 +43,7 @@ struct ContentView: View {
                         }
                     }
             }
-            if vehicleData.isEmpty {
+            else if vehicleData.isEmpty {
                 OnBoardingView()
             } else {
                 
