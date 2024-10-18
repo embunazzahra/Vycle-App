@@ -50,8 +50,8 @@ struct ContentView: View {
                         ServiceView()
                     case .DashboardView:
                         DashboardView()
-                    case .AddServiceView:
-                        AddServiceView()
+                    case .AddServiceView(let service):
+                        AddServiceView(service: service)
                     case .NoServiceView:
                         NoServiceView()
                     case .AllServiceHistoryView:

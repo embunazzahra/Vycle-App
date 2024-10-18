@@ -25,7 +25,7 @@ struct NoServiceView: View {
                 .padding(.bottom,12)
             
             CustomButton(title: "Mulai mencatat") {
-                routes.navigate(to: .AddServiceView)
+                routes.navigate(to: .AddServiceView(service: nil))
             }
             
         }

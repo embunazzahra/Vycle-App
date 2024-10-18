@@ -12,7 +12,7 @@ import SwiftUI
     var navPath = NavigationPath()
     
     public enum Destination : Hashable{
-        case DashboardView, PengingatView, ServisView, AddServiceView, NoServiceView, AllServiceHistoryView, ServiceDetailView(service: ServiceHistory)
+        case DashboardView, PengingatView, ServisView, NoServiceView, AllServiceHistoryView, ServiceDetailView(service: ServiceHistory), AddServiceView(service: ServiceHistory?)
     }
     
     func navigate(to destination: Destination) {

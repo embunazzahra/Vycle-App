@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ServiceDetailView: View {
+    @EnvironmentObject var routes: Routes
+    
     let service: ServiceHistory
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in
@@ -70,7 +72,7 @@ struct ServiceDetailView: View {
         }
         .safeAreaInset(edge: .bottom, content: {
             CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0) {
-                
+                routes.navigate(to: .AddServiceView(service: service))
             }
         })
         .navigationTitle("Catatan servis")
