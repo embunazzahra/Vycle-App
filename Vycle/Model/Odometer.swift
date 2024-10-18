@@ -14,7 +14,7 @@ final class Odometer {
    
     var date: Date = Date()
     var currentKM: Float
-    @Relationship(deleteRule: .cascade) var vehicle: Vehicle
+    @Relationship var vehicle: Vehicle
     init(date: Date, currentKM: Float, vehicle: Vehicle) {
         self.date = date
         self.currentKM = currentKM

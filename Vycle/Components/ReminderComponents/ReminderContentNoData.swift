@@ -35,26 +35,6 @@ struct ReminderContentNoData: View {
             
             Spacer()
             
-//            CustomButton(title: "Tambahkan Pengingat",  symbolName: "folder.badge.plus", isEnabled: true) {
-//                print("Tes")
-//            }
-            
-//            Button {
-//
-//            } label: {
-//                HStack {
-//                    Spacer()
-//                    Image(systemName: "folder.badge.plus")
-//                    Text("Tambahkan pengingat")
-//                    Spacer()
-//                }
-//                .padding(.vertical, 26)
-//                .foregroundColor(Color.white)
-//            }
-//            .background(Color.blue)
-//            .cornerRadius(12)
-//            .padding(.horizontal, 24)
-            
         }
     }
 }

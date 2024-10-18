@@ -18,7 +18,7 @@ struct RepetitiveToggle: View {
     var body: some View {
         VStack (alignment: .leading) {
             Toggle(isOn: $isToggleOn) {
-                Text("Pengingat Repetitif")
+                Text("Pengingat berulang")
                     .font(.headline)
                     .foregroundColor(Color.neutral.shade300)
             }
