@@ -68,7 +68,7 @@ struct AddServiceView: View {
         .navigationBarBackButtonHidden(false)
         .onAppear {
             if let service = service {
-                self.odometerValue = "\(service.odometer)"
+                self.odometerValue = "\(Int(service.odometer))"
                 self.userOdometer = Int(service.odometer)
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
@@ -78,7 +78,11 @@ struct AddServiceView: View {
     
     func saveButton() -> some View {
         CustomButton(title: service == nil ? "Simpan catatan" : "Simpan perubahan", iconName: "save_icon", iconPosition: .left, buttonType: isButtonDisabled ? .disabled : .primary, horizontalPadding: 0) {
-            saveNewService()
+            if service == nil {
+                saveNewService()
+            } else {
+                updateService()
+            }
             routes.navigateToRoot()
         }
         .frame(maxWidth: .infinity)
@@ -110,6 +114,24 @@ struct AddServiceView: View {
             try modelContext.save()
         } catch {
             print("Failed to save service: \(error)")
+        }
+    }
+    
+    // Function to update an existing service
+    private func updateService() {
+        guard let serviceToUpdate = service else { return }
+        
+        // Update properties of the existing service
+        serviceToUpdate.date = selectedDate
+        serviceToUpdate.odometer = Float(odometerValue) ?? 0.0
+        serviceToUpdate.servicedSparepart = Array(selectedParts)
+        serviceToUpdate.photo = selectedImage?.jpegData(compressionQuality: 1.0)
+        
+        // Save the changes in the model context
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to update service: \(error)")
         }
     }
 }
