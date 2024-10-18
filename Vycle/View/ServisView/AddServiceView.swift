@@ -72,6 +72,12 @@ struct AddServiceView: View {
                 self.userOdometer = Int(service.odometer)
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
+                // Check if service.photo is not nil and assign it to selectedImage
+                if let photoData = service.photo {
+                    self.selectedImage = UIImage(data: photoData) // Convert Data to UIImage
+                } else {
+                    self.selectedImage = nil // If photo is nil, set selectedImage to nil
+                }
             }
         }
     }
