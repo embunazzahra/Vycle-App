@@ -13,11 +13,11 @@ import SwiftData
 @Model
 class Servis {
     var date: Date
-    var servicedSparepart: Sparepart
+    var servicedSparepart: [Sparepart]
     var photo: Data?
     var odometer: Float?
-    @Relationship(deleteRule: .cascade) var vehicle: Vehicle
-    init(date: Date, servicedSparepart: Sparepart, photo: Data? = nil, odometer: Float? = nil, vehicle: Vehicle) {
+    @Relationship var vehicle: Vehicle
+    init(date: Date, servicedSparepart: [Sparepart], photo: Data? = nil, odometer: Float? = nil, vehicle: Vehicle) {
         self.date = date
         self.servicedSparepart = servicedSparepart
         self.photo = photo

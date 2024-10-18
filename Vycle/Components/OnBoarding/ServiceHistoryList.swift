@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ServiceHistory: Identifiable {
     var id = UUID()
-    var sparepart: SukuCadang
+    var sparepart: Sparepart
     var date: Date
     var isPartChosen: Bool = false
     var isMonthYearChosen: Bool = false
@@ -63,9 +63,9 @@ struct ServiceHistoryList: View {
                         Image("plus")
                             .foregroundColor(.green)
                     }
-                    Text("Tambahkan suku cadang lain")
+                    Text(items.isEmpty ?  "Tambahkan suku cadang" : "Tambahkan suku cadang lain")
                         .subhead(.regular)
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Color.primary.base)
                         .padding(.leading, 8)
                 }
                 .frame(height: 37)
@@ -75,13 +75,13 @@ struct ServiceHistoryList: View {
         }
     }
     
-    private func availableSpareparts(excluding currentIndex: Int) -> [SukuCadang] {
+    private func availableSpareparts(excluding currentIndex: Int) -> [Sparepart] {
         let selectedParts = items.enumerated()
             .filter { $0.offset != currentIndex }
             .map { $0.element.sparepart }
         
         // Return only parts that have not been selected yet
-        return SukuCadang.allCases.filter { !selectedParts.contains($0) }
+        return Sparepart.allCases.filter { !selectedParts.contains($0) }
     }
 
     
