@@ -9,38 +9,77 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-    @StateObject var routes = Routes()
     
+//    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext) private var context
+    @EnvironmentObject var routes: Routes
+    @StateObject var locationManager = LocationManager()
+    enum Tab: String {
+        case dashboard = "Dashboard"
+        case servis = "Service"
+        case pengingat = "Pengingat"
+    }
+    
+    @State private var selectedTab: Tab = .dashboard
+    @State private var reminders: [Reminder] = []
+    
+    init(){
+        setupNavigationBarWithoutScroll()
+    }
     var body: some View {
         NavigationStack (path: $routes.navPath) {
-                TabView {
-                    DashboardView().tabItem {
+            TabView(selection: $selectedTab) {
+                DashboardView(locationManager: locationManager).tabItem {
                         Image(systemName: "house.fill")
                         Text("Dashboard")
-                    }
-                    ServisView().tabItem {
-                        Image(systemName: "list.bullet.rectangle.fill")
-                        Text("Servis")
-                    }
-                    PengingatView().tabItem {
+                    }.tag(Tab.dashboard)
+                ServiceView().tabItem {
+                    Image(systemName: "list.bullet.rectangle.fill")
+                    Text("Servis")
+                }.tag(Tab.servis)
+                PengingatView(locationManager: locationManager).tabItem {
                         Image(systemName: "bell.fill")
                         Text("Pengingat")
-                    }
-                }
+                    }.tag(Tab.pengingat)
+                
+                
+            }.tint(.blue)
+            .navigationTitle(selectedTab.rawValue)
                 .navigationDestination(for: Routes.Destination.self) { destination in
                     switch destination {
                     case .PengingatView:
-                        PengingatView()
+                        PengingatView(locationManager: locationManager)
                     case .ServisView:
-                        ServisView()
+                        ServiceView()
                     case .DashboardView:
-                        DashboardView()
+                        DashboardView(locationManager: locationManager)
+                    case .AddServiceView:
+                        AddServiceView()
+                    case .NoServiceView:
+                        NoServiceView()
+                    case .AddReminderView:
+                        AddReminderView(reminders: $reminders)
+                    case .AllReminderView:
+                        AllReminderView()
                     }
                 }
-                .environmentObject(routes)
-            }
+                .toolbar {
+                    ToolbarItem {
+    //                    NavigationLink(destination: AddReminderView(reminders: $reminders)) {
+                            Image(systemName: "plus.square.fill")
+                                .foregroundColor(Color.white)
+                                .onTapGesture {
+                                    routes.navigate(to: .AddReminderView)
+                                }.opacity(selectedTab.rawValue == "Pengingat" ? 1 : 0).disabled(selectedTab.rawValue == "Pengingat" ? false : true)
+    //                    }
+                    }
+                }
+//                .environmentObject(routes)
+        }.tint(.white)
+            .onAppear {
+                locationManager.setContext(context)
+                       locationManager.startTracking()  // Start tracking the location and beacons
+                   }
     }
 }
 

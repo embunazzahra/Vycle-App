@@ -7,17 +7,7 @@
 
 import SwiftUI
 
-enum Sparepart: String, CaseIterable {
-    case filterUdara = "Filter udara"
-    case oliMesin = "Oli mesin"
-    case oliGardan = "Oli Gardan"
-    case oliTransmisi = "Oli transmisi"
-    case filterOli = "Filter Oli"
-    case busi = "Busi"
-    case minyakRem = "Minyak rem"
-    case minyakKopling = "Minyak Kopling"
-    case coolant = "Coolant"
-}
+
 
 struct ScrollPicker: View {
     @State private var selectedSparepart: Sparepart? = nil
@@ -53,9 +43,9 @@ struct ScrollPicker: View {
                 .pickerStyle(WheelPickerStyle())
                 .padding(.horizontal, 16)
                 Spacer()
-                CustomButton(title: "Pilih"){
-                    showSheet = false
-                }
+//                CustomButton(title: "Pilih"){
+//                    showSheet = false
+//                }
     
             }
             .presentationDetents([.height(404)]) // Set the sheet height to 404 points
