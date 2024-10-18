@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct ServiceHistoryCard: View {
-    let service: UserServiceHistory // Accept service data
+    let service: Servis // Accept service data
     var onCardTap: () -> Void
-
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.white)
                 .compositingGroup()
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 2, y: 2)
-
+            
             HStack {
                 ZStack {
                     Color.neutral.shade100
@@ -28,15 +28,15 @@ struct ServiceHistoryCard: View {
                         .frame(width: 36, height: 36)
                         .cornerRadius(8)
                 }
-
+                
                 VStack(alignment: .leading) {
-                    Text(service.title)
+                    Text(generateTitle(from: service.servicedSparepart))
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                    Text("Diservis pada KM \(service.mileage.formattedWithSeparator())")
+                    Text("Diservis pada KM \(Int(service.odometer).formattedWithSeparator())")
                         .font(.caption)
                     Spacer()
-                    Text(service.date)
+                    Text(service.date.toString(format: "dd/MM/yyyy"))
                         .font(.caption2)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.neutral.tone300)
@@ -53,5 +53,10 @@ struct ServiceHistoryCard: View {
         .onTapGesture {
             onCardTap() // Call the closure when the card is tapped
         }
+    }
+    
+    // Helper function untuk menghasilkan title dari spareparts
+    private func generateTitle(from spareparts: [Sparepart]) -> String {
+        return spareparts.map { $0.rawValue.capitalized }.joined(separator: ", ")
     }
 }

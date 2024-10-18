@@ -13,7 +13,7 @@ import SwiftUI
     
 
     public enum Destination : Hashable{
-        case DashboardView, PengingatView, ServisView, NoServiceView, AllServiceHistoryView, ServiceDetailView(service: UserServiceHistory), AddServiceView(service: UserServiceHistory?), AddReminderView
+        case DashboardView, PengingatView, ServisView, NoServiceView, AllServiceHistoryView, ServiceDetailView(service: Servis), AddServiceView(service: Servis?), AddReminderView
     }
     
     func navigate(to destination: Destination) {

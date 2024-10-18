@@ -10,7 +10,7 @@ import SwiftUI
 struct ServiceDetailView: View {
     @EnvironmentObject var routes: Routes
     
-    let service: UserServiceHistory
+    let service: Servis
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in
     
@@ -20,16 +20,16 @@ struct ServiceDetailView: View {
                 VStack(alignment: .leading) {
                     Text("Tanggal servis")
                         .font(.headline)
-                    Text(service.date)
+                    Text(service.date.formattedDate())
                         .padding(.vertical, 9)
                         .padding(.horizontal,12)
                 }
                 
-                OdometerInputView(odometerValue: $odometerValue, userOdometer: service.mileage, enable: false)
+                OdometerInputView(odometerValue: $odometerValue, userOdometer: Int(service.odometer), enable: false)
                 VStack(alignment: .leading) {
                     Text("Nama suku cadang")
                         .font(.headline)
-                    WrappingHStack(models: service.spareparts, viewGenerator: { part in
+                    WrappingHStack(models: service.servicedSparepart, viewGenerator: { part in
                         Text(part.rawValue)
                             .padding(8)
                             .background(
@@ -39,8 +39,8 @@ struct ServiceDetailView: View {
                     })
                 }
                 
-                if service.imageData != nil {
-                    if let imageData = service.imageData, let uiImage = UIImage(data: imageData) {
+                if service.photo != nil {
+                    if let imageData = service.photo, let uiImage = UIImage(data: imageData) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()
@@ -81,5 +81,11 @@ struct ServiceDetailView: View {
 }
 
 #Preview {
-    ServiceDetailView(service: UserServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil, spareparts: [.minyakRem,.oliMesin]))
+    ServiceDetailView(service: Servis(
+        date: Date(),
+        servicedSparepart: [.minyakRem],
+        photo: nil,
+        odometer: 78250,
+        vehicle: Vehicle(vehicleType: .car, brand: .honda)
+    ))
 }

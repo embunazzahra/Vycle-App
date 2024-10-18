@@ -11,9 +11,27 @@ struct ServiceHistoryView: View {
     @EnvironmentObject var routes: Routes
     
     @State private var serviceHistories = [
-        UserServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", spareparts: [.minyakRem]),
-        UserServiceHistory(title: "Oli mesin", mileage: 65100, date: "15/09/2024", spareparts: [.oliMesin]),
-        UserServiceHistory(title: "Filter udara", mileage: 60500, date: "30/08/2024", spareparts: [.filterUdara])
+        Servis(
+            date: Date(),
+            servicedSparepart: [.minyakRem],
+            photo: nil,
+            odometer: 78250,
+            vehicle: Vehicle(vehicleType: .car, brand: .honda)
+        ),
+        Servis(
+            date: Date(),
+            servicedSparepart: [.oliMesin],
+            photo: nil,
+            odometer: 65100,
+            vehicle: Vehicle(vehicleType: .car, brand: .honda)
+        ),
+        Servis(
+            date: Date(),
+            servicedSparepart: [.filterUdara],
+            photo: nil,
+            odometer: 60500,
+            vehicle: Vehicle(vehicleType: .car, brand: .honda)
+        )
     ]
     
     
@@ -60,7 +78,7 @@ struct ServiceHistoryView: View {
         .padding()
         .navigationTitle("Servis")
     }
-    func deleteHistory(_ history: UserServiceHistory) {
+    func deleteHistory(_ history: Servis) {
         if let index = serviceHistories.firstIndex(where: { $0.id == history.id }) {
             serviceHistories.remove(at: index)
         }

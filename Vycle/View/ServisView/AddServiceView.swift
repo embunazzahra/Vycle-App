@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AddServiceView: View {
     @EnvironmentObject var routes: Routes
+    @Environment(\.modelContext) var modelContext
     
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in textfield
@@ -19,7 +21,7 @@ struct AddServiceView: View {
     @State private var selectedDate = Date() // Default selected part
     
     // For spareparts selection
-    @State private var selectedParts: Set<SukuCadang> = [] // Track selected parts
+    @State private var selectedParts: Set<Sparepart> = [] // Track selected parts
     
     // For the camera and image picker
     @State private var isShowingCamera = false
@@ -29,7 +31,7 @@ struct AddServiceView: View {
     @State private var showGallery = false
     @State private var isShowingDialog: Bool = false
     
-    var service: UserServiceHistory?
+    var service: Servis?
     
     // Computed property to determine if the button should be disabled
     private var isButtonDisabled: Bool {
@@ -37,7 +39,7 @@ struct AddServiceView: View {
     }
     
     
-    init(service: UserServiceHistory?) {
+    init(service: Servis?) {
         self.service = service
         print(service) // Debugging line
     }
@@ -66,16 +68,17 @@ struct AddServiceView: View {
         .navigationBarBackButtonHidden(false)
         .onAppear {
             if let service = service {
-                self.odometerValue = "\(service.mileage)"
-                self.userOdometer = service.mileage
-                self.selectedDate = AddServiceView.date(from: service.date) // Adjust the date conversion
-                self.selectedParts = Set(service.spareparts)
+                self.odometerValue = "\(service.odometer)"
+                self.userOdometer = Int(service.odometer)
+                self.selectedDate =  service.date
+                self.selectedParts = Set(service.servicedSparepart)
             }
         }
     }
     
     func saveButton() -> some View {
         CustomButton(title: service == nil ? "Simpan catatan" : "Simpan perubahan", iconName: "save_icon", iconPosition: .left, buttonType: isButtonDisabled ? .disabled : .primary, horizontalPadding: 0) {
+            saveNewService()
             routes.navigateToRoot()
         }
         .frame(maxWidth: .infinity)
@@ -90,6 +93,24 @@ struct AddServiceView: View {
             return date
         }
         return Date() // Return current date if conversion fails
+    }
+    
+    // Function to save a new service to the database
+    private func saveNewService() {
+        let odometer = Float(odometerValue) ?? 0.0
+        let newService = Servis(date: selectedDate,
+                                servicedSparepart: Array(self.selectedParts),
+                                photo: selectedImage?.jpegData(compressionQuality: 1.0),
+                                odometer: odometer,
+                                vehicle: Vehicle(vehicleType: .car, brand: .honda))
+        
+        modelContext.insert(newService)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save service: \(error)")
+        }
     }
 }
 
