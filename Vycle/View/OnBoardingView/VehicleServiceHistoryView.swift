@@ -12,7 +12,7 @@ struct VehicleServiceHistoryView: View {
     
     var body: some View {
         VStack (alignment: .leading) {
-            Text("Masukkan penggantian suku cadang terakhir")
+            Text("Masukkan data servis terakhirmu disini")
                 .title1(.emphasized)
                 .foregroundStyle(Color.neutral.shade300)
                 .padding(.horizontal,16)

@@ -19,11 +19,18 @@ extension Date {
         // Get the current date components
         var components = Calendar.current.dateComponents([.year, .month], from: self)
         components.day = 2 // Set the day to the first of the month
-
+        
         guard let startOfMonth = Calendar.current.date(from: components) else {
             fatalError("Could not create date from components")
         }
         
         return startOfMonth // Return the Date object
+    }
+    
+    // Extension function to convert Date to String with a custom format
+    func toString(format: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        return formatter.string(from: self)
     }
 }

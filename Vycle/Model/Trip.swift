@@ -13,7 +13,8 @@ import Foundation
 final class Trip {
     var tripID: Int
     var isFinished: Bool
-    @Relationship(inverse: \LocationHistory.trip) var locationHistories: [LocationHistory] = []
+    
+    @Relationship(deleteRule: .cascade, inverse: \LocationHistory.trip) var locationHistories: [LocationHistory] = []
     @Relationship var vehicle: Vehicle
     
     init(tripID: Int, isFinished: Bool, locationHistories: [LocationHistory], vehicle: Vehicle) {

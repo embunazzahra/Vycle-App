@@ -104,7 +104,7 @@ struct OBDatePickerSheet: View {
                 updateSelectedDate()
                 isMonthYearChosen = true
                 dismiss()
-                print("Selected Year: \(selectedYear), Selected Month: \(selectedMonth + 1), New Date: \(selectedDate)")
+//                print("Selected Year: \(selectedYear), Selected Month: \(selectedMonth + 1), New Date: \(selectedDate)")
             }
             .padding(.top, 10)
             

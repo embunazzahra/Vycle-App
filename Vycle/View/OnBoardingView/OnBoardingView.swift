@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct OnBoardingView: View {
-    @State private var currentPage = 4
+    @State private var currentPage = 1
     @State private var vehicleType: VehicleType? = nil
     @State private var vehicleBrand: VehicleBrand? = nil
     @State private var otherBrandsList: [String] = []
     @State private var odometer: Float? = nil
-    @State private var serviceHistory: [ServiceHistory] = [ServiceHistory(sparepart: .filterUdara, date: Date().startOfMonth())]
+    @State private var serviceHistory: [ServiceHistory] = []
     
     @StateObject private var keyboardResponder = KeyboardResponder()
     
@@ -39,7 +39,7 @@ struct OnBoardingView: View {
         case 3:
             return odometer != nil
         case 4:
-            return true
+            return serviceHistory.allSatisfy { $0.isPartChosen && $0.isMonthYearChosen }
         default:
             return false
         }
@@ -120,7 +120,12 @@ struct OnBoardingView: View {
                                     if currentPage < 4 {
                                         currentPage += 1
                                     } else {
-                                        // Save the data
+                                        SwiftDataService.shared.insertOnBoarding(
+                                            vehicleType: vehicleType ?? .car,
+                                            vehicleBrand: vehicleBrand ?? .car(.honda),
+                                            odometer: odometer ?? 0,
+                                            serviceHistory: serviceHistory
+                                        )
                                     }
                                 }
                             }

@@ -26,7 +26,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let beaconMajor: CLBeaconMajorValue = 5
     private let beaconMinor: CLBeaconMinorValue = 88
     
-    let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .bmw))
+    let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
     
     override init() {
         super.init()

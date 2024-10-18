@@ -33,7 +33,7 @@ final class LocationHistory {
     var latitude: Double
     var longitude: Double
     var time: Date
-    @Relationship(deleteRule: .cascade) var trip: Trip
+    @Relationship var trip: Trip
     
     init(distance: Double? = nil, latitude: Double, longitude: Double, time: Date, trip: Trip) {
         self.distance = distance

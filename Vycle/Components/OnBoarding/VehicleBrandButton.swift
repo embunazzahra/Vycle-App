@@ -7,35 +7,6 @@
 
 import SwiftUI
 
-enum VehicleBrand: Hashable {
-    case honda
-    case suzuki
-    case toyota
-    case daihatsu
-    case mitsubishi
-    case custom(String)
-    
-    var stringValue: String {
-        switch self {
-        case .honda: return "Honda"
-        case .suzuki: return "Suzuki"
-        case .toyota: return "Toyota"
-        case .daihatsu: return "Daihatsu"
-        case .mitsubishi: return "Mitsubishi"
-        case .custom(let name): return name
-        }
-    }
-}
-
-extension VehicleBrand {
-    var isCustomBrand: Bool {
-        if case .custom(_) = self {
-            return true
-        }
-        return false
-    }
-}
-
 struct VehicleBrandButton: View {
     let brand: VehicleBrand
     let isSelected: Bool

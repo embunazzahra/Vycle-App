@@ -49,20 +49,20 @@ struct ReminderHeader: View {
     }
 }
 
-#Preview {
-    struct PreviewContainer: View {
-        @State var reminders = [
-            Reminder(date: Date(), sparepart: .oliMesin, targetKM: 5000, kmInterval: 5000, dueDate: Date(), timeInterval: 6, vehicle: Vehicle(vehicleType: .car, brand: .honda), isRepeat: true, isDraft: false),
-            Reminder(date: Date(), sparepart: .filterUdara, targetKM: 15000, kmInterval: 15000, dueDate: Date(), timeInterval: 12, vehicle: Vehicle(vehicleType: .car, brand: .toyota), isRepeat: true, isDraft: false)
-        ]
-        
-        var body: some View {
-            ReminderHeader(reminders: reminders)
-        }
-    }
-    
-    return PreviewContainer()
-}
+//#Preview {
+//    struct PreviewContainer: View {
+//        @State var reminders = [
+//            Reminder(date: Date(), sparepart: .oliMesin, targetKM: 5000, kmInterval: 5000, dueDate: Date(), timeInterval: 6, vehicle: Vehicle(vehicleType: .car, brand: .honda), isRepeat: true, isDraft: false),
+//            Reminder(date: Date(), sparepart: .filterUdara, targetKM: 15000, kmInterval: 15000, dueDate: Date(), timeInterval: 12, vehicle: Vehicle(vehicleType: .car, brand: .toyota), isRepeat: true, isDraft: false)
+//        ]
+//        
+//        var body: some View {
+//            ReminderHeader(reminders: reminders)
+//        }
+//    }
+//    
+//    return PreviewContainer()
+//}
 
 
 //import SwiftUI
