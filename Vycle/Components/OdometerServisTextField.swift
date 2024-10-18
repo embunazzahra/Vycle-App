@@ -10,6 +10,8 @@ import SwiftUI
 struct OdometerServisTextField: View {
     @Binding var text: String
     var placeholder: String
+    var enable: Bool = true
+    @FocusState var isInputActive: Bool
     
     
     var body: some View {
@@ -20,13 +22,29 @@ struct OdometerServisTextField: View {
                 .frame(width: 18, height: 15) // Set your desired frame
                 .padding(12)
             TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
-//                .disabled(true) // Disables the TextField
-                .foregroundColor(.black)
+                .keyboardType(.numberPad)
+                .tint(.grayShade300)
+                .focused($isInputActive)
+                .disabled(!enable) // Disables the TextField
+                .foregroundColor(.grayShade300)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.neutral.tint200) // Gray background
-                        
+                        .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
+                    
                 )
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        
+                        Button(action: {
+                            isInputActive = false // Dismiss the keyboard
+                        }) {
+                            Text("Done")
+                                .foregroundStyle(Color.primary.base) // Change the button color here
+                        }
+                        
+                    }
+                }
             Image("KM_text_logo")
                 .resizable()
                 .scaledToFit()
@@ -35,7 +53,11 @@ struct OdometerServisTextField: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.neutral.tint200) // Gray background
+                .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(enable ? Color.neutral.tone100 : Color.neutral.tint200, lineWidth: 1) // Adds a border around the view
         )
         
     }

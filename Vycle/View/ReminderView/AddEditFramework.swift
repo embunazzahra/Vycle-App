@@ -102,7 +102,7 @@ struct AddEditFramework: View {
                             kmInterval: Float(selectedNumber),
                             dueDate: Date(),
                             timeInterval: monthInterval,
-                            vehicle: Vehicle(vehicleType: .car, brand: .honda),
+                            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)),
                             isRepeat: isToggleOn,
                             isDraft: false
                         )

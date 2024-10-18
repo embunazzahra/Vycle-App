@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AddServiceView: View {
     @EnvironmentObject var routes: Routes
+    @Environment(\.modelContext) var modelContext
     
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in textfield
@@ -19,7 +21,7 @@ struct AddServiceView: View {
     @State private var selectedDate = Date() // Default selected part
     
     // For spareparts selection
-    @State private var selectedParts: Set<SukuCadang> = [] // Track selected parts
+    @State private var selectedParts: Set<Sparepart> = [] // Track selected parts
     
     // For the camera and image picker
     @State private var isShowingCamera = false
@@ -29,7 +31,18 @@ struct AddServiceView: View {
     @State private var showGallery = false
     @State private var isShowingDialog: Bool = false
     
+    var service: Servis?
     
+    // Computed property to determine if the button should be disabled
+    private var isButtonDisabled: Bool {
+        selectedParts.isEmpty || odometerValue.isEmpty // Disable if parts are empty or TextField is empty
+    }
+    
+    
+    init(service: Servis?) {
+        self.service = service
+        print(service) // Debugging line
+    }
     
     
     var body: some View {
@@ -51,19 +64,84 @@ struct AddServiceView: View {
         .safeAreaInset(edge: .bottom, content: {
             saveButton()
         })
-        .navigationTitle("Tambahkan servis")
+        .navigationTitle(service == nil ? "Tambahkan servis" : "Edit catatan servis")
         .navigationBarBackButtonHidden(false)
+        .onAppear {
+            if let service = service {
+                self.odometerValue = "\(Int(service.odometer ?? 0))"
+                self.userOdometer = Int(service.odometer ?? 0)
+                self.selectedDate =  service.date
+                self.selectedParts = Set(service.servicedSparepart)
+                // Check if service.photo is not nil and assign it to selectedImage
+                if let photoData = service.photo {
+                    self.selectedImage = UIImage(data: photoData) // Convert Data to UIImage
+                } else {
+                    self.selectedImage = nil // If photo is nil, set selectedImage to nil
+                }
+            }
+        }
     }
     
     func saveButton() -> some View {
-        CustomButton(title: "Simpan Catatan", iconName: "save_icon", iconPosition: .left, buttonType: selectedParts.isEmpty ? .disabled : .primary, horizontalPadding: 0) {
+        CustomButton(title: service == nil ? "Simpan catatan" : "Simpan perubahan", iconName: "save_icon", iconPosition: .left, buttonType: isButtonDisabled ? .disabled : .primary, horizontalPadding: 0) {
+            if service == nil {
+                saveNewService()
+            } else {
+                updateService()
+            }
             routes.navigateToRoot()
         }
-            .frame(maxWidth: .infinity)
-            .background(Color.neutral.tint300)
+        .frame(maxWidth: .infinity)
+        .background(Color.neutral.tint300)
+    }
+    
+    // Helper function to convert String to Date
+    private static func date(from string: String) -> Date {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy"
+        if let date = formatter.date(from: string) {
+            return date
+        }
+        return Date() // Return current date if conversion fails
+    }
+    
+    // Function to save a new service to the database
+    private func saveNewService() {
+        let odometer = Float(odometerValue) ?? 0.0
+        let newService = Servis(date: selectedDate,
+                                servicedSparepart: Array(self.selectedParts),
+                                photo: selectedImage?.jpegData(compressionQuality: 1.0),
+                                odometer: odometer,
+                                vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
+        
+        modelContext.insert(newService)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save service: \(error)")
+        }
+    }
+    
+    // Function to update an existing service
+    private func updateService() {
+        guard let serviceToUpdate = service else { return }
+        
+        // Update properties of the existing service
+        serviceToUpdate.date = selectedDate
+        serviceToUpdate.odometer = Float(odometerValue) ?? 0.0
+        serviceToUpdate.servicedSparepart = Array(selectedParts)
+        serviceToUpdate.photo = selectedImage?.jpegData(compressionQuality: 1.0)
+        
+        // Save the changes in the model context
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to update service: \(error)")
+        }
     }
 }
 
 #Preview {
-    AddServiceView()
+    AddServiceView(service: nil)
 }

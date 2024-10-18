@@ -15,6 +15,7 @@ class Servis {
     var date: Date
     var servicedSparepart: [Sparepart]
     var photo: Data?
+
     var odometer: Float?
     @Relationship var vehicle: Vehicle
     init(date: Date, servicedSparepart: [Sparepart], photo: Data? = nil, odometer: Float? = nil, vehicle: Vehicle) {
