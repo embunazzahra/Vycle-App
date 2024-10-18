@@ -35,7 +35,7 @@ class SwiftDataService {
 
 extension SwiftDataService {
     func insertTrip(){
-        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .ford))
+        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
         modelContext.insert(testTrip)
         
             do {
@@ -46,12 +46,12 @@ extension SwiftDataService {
     }
     
     func insertVehicle(){
-        let testVehicle = Vehicle(vehicleType: .car, brand: .bmw)
+        let testVehicle = Vehicle(vehicleType: .car, brand: .car(.toyota))
         modelContext.insert(testVehicle)
     }
     
     func insertReminder(){
-        let testVehicle = Reminder(date: Date(), sparepart: .busi, targetKM: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .bmw), isRepeat: false, isDraft: false)
+        let testVehicle = Reminder(date: Date(), sparepart: .busi, targetKM: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
         modelContext.insert(testVehicle)
     }
     
@@ -62,6 +62,13 @@ extension SwiftDataService {
             print("Failed to clear all Country and City data.")
         }
     }
-    
+}
+
+// MARK: OnBoarding
+extension SwiftDataService {
+    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
+        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+        
+    }
     
 }
