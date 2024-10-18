@@ -11,9 +11,9 @@ struct AllServiceHistoryView: View {
     @EnvironmentObject var routes: Routes
     
     @State private var serviceHistories = [
-        ServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil, spareparts: [.minyakRem]),
-        ServiceHistory(title: "Oli mesin", mileage: 65100, date: "15/09/2024", imageData: nil, spareparts: [.oliMesin]),
-        ServiceHistory(title: "Filter udara", mileage: 60500, date: "30/08/2024", imageData: nil, spareparts: [.filterUdara])
+        UserServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil, spareparts: [.minyakRem]),
+        UserServiceHistory(title: "Oli mesin", mileage: 65100, date: "15/09/2024", imageData: nil, spareparts: [.oliMesin]),
+        UserServiceHistory(title: "Filter udara", mileage: 60500, date: "30/08/2024", imageData: nil, spareparts: [.filterUdara])
     ]
     
     var body: some View {
@@ -51,7 +51,7 @@ struct AllServiceHistoryView: View {
         .padding()
     }
     
-    func deleteHistory(_ history: ServiceHistory) {
+    func deleteHistory(_ history: UserServiceHistory) {
         if let index = serviceHistories.firstIndex(where: { $0.id == history.id }) {
             serviceHistories.remove(at: index)
         }

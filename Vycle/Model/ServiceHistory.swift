@@ -6,7 +6,7 @@
 //
 import Foundation
 
-struct ServiceHistory: Identifiable, Hashable {
+struct UserServiceHistory: Identifiable, Hashable {
     let id = UUID() // Unique identifier
     let title: String
     let mileage: Int

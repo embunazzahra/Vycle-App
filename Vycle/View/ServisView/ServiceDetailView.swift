@@ -10,7 +10,7 @@ import SwiftUI
 struct ServiceDetailView: View {
     @EnvironmentObject var routes: Routes
     
-    let service: ServiceHistory
+    let service: UserServiceHistory
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in
     
@@ -81,5 +81,5 @@ struct ServiceDetailView: View {
 }
 
 #Preview {
-    ServiceDetailView(service: ServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil, spareparts: [.minyakRem,.oliMesin]))
+    ServiceDetailView(service: UserServiceHistory(title: "Minyak rem", mileage: 78250, date: "01/10/2024", imageData: nil, spareparts: [.minyakRem,.oliMesin]))
 }

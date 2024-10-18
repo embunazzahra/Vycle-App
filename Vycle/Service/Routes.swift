@@ -11,8 +11,9 @@ import SwiftUI
 @Observable final class Routes: ObservableObject {
     var navPath = NavigationPath()
     
+
     public enum Destination : Hashable{
-        case DashboardView, PengingatView, ServisView, NoServiceView, AllServiceHistoryView, ServiceDetailView(service: ServiceHistory), AddServiceView(service: ServiceHistory?)
+        case DashboardView, PengingatView, ServisView, NoServiceView, AllServiceHistoryView, ServiceDetailView(service: UserServiceHistory), AddServiceView(service: UserServiceHistory?), AddReminderView
     }
     
     func navigate(to destination: Destination) {

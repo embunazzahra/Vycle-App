@@ -29,7 +29,7 @@ struct AddServiceView: View {
     @State private var showGallery = false
     @State private var isShowingDialog: Bool = false
     
-    var service: ServiceHistory?
+    var service: UserServiceHistory?
     
     // Computed property to determine if the button should be disabled
     private var isButtonDisabled: Bool {
@@ -37,7 +37,7 @@ struct AddServiceView: View {
     }
     
     
-    init(service: ServiceHistory?) {
+    init(service: UserServiceHistory?) {
         self.service = service
         print(service) // Debugging line
     }

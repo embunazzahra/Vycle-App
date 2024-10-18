@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct AddEditFramework: View {
+    @EnvironmentObject var routes: Routes
+    
     let title: String
     let successNotification: () -> AnyView
     
@@ -20,9 +22,11 @@ struct AddEditFramework: View {
     @State private var selectedYear = Calendar.current.component(.year, from: Date()) - 2000
     
     @State private var selectedNumber = 1000
+    @State private var selectedSparepart: SukuCadang
     @State private var showSheet = false
     
     @State var isToggleOn = false
+    @Binding var reminders: [SparepartReminder]
 
     var isButtonEnabled: Bool {
         isPartChosen && isMonthYearChosen && isKilometerChosen
@@ -45,17 +49,19 @@ struct AddEditFramework: View {
         return (yearDifference * 12) + monthDifference
     }
 
-    init(title: String, successNotification: @escaping () -> AnyView) {
-        self.title = title
-        self.successNotification = successNotification
-    }
+    init(title: String, reminders: Binding<[SparepartReminder]>, selectedSparepart: SukuCadang, successNotification: @escaping () -> AnyView) {
+            self.title = title
+            self._reminders = reminders
+            self.selectedSparepart = selectedSparepart
+            self.successNotification = successNotification
+        }
 
     var body: some View {
 
         ZStack {
-            NavigationStack {
+//            NavigationStack {
                 VStack {
-                    SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedMonth: $selectedMonth, selectedYear: $selectedYear)
+                    SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedMonth: $selectedMonth, selectedYear: $selectedYear, selectedSparepart: $selectedSparepart, reminders: reminders)
 
                     NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
                     
@@ -92,6 +98,13 @@ struct AddEditFramework: View {
 
                         CustomButton(title: "Tambahkan Pengingat", iconName: "", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
                             isNotificationShowed = true
+
+                            let newReminder = SparepartReminder(
+                                sparepartName: selectedSparepart.rawValue,
+                                sparepartTargetKilometer: Double(selectedNumber),
+                                monthInterval: monthInterval
+                            )
+                            reminders.append(newReminder)
                         }
                         .padding(.bottom, 16)
                     }
@@ -99,7 +112,7 @@ struct AddEditFramework: View {
                 .navigationTitle(title)
                 .navigationBarBackButtonHidden(false)
                 .navigationBarHidden(isNotificationShowed)
-            }
+//            }
 
             if isNotificationShowed {
                 Color.black.opacity(0.6)
@@ -112,6 +125,9 @@ struct AddEditFramework: View {
 }
 
 #Preview {
-    AddReminderView()
+    let reminders: [SparepartReminder] = [] // Empty array of reminders
+    return AddReminderView(reminders: .constant(reminders))
+        .environmentObject(Routes())
 }
+
 

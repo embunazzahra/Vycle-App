@@ -11,6 +11,7 @@ enum ButtonStyleType {
     case primary
     case secondary
     case disabled
+    case clear
     
     func backgroundColor() -> Color {
         switch self {
@@ -20,7 +21,10 @@ enum ButtonStyleType {
             return Color.clear
         case .disabled:
             return Color.neutral.base
+        case .clear:
+            return Color.clear
         }
+        
     }
     
     func foregroundColor() -> Color {
@@ -29,6 +33,8 @@ enum ButtonStyleType {
             return Color.neutral.tint300
         case .secondary:
             return Color.primary.base
+        case .clear:
+            return Color.clear
         }
     }
     
@@ -99,17 +105,17 @@ struct CustomButton: View {
 struct CustomButtonExample: View {
     var body: some View {
         ZStack {
-//            VStack {
-//                CustomButton(title: "Primary",  iconName: "selesai", buttonType: .primary) {
-//                    print("Tes")
-//                }
-//                CustomButton(title: "Disabled",  iconName: "lanjutkan", buttonType: .disabled) {
-//                    print("Tes")
-//                }
-//                CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
-//                    print("Tes")
-//                }
-//            }
+            VStack {
+                CustomButton(title: "Primary",  iconName: "selesai", buttonType: .primary) {
+                    print("Tes")
+                }
+                CustomButton(title: "Disabled",  iconName: "lanjutkan", buttonType: .disabled) {
+                    print("Tes")
+                }
+                CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
+                    print("Tes")
+                }
+            }
         }
     }
 }

@@ -18,7 +18,5 @@ enum SukuCadang: String, CaseIterable, Hashable, Identifiable {
     case timingBelt = "Timing belt"
     
     
-    
-    
     var id: String { self.rawValue }
 }

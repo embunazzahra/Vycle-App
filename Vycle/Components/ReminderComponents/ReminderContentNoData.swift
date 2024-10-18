@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ReminderContentNoData: View {
+    @EnvironmentObject var routes: Routes
+    
     var body: some View {
         VStack (alignment: .center) {
             Spacer()
@@ -26,10 +28,9 @@ struct ReminderContentNoData: View {
                 Spacer()
             } .padding(.bottom, -8)
         
-            CustomButton(title: "Tambahkan Pengingat", iconName: "", iconPosition: .left, buttonType: .primary) {
-                NavigationLink(destination: AddReminderView()) {
-                    Text("")
-                }
+            CustomButton(title: "Tambahkan Pengingat", buttonType: .primary) {
+                routes.navigate(to: .AddReminderView)
+                print ("clicked")
             }
             
             Spacer()

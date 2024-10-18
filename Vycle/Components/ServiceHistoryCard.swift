@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ServiceHistoryCard: View {
-    let service: ServiceHistory // Accept service data
+    let service: UserServiceHistory // Accept service data
     var onCardTap: () -> Void
 
     var body: some View {
