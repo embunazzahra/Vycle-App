@@ -22,11 +22,21 @@ struct ServiceHistoryCard: View {
                 ZStack {
                     Color.neutral.shade100
                         .frame(width: 100)
-                    Image("image_icon")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 36, height: 36)
-                        .cornerRadius(8)
+                    if let photoData = service.photo {
+                        Image(uiImage: UIImage(data: photoData) ?? UIImage(systemName: "image_icon")!)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipped()
+                            .clipShape(RoundedCorners(radius: 8, corners: [.topLeft, .bottomLeft]))
+                    } else {
+                        Image(systemName: "image_icon")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 36, height: 36)
+                            .cornerRadius(8)
+                    }
+
                 }
                 
                 VStack(alignment: .leading) {
@@ -58,5 +68,15 @@ struct ServiceHistoryCard: View {
     // Helper function untuk menghasilkan title dari spareparts
     private func generateTitle(from spareparts: [Sparepart]) -> String {
         return spareparts.map { $0.rawValue.capitalized }.joined(separator: ", ")
+    }
+}
+
+struct RoundedCorners: Shape {
+    var radius: CGFloat
+    var corners: UIRectCorner
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }

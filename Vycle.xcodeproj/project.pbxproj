@@ -418,6 +418,7 @@
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location at all times to track significant changes and provide accurate data.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need your location even when you're not using the app to track significant changes.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to track significant changes and provide better services while using the app.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -454,6 +455,7 @@
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location at all times to track significant changes and provide accurate data.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need your location even when you're not using the app to track significant changes.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to track significant changes and provide better services while using the app.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
