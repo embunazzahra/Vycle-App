@@ -17,7 +17,7 @@ class Reminder {
     var kmInterval: Float = 1000
     var dueDate: Date = Date()
     var timeInterval: Int = 0
-    @Relationship(deleteRule: .cascade) var vehicle: Vehicle
+    @Relationship var vehicle: Vehicle
     var isRepeat: Bool
     var isDraft: Bool
     

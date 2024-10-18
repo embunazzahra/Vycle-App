@@ -6,7 +6,7 @@
 //
 
 
-enum Sparepart: String, Codable, CaseIterable {
+enum Sparepart: String, Codable, CaseIterable, Identifiable {
     case filterUdara = "Filter udara"
     case oliMesin = "Oli mesin"
     case oliGardan = "Oli Gardan"
@@ -16,6 +16,8 @@ enum Sparepart: String, Codable, CaseIterable {
     case minyakRem = "Minyak rem"
     case minyakKopling = "Minyak Kopling"
     case coolant = "Coolant"
+    
+    var id: String { self.rawValue }
 }
 
 enum VehicleType: String, Codable, CaseIterable {
