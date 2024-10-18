@@ -19,7 +19,7 @@ class SwiftDataService {
     @MainActor
     private init() {
         // Change isStoredInMemoryOnly to false if you would like to see the data persistance after kill/exit the app
-        self.modelContainer = try! ModelContainer(for: Odometer.self, Vehicle.self, Servis.self, Trip.self, Reminder.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        self.modelContainer = try! ModelContainer(for: Odometer.self, Vehicle.self, Servis.self, Trip.self, Reminder.self, configurations: ModelConfiguration(isStoredInMemoryOnly: false))
 
         self.modelContext = modelContainer.mainContext
     }
@@ -35,7 +35,7 @@ class SwiftDataService {
 
 extension SwiftDataService {
     func insertTrip(){
-        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .ford))
+        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
         modelContext.insert(testTrip)
         
             do {
@@ -46,12 +46,12 @@ extension SwiftDataService {
     }
     
     func insertVehicle(){
-        let testVehicle = Vehicle(vehicleType: .car, brand: .bmw)
+        let testVehicle = Vehicle(vehicleType: .car, brand: .car(.toyota))
         modelContext.insert(testVehicle)
     }
     
     func insertReminder(){
-        let testVehicle = Reminder(date: Date(), sparepart: .busi, targetKM: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .bmw), isRepeat: false, isDraft: false)
+        let testVehicle = Reminder(date: Date(), sparepart: .busi, targetKM: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
         modelContext.insert(testVehicle)
     }
     
@@ -62,6 +62,69 @@ extension SwiftDataService {
             print("Failed to clear all Country and City data.")
         }
     }
-    
-    
 }
+
+// MARK: OnBoarding
+extension SwiftDataService {
+    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
+        
+        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+        
+        let servicedSparepart = serviceHistory.map { $0.sparepart }
+        let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
+        
+        modelContext.insert(vehicleData)
+        modelContext.insert(odometerData)
+        modelContext.insert(serviceData)
+        
+        saveModelContext()
+        
+        printAllData()
+    }
+}
+
+// MARK: Debug
+extension SwiftDataService {
+    
+    func fetchVehicles() -> [Vehicle] {
+        let fetchRequest = FetchDescriptor<Vehicle>()
+        let vehicles = (try? modelContext.fetch(fetchRequest)) ?? []
+        return vehicles
+    }
+    
+    func fetchServices() -> [Servis] {
+        let fetchRequest = FetchDescriptor<Servis>()
+        let services = (try? modelContext.fetch(fetchRequest)) ?? []
+        return services
+    }
+    
+    func fetchOdometers() -> [Odometer] {
+        let fetchRequest = FetchDescriptor<Odometer>()
+        let odometers = (try? modelContext.fetch(fetchRequest)) ?? []
+        return odometers
+    }
+    
+    func printAllData() {
+        let vehicles = fetchVehicles()
+        let services = fetchServices()
+        let odometers = fetchOdometers()
+
+        print("Vehicles:")
+        for vehicle in vehicles {
+            print("ID: \(vehicle.vehicleID), Type: \(vehicle.vehicleType), Brand: \(vehicle.brand)")
+        }
+
+        print("\nServices:")
+        for service in services {
+            print("Date: \(service.date), Spareparts: \(service.servicedSparepart), Vehicle ID: \(service.vehicle.vehicleID)")
+        }
+
+        print("\nOdometers:")
+        for odometer in odometers {
+            print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
+        }
+    }
+}
+
+

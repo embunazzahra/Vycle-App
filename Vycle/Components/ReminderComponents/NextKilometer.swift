@@ -14,7 +14,7 @@ struct NextKilometer: View {
     
     var body: some View {
         VStack (alignment: .leading) {
-            Text("Kilometer selanjutnya")
+            Text("Interval kilometer")
                 .headline()
                 .padding(.horizontal, 16)
                 .padding(.bottom, -4)

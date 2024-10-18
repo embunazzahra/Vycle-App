@@ -68,8 +68,8 @@ struct AddServiceView: View {
         .navigationBarBackButtonHidden(false)
         .onAppear {
             if let service = service {
-                self.odometerValue = "\(Int(service.odometer))"
-                self.userOdometer = Int(service.odometer)
+                self.odometerValue = "\(Int(service.odometer ?? 0))"
+                self.userOdometer = Int(service.odometer ?? 0)
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
                 // Check if service.photo is not nil and assign it to selectedImage
@@ -112,7 +112,7 @@ struct AddServiceView: View {
                                 servicedSparepart: Array(self.selectedParts),
                                 photo: selectedImage?.jpegData(compressionQuality: 1.0),
                                 odometer: odometer,
-                                vehicle: Vehicle(vehicleType: .car, brand: .honda))
+                                vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
         
         modelContext.insert(newService)
         

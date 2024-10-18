@@ -16,21 +16,21 @@ struct AllServiceHistoryView: View {
             servicedSparepart: [.minyakRem],
             photo: nil,
             odometer: 78250,
-            vehicle: Vehicle(vehicleType: .car, brand: .honda)
+            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
         ),
         Servis(
             date: Date(),
             servicedSparepart: [.oliMesin],
             photo: nil,
             odometer: 65100,
-            vehicle: Vehicle(vehicleType: .car, brand: .honda)
+            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
         ),
         Servis(
             date: Date(),
             servicedSparepart: [.filterUdara],
             photo: nil,
             odometer: 60500,
-            vehicle: Vehicle(vehicleType: .car, brand: .honda)
+            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
         )
     ]
     

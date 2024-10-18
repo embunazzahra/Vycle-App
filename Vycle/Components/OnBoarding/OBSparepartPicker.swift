@@ -7,10 +7,10 @@
 import SwiftUI
 
 struct OBSparepartWheelPicker: View {
-    @Binding var selectedValue: SukuCadang
+    @Binding var selectedValue: Sparepart
     @State private var showSheet = false
     @Binding var isPartChosen: Bool
-    var availableParts: [SukuCadang]
+    var availableParts: [Sparepart]
     
     var body: some View {
         VStack {
@@ -34,10 +34,10 @@ struct OBSparepartWheelPicker: View {
 }
 
 struct OBSparepartPickerSheet: View {
-    @Binding var selectedValue: SukuCadang
+    @Binding var selectedValue: Sparepart
     @Environment(\.dismiss) var dismiss
     @Binding var isPartChosen: Bool
-    var availableParts: [SukuCadang]
+    var availableParts: [Sparepart]
     
     var body: some View {
         VStack {

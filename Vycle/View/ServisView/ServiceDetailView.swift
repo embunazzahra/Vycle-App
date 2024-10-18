@@ -25,7 +25,7 @@ struct ServiceDetailView: View {
                         .padding(.horizontal,12)
                 }
                 
-                OdometerInputView(odometerValue: $odometerValue, userOdometer: Int(service.odometer), enable: false)
+                OdometerInputView(odometerValue: $odometerValue, userOdometer: Int(service.odometer ?? 0), enable: false)
                 VStack(alignment: .leading) {
                     Text("Nama suku cadang")
                         .font(.headline)
@@ -86,6 +86,6 @@ struct ServiceDetailView: View {
         servicedSparepart: [.minyakRem],
         photo: nil,
         odometer: 78250,
-        vehicle: Vehicle(vehicleType: .car, brand: .honda)
+        vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
     ))
 }

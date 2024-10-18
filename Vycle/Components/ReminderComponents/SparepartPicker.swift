@@ -5,12 +5,13 @@
 //  Created by Clarissa Alverina on 09/10/24.
 //
 import SwiftUI
+import SwiftData
 
 struct SparepartWheelPicker: View {
     @State private var showSheet = false
     @Binding var isPartChosen: Bool
-    @Binding var selectedSparepart: SukuCadang
-    var reminders: [SparepartReminder]
+    @Binding var selectedSparepart: Sparepart
+    @Query var reminders: [Reminder]
 
     var body: some View {
         VStack {
@@ -25,7 +26,7 @@ struct SparepartWheelPicker: View {
                     .cornerRadius(10)
             }
             .sheet(isPresented: $showSheet) {
-                SparepartPickerSheet(isPartChosen: $isPartChosen, selectedSparepart: $selectedSparepart, reminders: reminders)
+                SparepartPickerSheet(isPartChosen: $isPartChosen, selectedSparepart: $selectedSparepart)
                     .presentationDetents([.medium])
             }
         }
@@ -33,11 +34,12 @@ struct SparepartWheelPicker: View {
     }
 }
 
+
 struct SparepartPickerSheet: View {
     @Environment(\.dismiss) var dismiss
     @Binding var isPartChosen: Bool
-    @Binding var selectedSparepart: SukuCadang
-    var reminders: [SparepartReminder]
+    @Binding var selectedSparepart: Sparepart
+    @Query var reminders: [Reminder]
 
     var body: some View {
         VStack {
@@ -50,8 +52,8 @@ struct SparepartPickerSheet: View {
             }
             
             Picker("Select a spare part", selection: $selectedSparepart) {
-                ForEach(SukuCadang.allCases.filter { part in
-                    !reminders.contains(where: { $0.sparepartName == part.rawValue })
+                ForEach(Sparepart.allCases.filter { part in
+                    !reminders.contains(where: { $0.sparepart == part })
                 }) { part in
                     Text(part.rawValue).tag(part)
                 }

@@ -15,11 +15,12 @@ struct VehicleBrandView: View {
 
     var brandsList: [VehicleBrand] {
         let predefinedBrands: [VehicleBrand]
+        
         switch vehicleType {
         case .car:
-            predefinedBrands = [.honda, .suzuki, .toyota, .daihatsu, .mitsubishi]
+            predefinedBrands = Car.allCases.map { VehicleBrand.car($0) }
         case .motorcycle:
-            predefinedBrands = [.honda, .suzuki, .toyota]
+            predefinedBrands = Motorcycle.allCases.map { VehicleBrand.motorcycle($0) }
         case .none:
             predefinedBrands = []
         }

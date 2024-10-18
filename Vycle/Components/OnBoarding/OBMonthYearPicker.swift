@@ -37,10 +37,6 @@ struct OBDateWheelPicker: View {
         formatter.dateFormat = "MM/yyyy"
         return formatter.string(from: selectedDate)
     }
-    
-//    private var monthSymbols: [String] {
-//        return Calendar.current.monthSymbols
-//    }
 }
 
 struct OBDatePickerSheet: View {
@@ -49,7 +45,10 @@ struct OBDatePickerSheet: View {
     @Binding var isMonthYearChosen: Bool
     
     private let months = Calendar.current.monthSymbols
-    private let years = Array(2000...Calendar.current.component(.year, from: Date()))
+    private var years: [Int] {
+       let currentYear = Calendar.current.component(.year, from: Date())
+        return Array(currentYear - 5...currentYear)
+   }
     
     @State private var selectedMonth = Calendar.current.component(.month, from: Date())
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
@@ -105,7 +104,7 @@ struct OBDatePickerSheet: View {
                 updateSelectedDate()
                 isMonthYearChosen = true
                 dismiss()
-                print("Selected Year: \(selectedYear), Selected Month: \(selectedMonth + 1), New Date: \(selectedDate)")
+//                print("Selected Year: \(selectedYear), Selected Month: \(selectedMonth + 1), New Date: \(selectedDate)")
             }
             .padding(.top, 10)
             

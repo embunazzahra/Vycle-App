@@ -43,7 +43,7 @@ struct ServiceHistoryCard: View {
                     Text(generateTitle(from: service.servicedSparepart))
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                    Text("Diservis pada KM \(Int(service.odometer).formattedWithSeparator())")
+                    Text("Diservis pada KM \(Int(service.odometer ?? 0).formattedWithSeparator())")
                         .font(.caption)
                     Spacer()
                     Text(service.date.toString(format: "dd/MM/yyyy"))
