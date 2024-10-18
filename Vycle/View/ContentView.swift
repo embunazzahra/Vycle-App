@@ -22,6 +22,8 @@ struct ContentView: View {
     
     @State private var selectedTab: Tab = .dashboard
     @State private var reminders: [SparepartReminder] = []
+    @Query var services : [Servis]
+    
     
     init(){
         setupNavigationBarWithoutScroll()
@@ -67,13 +69,18 @@ struct ContentView: View {
                 }
                 .toolbar {
                     ToolbarItem {
-    //                    NavigationLink(destination: AddReminderView(reminders: $reminders)) {
                             Image(systemName: "plus.square.fill")
                                 .foregroundColor(Color.white)
                                 .onTapGesture {
-                                    routes.navigate(to: .AddReminderView)
-                                }.opacity(selectedTab.rawValue == "Pengingat" ? 1 : 0).disabled(selectedTab.rawValue == "Pengingat" ? false : true)
-    //                    }
+                                    if (selectedTab == .pengingat) {
+                                        routes.navigate(to: .AddReminderView)
+                                    }
+                                    else if (selectedTab == .servis){
+                                        routes.navigate(to: .AddServiceView(service: nil))
+                                    }
+                                }
+                                .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? 1 : 0)
+                                .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? false : true)
                     }
                 }
 //                .environmentObject(routes)
