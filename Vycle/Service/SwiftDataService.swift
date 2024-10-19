@@ -69,17 +69,20 @@ extension SwiftDataService {
     func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
         
         let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
-        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-        
-        let servicedSparepart = serviceHistory.map { $0.sparepart }
-        let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
-        
         modelContext.insert(vehicleData)
+        
+        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
         modelContext.insert(odometerData)
-        modelContext.insert(serviceData)
         
+        let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
+        
+        for (date, historyForDate) in groupedServiceHistory {
+            let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
+            let serviceData = Servis(date: date, servicedSparepart: servicedSpareparts, vehicle: vehicleData)
+            modelContext.insert(serviceData)
+        }
+
         saveModelContext()
-        
         printAllData()
     }
 }
