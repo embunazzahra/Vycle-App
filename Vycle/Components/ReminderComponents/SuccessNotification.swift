@@ -81,7 +81,7 @@ public struct EditSuccessNotification: View {
                     }
                     .padding(.top)
                     .onTapGesture {
-                        routes.navigate(to: .PengingatView)
+                        routes.navigateBack()
                     }
             }
         }

@@ -34,7 +34,6 @@ struct SparepartWheelPicker: View {
     }
 }
 
-
 struct SparepartPickerSheet: View {
     @Environment(\.dismiss) var dismiss
     @Binding var isPartChosen: Bool
@@ -61,6 +60,9 @@ struct SparepartPickerSheet: View {
             .pickerStyle(.wheel)
             .frame(height: 254)
             .clipped()
+            .onChange(of: selectedSparepart) { _ in
+                isPartChosen = true
+            }
             
             CustomButton(title: "Pilih", iconPosition: .left, buttonType: .primary) {
                 isPartChosen = true
@@ -69,6 +71,9 @@ struct SparepartPickerSheet: View {
             .padding(.top, 10)
             
             Spacer()
+        }
+        .onAppear {
+            isPartChosen = true
         }
     }
 }
