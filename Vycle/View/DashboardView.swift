@@ -15,11 +15,14 @@ struct DashboardView: View {
     @Query var vehicles : [Vehicle]
     @Query var reminders : [Reminder]
     @State private var showSheet = false
-    
+    @Query var locationHistory : [LocationHistory]
     @State private var odometer: Float? = 10000
     var body: some View {
         NavigationView {
             ScrollView{
+//                ForEach(locationHistory){ history in
+//                    Text("Lati: \(history.latitude), Long: \(history.longitude) Dis: \(history.distance)")
+//                }
                 ZStack{
                     VStack{
                         ZStack {
