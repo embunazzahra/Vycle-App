@@ -26,11 +26,11 @@ struct ProgressBar: View {
                 Text("Sudah tiba bulannya nih!")
                     .footnote(.emphasized)
                     .foregroundColor(Color.persianRed600)
-            } else if progress >= 0.66 {
+            } else if progress > 0.7 {
                 Text("\(Int(kilometerDifference)) Kilometer lagi")
                     .footnote(.emphasized)
                     .foregroundColor(Color.persianRed600)
-            }  else if progress >= 0.3 && progress <= 0.66 {
+            }  else if progress > 0.3 && progress < 0.7 {
                 Text("\(Int(kilometerDifference)) Kilometer lagi")
                     .footnote(.emphasized)
                     .foregroundColor(Color.amber600)
@@ -54,8 +54,8 @@ struct ProgressBar: View {
                     .frame(width: CGFloat(progress) * 265, height: 8)
                     .cornerRadius(4)
                     .foregroundColor(
-                        progress >= 0.66 ? .persianRed600 :
-                        (progress >= 0.3 && progress <= 0.66 ? .amber600 : .lima600)
+                        progress > 0.7 ? .persianRed600 :
+                        (progress > 0.3 && progress < 0.7 ? .amber600 : .lima600)
                     )
                     .animation(.linear, value: progress)
             }

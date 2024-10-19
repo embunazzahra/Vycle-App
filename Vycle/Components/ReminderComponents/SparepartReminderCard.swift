@@ -51,25 +51,37 @@ struct SparepartReminderCard: View {
 
 
 struct SparepartReminderListView: View {
-    var reminders: [Reminder]
+    @Binding var reminders: [Reminder]
     @Environment(\.modelContext) private var context
-    
+    @EnvironmentObject var routes: Routes 
+
     var currentKilometer: Double = 10
     var serviceOdometer: Double = 5
 
     var body: some View {
         VStack {
             if reminders.isEmpty {
-                Text("No Reminders Available")
-                    .font(.headline)
-                    .foregroundColor(.gray)
+//                Text("No Reminders Available")
+//                    .font(.headline)
+//                    .foregroundColor(.gray)
+                Spacer()
+                ReminderContentFar()
+                Spacer()
             } else {
                 List {
-                    ForEach(reminders) { reminder in
-                        SparepartReminderCard(reminder: reminder, currentKilometer: currentKilometer, serviceOdometer: serviceOdometer)
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                            .listSectionSeparator(.hidden)
+                    ForEach($reminders) { $reminder in
+                        SparepartReminderCard(
+                            reminder: reminder,
+                            currentKilometer: currentKilometer,
+                            serviceOdometer: serviceOdometer
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            routes.navigate(to: .EditReminderView(reminder: reminder))
+                        }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listSectionSeparator(.hidden)
                     }
                     .onDelete(perform: deleteReminder)
                 }
@@ -81,23 +93,21 @@ struct SparepartReminderListView: View {
     }
 
     private func deleteReminder(at offsets: IndexSet) {
-        print("Reminders before deletion: \(reminders)")
-
         for index in offsets {
             guard reminders.indices.contains(index) else { continue }
-            
             let reminderToDelete = reminders[index]
-            print("Deleting reminder: \(reminderToDelete)")
             context.delete(reminderToDelete)
         }
-        
         do {
             try context.save()
-            print("Successfully deleted reminder(s).")
         } catch {
             print("Failed to delete reminder: \(error.localizedDescription)")
         }
     }
+}
+
+
+
     
     
 //    import SwiftUI
@@ -216,7 +226,6 @@ struct SparepartReminderListView: View {
 //        }
 //    }
 
-}
 
 
 
