@@ -89,6 +89,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         if beacons.count > 0 {
             var distance = beacons[0].proximity
+            print("Distance: \(distance.rawValue)")
             switch distance {
             case .unknown:
                 print("unknown")
@@ -99,20 +100,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             case .near:
                 print("near")
                 handleBeaconConnection(isConnected: true)
-//                let newLocation = LocationHistory(latitude: 3, longitude: 3, distanceFromLastLocation: 3, bleStatus: true)
-//                context?.insert(newLocation)
                 isInsideBeaconRegion = true
                 if let currentLocation = currentLocation {
-//                        let newLocation = LocationHistory(
-//                            latitude: currentLocation.latitude,
-//                            longitude: currentLocation.longitude,
-//                            distanceFromLastLocation:11,
-//                            bleStatus: true
-//                        )
-                    let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
-                        context?.insert(newLocation)
+//                    let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
+                    SwiftDataService.shared.insertLocationHistory(distance: 0, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
+//                        context?.insert(newLocation)
                 }
-                
             case .immediate:
                 print("immediate")
                 handleBeaconConnection(isConnected: true)
@@ -120,14 +113,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 //                let newLocation = LocationHistory(latitude: currentLocation?.latitude ?? 11, longitude: currentLocation?.longitude ?? 11, distanceFromLastLocation: 4, bleStatus: true)
 //                context?.insert(newLocation)
                 if let currentLocation = currentLocation {
-//                        let newLocation = LocationHistory(
-//                            latitude: currentLocation.latitude,
-//                            longitude: currentLocation.longitude,
-//                            distanceFromLastLocation:11,
-//                            bleStatus: true
-//                        )
-                    let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
-                        context?.insert(newLocation)
+                    SwiftDataService.shared.insertLocationHistory(distance: 0, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
+//                    let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
+//                        context?.insert(newLocation)
                     }
 
             }
@@ -144,11 +132,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("Entered beacon region")
             handleBeaconConnection(isConnected: true)
             if let currentLocation = currentLocation {
-//                    let newLocation = LocationHistory(
-//                        distance: 11, latitude: currentLocation.latitude, longitude: currentLocation.latitude, vehicle: <#T##Vehicle#>, trip: <#T##Trip#>
-//                    )
-                let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
-                    context?.insert(newLocation)
+//                let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
+                SwiftDataService.shared.insertLocationHistory(distance: 0, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
+//                    context?.insert(newLocation)
             }
 //            startBackgroundTask()
         }
@@ -170,14 +156,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 //            context?.insert(newLocation)
             
             if let currentLocation = currentLocation {
-//                    let newLocation = LocationHistory(
-//                        latitude: currentLocation.latitude,
-//                        longitude: currentLocation.longitude,
-//                        distanceFromLastLocation:12,
-//                        bleStatus: true
-//                    )
-                let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
-                    context?.insert(newLocation)
+//                let newLocation = LocationHistory(distance: 12, latitude: currentLocation.latitude, longitude: currentLocation.longitude, time: Date(), trip: testTrip)
+                SwiftDataService.shared.insertLocationHistory(distance: 0, latitude: currentLocation.latitude, longitude: currentLocation.latitude, time: Date(), trip: testTrip)
+//                    context?.insert(newLocation)
             }
             
             startBackgroundTask()
@@ -254,6 +235,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: distance)
             }
         } else {
+            
             storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: nil)
         }
     }
@@ -263,6 +245,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
 //        let newLocation = LocationHistory(latitude: latitude, longitude: longitude, distanceFromLastLocation: distanceFromLastLocation)
         let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: testTrip)
+        SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: testTrip)
         context.insert(newLocation)
 
         do {

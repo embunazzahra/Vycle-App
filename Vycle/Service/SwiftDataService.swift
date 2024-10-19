@@ -62,6 +62,17 @@ extension SwiftDataService {
             print("Failed to clear all Country and City data.")
         }
     }
+    
+    func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date, trip: Trip){
+        let locationHistory = LocationHistory(latitude: latitude, longitude: longitude, time: time, trip: trip)
+        modelContext.insert(locationHistory)
+        
+            do {
+                try saveModelContext() // Save the context to persist the new trip
+            } catch {
+                print("Failed to save trip: \(error.localizedDescription)")
+            }
+    }
 }
 
 // MARK: OnBoarding
