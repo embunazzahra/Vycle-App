@@ -5,32 +5,55 @@
 //  Created by Clarissa Alverina on 10/10/24.
 //
 
-//import SwiftUI
-//
+import SwiftUI
+
+struct EditReminderView: View {
+    @Binding var reminder: Reminder
+    @EnvironmentObject var routes: Routes
+    @State private var isNotificationShowed = false
+
+    var body: some View {
+        AddEditFramework(
+            title: "Edit Pengingat",
+            reminders: .constant([reminder]),
+            selectedSparepart: reminder.sparepart,
+            selectedDate: reminder.dueDate,
+            selectedNumber: Int(reminder.targetKM),
+            reminderToEdit: reminder
+        ) {
+            AnyView(EditSuccessNotification(reminders: .constant([reminder])))
+        }
+        .onAppear {
+            setupNavigationBarWithoutScroll()
+        }
+    }
+}
+
+
 //struct EditReminderView: View {
-//    @Binding var reminders: [SparepartReminder]
+//    @Binding var reminders: [Reminder]
 //    @EnvironmentObject var routes: Routes
 //
-//    init(reminders: Binding<[SparepartReminder]>) {
+//    init(reminders: Binding<[Reminder]>) {
 //        self._reminders = reminders
 //    }
 //
 //    var body: some View {
 //        AddEditFramework(
-//            title: "Edit Pengingat",
+//            title: "Tambahkan pengingat",
 //            reminders: $reminders,
-//            selectedSparepart: .busi 
+//            selectedSparepart: .busi
 //        ) {
-//            AnyView(AddSuccessNotification(reminders: $reminders))
+//            AnyView(EditReminderView(reminders: $reminders))
 //        }
 //        .onAppear {
 //            setupNavigationBarWithoutScroll()
 //        }
 //    }
 //}
-//
+
 //#Preview {
-//    let reminders: [SparepartReminder] = []
+//    let reminders: [Reminder] = []
 //    return EditReminderView(reminders: .constant(reminders))
 //        .environmentObject(Routes())
 //}

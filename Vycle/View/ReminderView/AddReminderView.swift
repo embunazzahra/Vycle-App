@@ -17,14 +17,11 @@ struct AddReminderView: View {
 
     var body: some View {
         AddEditFramework(
-            title: "Tambahkan pengingat",
+            title: "Tambahkan Pengingat",
             reminders: $reminders,
             selectedSparepart: .busi
         ) {
             AnyView(AddSuccessNotification(reminders: $reminders))
-        }
-        .onAppear {
-            setupNavigationBarWithoutScroll()
         }
     }
 }

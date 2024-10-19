@@ -84,6 +84,8 @@ struct ContentView: View {
                             AddReminderView(reminders: $reminders)
                         case .AllReminderView:
                             AllReminderView()
+                        case .EditReminderView(let reminder):
+                            EditReminderView(reminder: .constant(reminder))
                         }
                     }
                     .toolbar {
