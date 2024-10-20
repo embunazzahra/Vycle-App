@@ -36,7 +36,7 @@ struct ServiceDetailView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.grayTint200)
                             )
-                    })
+                    }, horizontalSpacing: 4, verticalSpacing: 4)
                 }
                 
                 if service.photo != nil {
