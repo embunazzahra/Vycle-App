@@ -41,6 +41,17 @@ enum VehicleBrand:  Codable, Hashable {
         }
     }
     
+    func intervalForSparepart(_ sparepart: Sparepart) -> Interval? {
+            switch self {
+            case .car(let brand):
+                return brand.intervalForSparepart(sparepart)
+            case .motorcycle(let brand):
+                return brand.intervalForSparepart(sparepart)
+            case .custom(_):
+                return nil // atau Anda dapat memberikan logika khusus untuk merek kustom
+            }
+        }
+    
     // Check if it is a custom brand
     var isCustomBrand: Bool {
         if case .custom = self {
