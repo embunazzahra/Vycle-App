@@ -6,33 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AllServiceHistoryView: View {
     @EnvironmentObject var routes: Routes
+    @Query var serviceHistories : [Servis]
+    @Environment(\.modelContext) private var modelContext
     
-    @State private var serviceHistories = [
-        Servis(
-            date: Date(),
-            servicedSparepart: [.minyakRem],
-            photo: nil,
-            odometer: 78250,
-            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
-        ),
-        Servis(
-            date: Date(),
-            servicedSparepart: [.oliMesin],
-            photo: nil,
-            odometer: 65100,
-            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
-        ),
-        Servis(
-            date: Date(),
-            servicedSparepart: [.filterUdara],
-            photo: nil,
-            odometer: 60500,
-            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
-        )
-    ]
     
     var body: some View {
         //        ScrollView{
@@ -69,10 +49,9 @@ struct AllServiceHistoryView: View {
         .padding()
     }
     
+    // Update deleteHistory to remove from the model context
     func deleteHistory(_ history: Servis) {
-        if let index = serviceHistories.firstIndex(where: { $0.id == history.id }) {
-            serviceHistories.remove(at: index)
-        }
+        modelContext.delete(history) // Deletes the history from the context
     }
 }
 
