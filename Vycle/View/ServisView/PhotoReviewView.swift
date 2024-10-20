@@ -29,7 +29,7 @@ struct PhotoReviewView: View {
                 Button("Tinjau Ulang") {
                     presentationMode.wrappedValue.dismiss()
                 }
-                .offset(x: -25)
+                .offset(x: -24)
             }
         }
     }

@@ -51,8 +51,15 @@ struct AddServiceView: View {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
                 ChooseSparepartView(selectedParts: $selectedParts)
-                if selectedImage != nil {
+                if let selectedImage = selectedImage {
                     ImagePreviewView(selectedImage: $selectedImage)
+                        .onTapGesture {
+                            if let imageData = selectedImage.jpegData(compressionQuality: 1.0) {
+                                routes.navigate(to: .PhotoReviewView(imageData: imageData))
+                            } else {
+                                print("Failed to convert UIImage to Data")
+                            }
+                        }
                 } else {
                     PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)
                 }
@@ -72,11 +79,9 @@ struct AddServiceView: View {
                 self.userOdometer = Int(service.odometer ?? 0)
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
-                // Check if service.photo is not nil and assign it to selectedImage
-                if let photoData = service.photo {
-                    self.selectedImage = UIImage(data: photoData) // Convert Data to UIImage
-                } else {
-                    self.selectedImage = nil // If photo is nil, set selectedImage to nil
+                
+                if let photoData = service.photo, selectedImage == nil {
+                    self.selectedImage = UIImage(data: photoData)
                 }
             }
         }
