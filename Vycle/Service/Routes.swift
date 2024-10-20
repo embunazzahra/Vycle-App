@@ -23,6 +23,7 @@ import SwiftUI
         case AddReminderView
         case AllReminderView
         case EditReminderView(reminder: Reminder)
+        case PhotoReviewView(imageData: Data)
     }
 
     func navigate(to destination: Destination) {
