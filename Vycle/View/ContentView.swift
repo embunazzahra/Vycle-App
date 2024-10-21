@@ -10,11 +10,11 @@ import SwiftData
 
 struct ContentView: View {
     
-    //    @Environment(\.modelContext) private var modelContext
     @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
-    @StateObject var locationManager = LocationManager()
+    @StateObject var locationManager = LocationManager() // @StateObject for lifecycle management
     @Query(sort: \Vehicle.vehicleID) var vehicleData: [Vehicle]
+    
     enum Tab: String {
         case dashboard = "Dashboard"
         case servis = "Servis"
@@ -23,17 +23,16 @@ struct ContentView: View {
     
     @State private var isShowSplash = true
     @State private var selectedTab: Tab = .dashboard
-    
     @State private var reminders: [Reminder] = []
     @Query var services : [Servis]
     
-    
-    init(){
+    init() {
         setupNavigationBarWithoutScroll()
     }
+    
     var body: some View {
-        NavigationStack (path: $routes.navPath) {
-            if isShowSplash{
+        NavigationStack(path: $routes.navPath) {
+            if isShowSplash {
                 SplashView()
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -42,11 +41,9 @@ struct ContentView: View {
                             }
                         }
                     }
-            }
-            else if vehicleData.isEmpty {
+            } else if vehicleData.isEmpty {
                 OnBoardingView()
             } else {
-                
                 TabView(selection: $selectedTab) {
                     DashboardView(locationManager: locationManager).tabItem {
                         Image(systemName: "house.fill")
@@ -90,31 +87,31 @@ struct ContentView: View {
                             PhotoReviewView(imageData: imageData)
                         }
                     }
-                    .toolbar {
-                        ToolbarItem {
-                            Image(systemName: "plus.square.fill")
-                                .foregroundColor(Color.white)
-                                .onTapGesture {
-                                    if (selectedTab == .pengingat) {
-                                        routes.navigate(to: .AddReminderView)
-                                    }
-                                    else if (selectedTab == .servis){
-                                        routes.navigate(to: .AddServiceView(service: nil))
-                                    }
+                }
+                .toolbar {
+                    ToolbarItem {
+                        Image(systemName: "plus.square.fill")
+                            .foregroundColor(.white)
+                            .onTapGesture {
+                                if selectedTab == .pengingat {
+                                    routes.navigate(to: .AddReminderView)
+                                } else if selectedTab == .servis {
+                                    routes.navigate(to: .AddServiceView(service: nil))
                                 }
-                                .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? 1 : 0)
-                                .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? false : true)
-                        }
+                            }
+                            .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? 1 : 0)
+                            .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? false : true)
                     }
-                //                .environmentObject(routes)
+                }
             }
-                
         }
         .tint(.white)
         .onAppear {
-            locationManager.setContext(context)
-            locationManager.startTracking()  // Start tracking the location and beacons
+//            locationManager.setContext(context)
+            locationManager.startTracking()  // Start tracking the location
         }
+        .environmentObject(locationManager)  // Provide LocationManager as EnvironmentObject
     }
-    
 }
+
+
