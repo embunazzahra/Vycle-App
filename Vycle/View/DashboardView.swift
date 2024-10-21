@@ -13,7 +13,9 @@ struct DashboardView: View {
     @ObservedObject var locationManager: LocationManager  // Add LocationManager to DashboardView
     @Query var trips: [Trip]
     @Query var vehicles : [Vehicle]
+    
     @Query var reminders : [Reminder]
+    
     @State private var showSheet = false
     //    @Query var locationHistory : [LocationHistory]
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
@@ -63,6 +65,8 @@ struct DashboardView: View {
                                     //                                        .headline()
                                     //                                        .foregroundStyle(.grayShade300)
                                     let odometer = initialOdometer.first?.currentKM ?? 0
+                                    
+                                   
                                     if let firstLocation = locationHistory.first {
                                         let totalDistance = (Double(odometer) + (firstLocation.distance ?? 0))
                                         Text("\(Int(totalDistance)) Kilometer")
@@ -138,16 +142,12 @@ struct DashboardView: View {
                                     HStack{
                                         HaveReminderView().padding(.horizontal, 16)
                                     }
+                                    
                                     ForEach(reminders) { reminder in
                                         SparepartReminderCard(reminder: reminder, currentKilometer: 10, serviceOdometer: 10)
                                             .listRowInsets(EdgeInsets())
                                             .listRowSeparator(.hidden)
                                             .listSectionSeparator(.hidden)
-                                    }
-//                                    .onDelete(perform: deleteReminder)
-                                    
-                                    ForEach(reminders){reminder in
-                                        Text("reminder: \(reminder.sparepart)")
                                     }
                                 } else {
                                     Spacer()
@@ -155,7 +155,7 @@ struct DashboardView: View {
                                     
                                 }
                                
-                            }.padding()
+                            }.padding(.horizontal, 16)
                             
                         
                     }
@@ -188,6 +188,7 @@ struct NoReminderView : View {
 }
 
 struct HaveReminderView : View {
+    @EnvironmentObject var routes: Routes
     var body: some View {
         HStack{
             VStack(alignment: .leading){
@@ -196,14 +197,14 @@ struct HaveReminderView : View {
             }
             Spacer()
             Button(action: {
-                //
+                routes.navigate(to: .AllReminderView)
             }){
                 ZStack{
                     Color.primary.base
                     Text("Lihat Semua").foregroundStyle(Color.background)
                 }.cornerRadius(14)
             }.frame(width: 120, height: 35)
-        }
+        } .padding(.top, -30)
         
     }
 }
