@@ -23,15 +23,15 @@ struct PhotoReviewView: View {
                 Text("Invalid Image")
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .principal) { Color.clear }
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Tinjau Ulang") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .offset(x: -24)
-            }
-        }
+//        .toolbar {
+//            ToolbarItem(placement: .principal) { Color.clear }
+//            ToolbarItem(placement: .topBarLeading) {
+//                Button("Tinjau Ulang") {
+//                    presentationMode.wrappedValue.dismiss()
+//                }
+//                .offset(x: -24)
+//            }
+//        }
     }
 }
 
