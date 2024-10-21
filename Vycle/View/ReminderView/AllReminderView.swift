@@ -14,7 +14,7 @@ struct AllReminderView: View {
     @State private var availableOptions: [String] = []
     @State private var remindersCountByOption: [String: Int] = [:]
 
-    @StateObject private var locationManager = LocationManager()
+    @ObservedObject private var locationManager = LocationManager()
     
     var body: some View {
         VStack {
@@ -55,7 +55,7 @@ struct AllReminderView: View {
                             set: { newValue in
                                 
                             }
-                        ))
+                        ), locationManager: locationManager)
                     } else {
                         Text("No data")
                             .font(.headline)

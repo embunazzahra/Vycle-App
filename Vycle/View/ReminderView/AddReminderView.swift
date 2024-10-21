@@ -10,6 +10,15 @@ import SwiftUI
 struct AddReminderView: View {
     @Binding var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
+    
+    // Computed property for available spare parts, filtering out the ones that are already in reminders
+    var availableSpareparts: [Sparepart] {
+        let usedSpareparts = reminders.map { $0.sparepart }
+        return Sparepart.allCases.filter { !usedSpareparts.contains($0) }
+    }
+
+    // Selected spare part (the first available one by default)
+    @State private var selectedSparepart: Sparepart?
 
     init(reminders: Binding<[Reminder]>) {
         self._reminders = reminders
@@ -19,18 +28,25 @@ struct AddReminderView: View {
         AddEditFramework(
             title: "Tambahkan Pengingat",
             reminders: $reminders,
-            selectedSparepart: .busi
+            selectedSparepart: selectedSparepart ?? availableSpareparts.first ?? Sparepart.allCases.first!
         ) {
             AnyView(AddSuccessNotification(reminders: $reminders))
+        }
+        .onAppear {
+            // Make sure that selectedSparepart is set to the first available spare part
+            if selectedSparepart == nil {
+                selectedSparepart = availableSpareparts.first
+            }
         }
     }
 }
 
 #Preview {
-    let reminders: [Reminder] = [] 
+    let reminders: [Reminder] = []
     return AddReminderView(reminders: .constant(reminders))
         .environmentObject(Routes())
 }
+
 
 
 //import SwiftUI

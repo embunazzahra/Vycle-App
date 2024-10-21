@@ -7,7 +7,7 @@
 import SwiftUI
 
 public struct AddSuccessNotification: View {
-    @Binding var reminders: [Reminder] // Use Reminder model
+    @Binding var reminders: [Reminder] 
     @EnvironmentObject var routes: Routes
 
     public var body: some View {

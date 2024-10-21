@@ -14,7 +14,6 @@ struct OnBoardingView: View {
     @State private var otherBrandsList: [String] = []
     @State private var odometer: Float? = nil
     @State private var serviceHistory: [ServiceHistory] = []
-    
     @StateObject private var keyboardResponder = KeyboardResponder()
     
     private var backButtonText: String {

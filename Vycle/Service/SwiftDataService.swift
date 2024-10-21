@@ -62,12 +62,43 @@ extension SwiftDataService {
             print("Failed to clear all Country and City data.")
         }
     }
+    
+    func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
+        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
+        let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time, trip: testTrip)
+        modelContext.insert(locationHistory)
+        
+            do {
+                try saveModelContext() // Save the context to persist the new trip
+            } catch {
+                print("Failed to save trip: \(error.localizedDescription)")
+            }
+    }
 }
 
 // MARK: OnBoarding
+//extension SwiftDataService {
+//    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
+//        
+//        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+//        
+//        let servicedSparepart = serviceHistory.map { $0.sparepart }
+//        let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
+//        
+//        modelContext.insert(vehicleData)
+//        modelContext.insert(odometerData)
+//        modelContext.insert(serviceData)
+//        
+//        saveModelContext()
+//        
+//        printAllData()
+//    }
+//}
+
 extension SwiftDataService {
-    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
-        // Insert Vehicle
+    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
+        
         let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
         modelContext.insert(vehicleData)
         
@@ -110,11 +141,26 @@ extension SwiftDataService {
                 modelContext.insert(reminderData)
             }
         }
+        modelContext.insert(vehicleData)
+        modelContext.insert(odometerData)
         
+//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+//        modelContext.insert(odometerData)
+        
+//        let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
+//        saveModelContext()
+        
+//        for (date, historyForDate) in groupedServiceHistory {
+//            let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
+//            let serviceData = Servis(date: date, servicedSparepart: servicedSpareparts, vehicle: vehicleData)
+//            modelContext.insert(serviceData)
+//        }
+
         saveModelContext()
         printAllData()
     }
 }
+
 
 // MARK: Debug
 extension SwiftDataService {
