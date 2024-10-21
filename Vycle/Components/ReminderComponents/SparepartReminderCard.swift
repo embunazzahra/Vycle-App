@@ -57,7 +57,7 @@ struct SparepartReminderListView: View {
     @Binding var reminders: [Reminder]
     @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
-    @EnvironmentObject var locationManager: LocationManager  
+    @ObservedObject var locationManager: LocationManager  
 
     var serviceOdometer: Double = 0
 

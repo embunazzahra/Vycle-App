@@ -20,7 +20,7 @@ struct RoundedCornersShape: Shape {
 struct PengingatView: View {
     @Query var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
-    @EnvironmentObject var locationManager: LocationManager  // Use actual distance from locationManager
+    @ObservedObject var locationManager: LocationManager  // Use actual distance from locationManager
     @State private var filteredReminders: [Reminder] = []
 
     var body: some View {
@@ -52,7 +52,7 @@ struct PengingatView: View {
                             ReminderContentNear()
                                 .frame(width: 390)
                                 .padding(.vertical, 8)
-                            SparepartReminderListView(reminders: $filteredReminders)
+                            SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                         } else {
                             Spacer()
                             ReminderContentFar()
@@ -87,11 +87,11 @@ struct PengingatView: View {
     }
 }
 
-#Preview {
-    PengingatView()
-        .environmentObject(LocationManager())  // Ensure LocationManager is correctly initialized
-        .environmentObject(Routes())
-}
+//#Preview {
+//    PengingatView()
+//        .environmentObject(LocationManager())  // Ensure LocationManager is correctly initialized
+//        .environmentObject(Routes())
+//}
 
 
 

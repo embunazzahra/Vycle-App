@@ -87,31 +87,33 @@ struct ContentView: View {
                             PhotoReviewView(imageData: imageData)
                         }
                     }
-                }
-                .toolbar {
-                    ToolbarItem {
-                        Image(systemName: "plus.square.fill")
-                            .foregroundColor(.white)
-                            .onTapGesture {
-                                if selectedTab == .pengingat {
-                                    routes.navigate(to: .AddReminderView)
-                                } else if selectedTab == .servis {
-                                    routes.navigate(to: .AddServiceView(service: nil))
+                
+                    .toolbar {
+                        ToolbarItem {
+                            Image(systemName: "plus.square.fill")
+                                .foregroundColor(.white)
+                                .onTapGesture {
+                                    if selectedTab == .pengingat {
+                                        routes.navigate(to: .AddReminderView)
+                                    } else if selectedTab == .servis {
+                                        routes.navigate(to: .AddServiceView(service: nil))
+                                    }
                                 }
-                            }
-                            .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? 1 : 0)
-                            .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? false : true)
+                                .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? 1 : 0)
+                                .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? false : true)
+                        }
                     }
-                }
             }
         }
+        
         .tint(.white)
         .onAppear {
-//            locationManager.setContext(context)
+            locationManager.setContext(context)
             locationManager.startTracking()  // Start tracking the location
         }
-        .environmentObject(locationManager)  // Provide LocationManager as EnvironmentObject
+        /*.environmentObject(locationManager) */ // Provide LocationManager as EnvironmentObject
     }
+    
+    
 }
-
 

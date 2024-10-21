@@ -10,7 +10,7 @@ import SwiftData
 
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
-    @EnvironmentObject var locationManager: LocationManager  // Add LocationManager to DashboardView
+    @ObservedObject var locationManager: LocationManager  // Add LocationManager to DashboardView
     @Query var trips: [Trip]
     @Query var vehicles : [Vehicle]
     @Query var reminders : [Reminder]
@@ -159,7 +159,7 @@ struct HaveReminderView : View {
     }
 }
 
-#Preview {
-    DashboardView()
-        .environmentObject(LocationManager()) 
-}
+//#Preview {
+//    DashboardView()
+//        .environmentObject(LocationManager()) 
+//}
