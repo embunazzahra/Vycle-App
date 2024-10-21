@@ -62,6 +62,18 @@ extension SwiftDataService {
             print("Failed to clear all Country and City data.")
         }
     }
+    
+    func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
+        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
+        let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time, trip: testTrip)
+        modelContext.insert(locationHistory)
+        
+            do {
+                try saveModelContext() // Save the context to persist the new trip
+            } catch {
+                print("Failed to save trip: \(error.localizedDescription)")
+            }
+    }
 }
 
 // MARK: OnBoarding
@@ -92,8 +104,6 @@ extension SwiftDataService {
         let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
         
         // Insert the vehicle and odometer data
-       
-        
         // Only insert service data if serviceHistory is not nil or empty
         if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
             let servicedSparepart = serviceHistory.map { $0.sparepart }
@@ -101,6 +111,7 @@ extension SwiftDataService {
             modelContext.insert(serviceData)
         }
         modelContext.insert(vehicleData)
+        modelContext.insert(odometerData)
         
 //        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
 //        modelContext.insert(odometerData)
@@ -118,6 +129,7 @@ extension SwiftDataService {
         printAllData()
     }
 }
+
 
 // MARK: Debug
 extension SwiftDataService {
