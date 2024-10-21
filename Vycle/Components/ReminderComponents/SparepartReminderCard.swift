@@ -10,7 +10,7 @@ import SwiftData
 
 struct SparepartReminderCard: View {
     var reminder: Reminder
-    var currentKilometer: Double
+    var currentKilometer: Double  // This is now linked to totalDistanceTraveled
     var serviceOdometer: Double
 
     var body: some View {
@@ -37,7 +37,9 @@ struct SparepartReminderCard: View {
 
                     ProgressBar(
                         currentKilometer: currentKilometer,
-                        maxKilometer: serviceOdometer + Double(reminder.kmInterval), serviceOdometer: serviceOdometer
+                        maxKilometer: serviceOdometer + Double(reminder.kmInterval),  // maxKilometer calculation
+                        serviceOdometer: serviceOdometer,
+                        sparepart: reminder.sparepart
                     )
                     .padding(.bottom, 3)
                 }
@@ -50,26 +52,36 @@ struct SparepartReminderCard: View {
 }
 
 
+
 struct SparepartReminderListView: View {
-    var reminders: [Reminder]
+    @Binding var reminders: [Reminder]
     @Environment(\.modelContext) private var context
-    
-    var currentKilometer: Double = 10
-    var serviceOdometer: Double = 5
+    @EnvironmentObject var routes: Routes
+    @ObservedObject var locationManager: LocationManager  
+
+    var serviceOdometer: Double = 0
 
     var body: some View {
         VStack {
             if reminders.isEmpty {
-                Text("No Reminders Available")
-                    .font(.headline)
-                    .foregroundColor(.gray)
+                Spacer()
+                ReminderContentFar()
+                Spacer()
             } else {
                 List {
-                    ForEach(reminders) { reminder in
-                        SparepartReminderCard(reminder: reminder, currentKilometer: currentKilometer, serviceOdometer: serviceOdometer)
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                            .listSectionSeparator(.hidden)
+                    ForEach($reminders) { $reminder in
+                        SparepartReminderCard(
+                            reminder: reminder,
+                            currentKilometer: locationManager.totalDistanceTraveled,
+                            serviceOdometer: serviceOdometer
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            routes.navigate(to: .EditReminderView(reminder: reminder))
+                        }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listSectionSeparator(.hidden)
                     }
                     .onDelete(perform: deleteReminder)
                 }
@@ -81,23 +93,22 @@ struct SparepartReminderListView: View {
     }
 
     private func deleteReminder(at offsets: IndexSet) {
-        print("Reminders before deletion: \(reminders)")
-
         for index in offsets {
             guard reminders.indices.contains(index) else { continue }
-            
             let reminderToDelete = reminders[index]
-            print("Deleting reminder: \(reminderToDelete)")
             context.delete(reminderToDelete)
         }
-        
         do {
             try context.save()
-            print("Successfully deleted reminder(s).")
         } catch {
             print("Failed to delete reminder: \(error.localizedDescription)")
         }
     }
+}
+
+
+
+
     
     
 //    import SwiftUI
@@ -216,7 +227,6 @@ struct SparepartReminderListView: View {
 //        }
 //    }
 
-}
 
 
 

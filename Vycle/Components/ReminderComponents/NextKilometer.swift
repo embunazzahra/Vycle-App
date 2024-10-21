@@ -13,7 +13,7 @@ struct NextKilometer: View {
     @Binding var showSheet: Bool
     
     var body: some View {
-        VStack (alignment: .leading) {
+        VStack(alignment: .leading) {
             Text("Interval kilometer")
                 .headline()
                 .padding(.horizontal, 16)

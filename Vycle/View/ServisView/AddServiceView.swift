@@ -51,8 +51,15 @@ struct AddServiceView: View {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
                 ChooseSparepartView(selectedParts: $selectedParts)
-                if selectedImage != nil {
+                if let selectedImage = selectedImage {
                     ImagePreviewView(selectedImage: $selectedImage)
+                        .onTapGesture {
+                            if let imageData = selectedImage.jpegData(compressionQuality: 1.0) {
+                                routes.navigate(to: .PhotoReviewView(imageData: imageData))
+                            } else {
+                                print("Failed to convert UIImage to Data")
+                            }
+                        }
                 } else {
                     PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)
                 }
@@ -72,11 +79,9 @@ struct AddServiceView: View {
                 self.userOdometer = Int(service.odometer ?? 0)
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
-                // Check if service.photo is not nil and assign it to selectedImage
-                if let photoData = service.photo {
-                    self.selectedImage = UIImage(data: photoData) // Convert Data to UIImage
-                } else {
-                    self.selectedImage = nil // If photo is nil, set selectedImage to nil
+                
+                if let photoData = service.photo, selectedImage == nil {
+                    self.selectedImage = UIImage(data: photoData)
                 }
             }
         }
@@ -105,6 +110,9 @@ struct AddServiceView: View {
         return Date() // Return current date if conversion fails
     }
     
+    
+    // MARK: SwiftData Service
+    
     // Function to save a new service to the database
     private func saveNewService() {
         let odometer = Float(odometerValue) ?? 0.0
@@ -115,7 +123,7 @@ struct AddServiceView: View {
                                 vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
         
         modelContext.insert(newService)
-        
+        createReminder(for: newService.vehicle, with: odometer)
         do {
             try modelContext.save()
         } catch {
@@ -140,6 +148,48 @@ struct AddServiceView: View {
             print("Failed to update service: \(error)")
         }
     }
+    
+    // Function to create and insert a new Reminder for each selected spare part
+    private func createReminder(for vehicle: Vehicle, with odometer: Float) {
+        // Loop through each selected spare part
+        for sparepart in selectedParts {
+            // Get the interval for the sparepart based on the vehicle's brand
+            guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
+                continue
+            }
+
+            // Calculate the target odometer for the next service reminder
+            let targetKM = odometer + Float(interval.kilometer)
+            
+            // Calculate the due date based on the interval in months
+            let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: selectedDate) ?? Date()
+
+            // Create a new reminder
+            let newReminder = Reminder(
+                date: selectedDate,
+                sparepart: sparepart,
+                targetKM: targetKM,
+                kmInterval: Float(interval.kilometer),
+                dueDate: dueDate,
+                timeInterval: interval.month,
+                vehicle: vehicle,
+                isRepeat: true, // Set true if you want reminders to repeat
+                isDraft: false
+            )
+            
+            // Insert the reminder into the model context
+            modelContext.insert(newReminder)
+            print(newReminder)
+        }
+
+        // Save the model context after adding the reminders
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save reminder: \(error)")
+        }
+    }
+
 }
 
 #Preview {

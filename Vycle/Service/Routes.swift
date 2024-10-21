@@ -12,10 +12,20 @@ import SwiftUI
     var navPath = NavigationPath()
     
 
-    public enum Destination : Hashable{
-        case DashboardView, PengingatView, ServisView, NoServiceView, AllServiceHistoryView, ServiceDetailView(service: Servis), AddServiceView(service: Servis?), AddReminderView, AllReminderView
+    public enum Destination: Hashable {
+        case DashboardView
+        case PengingatView
+        case ServisView
+        case NoServiceView
+        case AllServiceHistoryView
+        case ServiceDetailView(service: Servis)
+        case AddServiceView(service: Servis?)
+        case AddReminderView
+        case AllReminderView
+        case EditReminderView(reminder: Reminder)
+        case PhotoReviewView(imageData: Data)
     }
-    
+
     func navigate(to destination: Destination) {
         navPath.append(destination)
     }

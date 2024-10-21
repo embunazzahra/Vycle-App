@@ -74,7 +74,7 @@ struct OdometerInput: View {
                             Spacer()
                             Button("Done") {
                                 fieldFocusState = false
-                            }
+                            }.tint(Color.primary.base)
                         }
                     }
             }

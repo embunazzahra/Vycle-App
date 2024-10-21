@@ -9,27 +9,30 @@ import SwiftUI
 import SwiftData
 
 struct AllReminderView: View {
-    let options: [String] = ["September 2025", "Oktober 2025", "November 2025", "Desember 2025"]
-    @State private var selectedOption: String
-    @Query var reminders: [Reminder]
-    @StateObject private var locationManager = LocationManager()
+    @Query private var reminders: [Reminder]
+    @State private var selectedOption: String = ""
+    @State private var availableOptions: [String] = []
+    @State private var remindersCountByOption: [String: Int] = [:]
 
-    init() {
-        self._selectedOption = State(initialValue: options[0])
-        setupNavigationBarWithoutScroll()
-    }
-
+    @ObservedObject private var locationManager = LocationManager()
+    
     var body: some View {
         VStack {
-            CustomScrollPicker(selectedOption: $selectedOption, options: options)
+            if !availableOptions.isEmpty {
+                CustomScrollPicker(
+                    selectedOption: $selectedOption,
+                    options: availableOptions,
+                    reminderCounts: remindersCountByOption
+                )
                 .padding(.horizontal)
-            
+            }
+
             ZStack {
                 Rectangle()
                     .foregroundColor(.white)
                     .clipShape(RoundedCornersShape(corners: [.topLeft, .topRight], radius: 20))
                     .ignoresSafeArea()
-                
+
                 VStack {
                     VStack(alignment: .leading) {
                         Text("Suku cadang sudah menanti di \(selectedOption)! 🗓️")
@@ -42,32 +45,77 @@ struct AllReminderView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
-                    
-                    if !reminders.isEmpty {
-                        SparepartReminderListView(reminders: reminders)
-//                        SparepartReminderListView(reminders: reminders, locationManager: locationManager)
+
+                    let filteredReminders = remindersForSelectedMonthAndYear()
+
+                    if !filteredReminders.isEmpty {
+                        // Create a Binding to the filtered reminders
+                        SparepartReminderListView(reminders: Binding(
+                            get: { filteredReminders },
+                            set: { newValue in
+                                
+                            }
+                        ), locationManager: locationManager)
                     } else {
                         Text("No data")
                             .font(.headline)
                             .foregroundColor(.gray)
                     }
-                    
+
                     Spacer()
                 }
             }
+        }
+        .onAppear {
+            loadAvailableOptionsAndCounts()
+            selectedOption = availableOptions.first ?? ""
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.primary.tone100)
         .navigationTitle("Pengingat terjadwal")
         .navigationBarBackButtonHidden(false)
     }
+
+    private func remindersForSelectedMonthAndYear() -> [Reminder] {
+        guard let selectedDate = getDateFrom(option: selectedOption) else {
+            return []
+        }
+        let calendar = Calendar.current
+        return reminders.filter {
+            calendar.isDate($0.dueDate, equalTo: selectedDate, toGranularity: .month)
+        }
+    }
+
+    private func loadAvailableOptionsAndCounts() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        
+        let sortedReminders = reminders.sorted { $0.dueDate < $1.dueDate }
+        
+        var optionCountMap: [String: Int] = [:]
+        
+        for reminder in sortedReminders {
+            let option = formatter.string(from: reminder.dueDate)
+            optionCountMap[option, default: 0] += 1
+        }
+        
+        availableOptions = Array(optionCountMap.keys).sorted {
+            getDateFrom(option: $0)! < getDateFrom(option: $1)!
+        }
+        remindersCountByOption = optionCountMap
+    }
+
+    private func getDateFrom(option: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.date(from: option)
+    }
 }
-
-
 
 struct CustomScrollPicker: View {
     @Binding var selectedOption: String
     let options: [String]
+    let reminderCounts: [String: Int]  // New parameter to hold the reminder counts
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -78,7 +126,7 @@ struct CustomScrollPicker: View {
                             .subhead(.regular)
                         
                         HStack {
-                            Text("0")
+                            Text("\(reminderCounts[option] ?? 0)")
                                 .subhead(.emphasized)
                             Text("pengingat")
                                 .subhead(.emphasized)
@@ -103,6 +151,7 @@ struct CustomScrollPicker: View {
         }
     }
 }
+
 
 //#Preview {
 //    @State var dummyReminders = [

@@ -20,13 +20,14 @@ struct AddEditFramework: View {
     @State private var isKilometerChosen = false
     @State private var isNotificationShowed = false
 
-    @State private var selectedDate: Date = Date().startOfMonth()
-    @State private var selectedNumber = 1000
+    @State private var selectedDate: Date
+    @State private var selectedNumber: Int
     @State private var selectedSparepart: Sparepart
+    @State private var isToggleOn = false
     @State private var showSheet = false
-    
-    @State var isToggleOn = false
+
     @Binding var reminders: [Reminder]
+    var reminderToEdit: Reminder?
 
     var isButtonEnabled: Bool {
         isPartChosen && isMonthYearChosen && isKilometerChosen
@@ -35,7 +36,6 @@ struct AddEditFramework: View {
     var monthInterval: Int {
         let calendar = Calendar.current
         let currentDate = Date()
-
         let currentComponents = calendar.dateComponents([.year, .month], from: currentDate)
         let currentYear = currentComponents.year ?? 0
         let currentMonth = currentComponents.month ?? 0
@@ -49,10 +49,29 @@ struct AddEditFramework: View {
         return (yearDifference * 12) + monthDifference
     }
 
-    init(title: String, reminders: Binding<[Reminder]>, selectedSparepart: Sparepart, successNotification: @escaping () -> AnyView) {
+    init(title: String, reminders: Binding<[Reminder]>, selectedSparepart: Sparepart,
+         selectedDate: Date = Calendar.current.date(byAdding: .month, value: 1, to: Date().startOfMonth()) ?? Date().startOfMonth(),
+         selectedNumber: Int = 1,
+         reminderToEdit: Reminder? = nil,
+         successNotification: @escaping () -> AnyView) {
         self.title = title
         self._reminders = reminders
-        self.selectedSparepart = selectedSparepart
+        self.reminderToEdit = reminderToEdit
+        
+        if let reminder = reminderToEdit {
+            self.selectedSparepart = reminder.sparepart
+            self.selectedDate = reminder.dueDate
+            self.selectedNumber = Int(reminder.targetKM)
+            self.isPartChosen = true
+            self.isMonthYearChosen = true 
+            self.isKilometerChosen = true
+            self.isToggleOn = reminder.isRepeat 
+        } else {
+            self.selectedSparepart = selectedSparepart
+            self.selectedDate = selectedDate
+            self.selectedNumber = selectedNumber
+        }
+
         self.successNotification = successNotification
     }
 
@@ -60,11 +79,13 @@ struct AddEditFramework: View {
         ZStack {
             VStack {
                 SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
+               
                 NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
+                
                 
                 VStack(alignment: .leading) {
                     Toggle(isOn: $isToggleOn) {
-                        Text("Pengingat Repetitif")
+                        Text("Pengingat berulang")
                             .font(.headline)
                             .foregroundColor(Color.neutral.shade300)
                     }
@@ -85,39 +106,44 @@ struct AddEditFramework: View {
                 }
                 
                 Spacer()
-                
-                ZStack {
-                    Rectangle()
-                        .ignoresSafeArea()
-                        .frame(height: 137)
-                        .foregroundColor(Color.neutral.tint300)
 
-                    CustomButton(title: "Tambahkan Pengingat", iconName: "", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
-                        isNotificationShowed = true
+                CustomButton(title: reminderToEdit == nil ? "Tambahkan Pengingat" : "Edit Pengingat", iconName: "", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
+                    isNotificationShowed = true
 
+                    let firstDayOfMonth = selectedDate.startOfMonth()
+                    
+                    if let reminderToEdit = reminderToEdit {
+                        reminderToEdit.sparepart = selectedSparepart
+                        reminderToEdit.targetKM = Float(selectedNumber)
+                        reminderToEdit.kmInterval = Float(selectedNumber)
+                        reminderToEdit.dueDate = firstDayOfMonth
+                        reminderToEdit.timeInterval = monthInterval
+                        reminderToEdit.isRepeat = isToggleOn
+                        reminderToEdit.isDraft = false
+                    } else {
                         let newReminder = Reminder(
                             date: Date(),
                             sparepart: selectedSparepart,
                             targetKM: Float(selectedNumber),
                             kmInterval: Float(selectedNumber),
-                            dueDate: Date(),
+                            dueDate: firstDayOfMonth,
                             timeInterval: monthInterval,
                             vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)),
                             isRepeat: isToggleOn,
                             isDraft: false
                         )
-                        
                         context.insert(newReminder)
                         reminders.append(newReminder)
-                        
-                        do {
-                            try context.save()
-                        } catch {
-                            print("Failed to save new reminder: \(error.localizedDescription)")
-                        }
                     }
-                    .padding(.bottom, 16)
+                    
+                    do {
+                        try context.save()
+                        print("Reminder saved successfully!")
+                    } catch {
+                        print("Failed to save reminder: \(error.localizedDescription)")
+                    }
                 }
+                .padding(.bottom, 16)
             }
             .navigationTitle(title)
             .navigationBarBackButtonHidden(false)
@@ -126,8 +152,6 @@ struct AddEditFramework: View {
             if isNotificationShowed {
                 Color.black.opacity(0.6)
                     .edgesIgnoringSafeArea(.all)
-                    .transition(.opacity)
-        
                 successNotification()
                     .transition(.opacity)
             }
@@ -135,6 +159,8 @@ struct AddEditFramework: View {
         .animation(.easeInOut, value: isNotificationShowed)
     }
 }
+
+
 
 
 //#Preview {

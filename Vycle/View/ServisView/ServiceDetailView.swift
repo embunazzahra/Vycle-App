@@ -36,7 +36,7 @@ struct ServiceDetailView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.grayTint200)
                             )
-                    })
+                    }, horizontalSpacing: 4, verticalSpacing: 4)
                 }
                 
                 if service.photo != nil {
@@ -52,6 +52,9 @@ struct ServiceDetailView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .stroke(Color.grayShade300, lineWidth: 0.5)
                             )
+                            .onTapGesture {
+                                routes.navigate(to: .PhotoReviewView(imageData: imageData))
+                            }
                     }
                 } else {
                     ZStack {
