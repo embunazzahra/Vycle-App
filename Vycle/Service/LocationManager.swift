@@ -324,34 +324,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
-    // Save location history and handle BLE/beacon status
-//    func saveLocationHistory(latitude: Double, longitude: Double) {
-//        guard let context = context else { return }
-//        
-//        var distance: Double? = nil
-//        if let lastLocation = self.lastSavedLocation {
-//            let currentLocation = CLLocation(latitude: latitude, longitude: longitude)
-//            distance = currentLocation.distance(from: lastLocation) / 1000
-//        
-//            // Accumulate total distance traveled
-//            self.totalDistanceTraveled += distance ?? 0.0
-//        }
-//        
-//        let bleStatus = self.bleManager?.isConnected ?? false
-//        
-//        let newLocation = LocationHistory(latitude: latitude, longitude: longitude, distanceFromLastLocation: distance, bleStatus: bleStatus)
-//        context.insert(newLocation)
-//        
-//        do {
-//            try context.save()
-//            //            print("Location saved: \(newLocation)")
-//            sendNotification(for: newLocation)
-//            self.lastSavedLocation = CLLocation(latitude: latitude, longitude: longitude)
-//        } catch {
-//            print("Failed to save location: \(error.localizedDescription)")
-//        }
-//    }
-    
     func saveLocationHistory(latitude: Double, longitude: Double) {
         guard let context = context else {
             print("Context not set")
@@ -396,7 +368,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: testTrip)
             self.sendNotification(for: newLocation)
 //            self.locationHistory.append(newLocation)
-            SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: testTrip)
+            SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date())
 
         } catch {
             print("Failed to save location history: \(error.localizedDescription)")
