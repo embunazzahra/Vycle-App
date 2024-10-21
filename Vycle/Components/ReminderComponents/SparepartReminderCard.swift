@@ -10,7 +10,7 @@ import SwiftData
 
 struct SparepartReminderCard: View {
     var reminder: Reminder
-    var currentKilometer: Double  // This is now linked to totalDistanceTraveled
+    var currentKilometer: Double
     var serviceOdometer: Double
 
     var body: some View {
@@ -37,7 +37,7 @@ struct SparepartReminderCard: View {
 
                     ProgressBar(
                         currentKilometer: currentKilometer,
-                        maxKilometer: serviceOdometer + Double(reminder.kmInterval),  // maxKilometer calculation
+                        maxKilometer: serviceOdometer + Double(reminder.kmInterval),
                         serviceOdometer: serviceOdometer,
                         sparepart: reminder.sparepart
                     )
@@ -51,25 +51,25 @@ struct SparepartReminderCard: View {
     }
 }
 
-
-
 struct SparepartReminderListView: View {
     @Binding var reminders: [Reminder]
     @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
-    @EnvironmentObject var locationManager: LocationManager  
+    @EnvironmentObject var locationManager: LocationManager
 
     var serviceOdometer: Double = 0
 
     var body: some View {
+        let uniqueReminders = removeDuplicateReminders(reminders)
+
         VStack {
-            if reminders.isEmpty {
+            if uniqueReminders.isEmpty {
                 Spacer()
                 ReminderContentFar()
                 Spacer()
             } else {
                 List {
-                    ForEach($reminders) { $reminder in
+                    ForEach(uniqueReminders) { reminder in
                         SparepartReminderCard(
                             reminder: reminder,
                             currentKilometer: locationManager.totalDistanceTraveled,
@@ -92,6 +92,23 @@ struct SparepartReminderListView: View {
         }
     }
 
+    private func removeDuplicateReminders(_ reminders: [Reminder]) -> [Reminder] {
+        var sparePartDict = [String: Reminder]()
+        
+        for reminder in reminders {
+            if let existingReminder = sparePartDict[reminder.sparepart.rawValue] {
+                // Keep the reminder with the higher kilometer interval or newer service date
+                if reminder.kmInterval > existingReminder.kmInterval {
+                    sparePartDict[reminder.sparepart.rawValue] = reminder
+                }
+            } else {
+                sparePartDict[reminder.sparepart.rawValue] = reminder
+            }
+        }
+        
+        return Array(sparePartDict.values)
+    }
+
     private func deleteReminder(at offsets: IndexSet) {
         for index in offsets {
             guard reminders.indices.contains(index) else { continue }
@@ -105,9 +122,6 @@ struct SparepartReminderListView: View {
         }
     }
 }
-
-
-
 
     
     
