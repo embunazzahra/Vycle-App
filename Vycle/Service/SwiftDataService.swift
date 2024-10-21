@@ -20,16 +20,16 @@ class SwiftDataService {
     private init() {
         // Change isStoredInMemoryOnly to false if you would like to see the data persistance after kill/exit the app
         self.modelContainer = try! ModelContainer(for: Odometer.self, Vehicle.self, Servis.self, Trip.self, Reminder.self, configurations: ModelConfiguration(isStoredInMemoryOnly: false))
-
+        
         self.modelContext = modelContainer.mainContext
     }
     func saveModelContext(){
-         do {
-             try modelContext.save()
-         } catch {
-             fatalError(error.localizedDescription)
-         }
-     }
+        do {
+            try modelContext.save()
+        } catch {
+            fatalError(error.localizedDescription)
+        }
+    }
     //testing
 }
 
@@ -38,11 +38,11 @@ extension SwiftDataService {
         let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
         modelContext.insert(testTrip)
         
-            do {
-                try saveModelContext() // Save the context to persist the new trip
-            } catch {
-                print("Failed to save trip: \(error.localizedDescription)")
-            }
+        do {
+            try saveModelContext() // Save the context to persist the new trip
+        } catch {
+            print("Failed to save trip: \(error.localizedDescription)")
+        }
     }
     
     func insertVehicle(){
@@ -140,21 +140,27 @@ extension SwiftDataService {
         return odometers
     }
     
+    func fetchReminders() -> [Reminder] {
+        let fetchRequest = FetchDescriptor<Reminder>()
+        let reminders = (try? modelContext.fetch(fetchRequest)) ?? []
+        return reminders
+    }
+    
     func printAllData() {
         let vehicles = fetchVehicles()
         let services = fetchServices()
         let odometers = fetchOdometers()
-
+        
         print("Vehicles:")
         for vehicle in vehicles {
             print("ID: \(vehicle.vehicleID), Type: \(vehicle.vehicleType), Brand: \(vehicle.brand)")
         }
-
+        
         print("\nServices:")
         for service in services {
             print("Date: \(service.date), Spareparts: \(service.servicedSparepart), Vehicle ID: \(service.vehicle.vehicleID)")
         }
-
+        
         print("\nOdometers:")
         for odometer in odometers {
             print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
@@ -217,7 +223,7 @@ extension SwiftDataService {
             print("Failed to save service: \(error)")
         }
     }
-
+    
     // Function to update an existing service
     func updateService(service: Servis,
                        selectedDate: Date,
@@ -231,14 +237,83 @@ extension SwiftDataService {
         service.servicedSparepart = Array(selectedParts)
         service.photo = selectedImage
         
+        // Clear all reminders associated with this service
+        deleteReminders(for: service)
+        // Create new reminders based on the updated service
+        createReminder(for: Vehicle(vehicleType: .car, brand: .car(.honda)), with: odometerValue, service: service, selectedParts: selectedParts)
+        
         // Save the changes in the model context
         do {
             try modelContext.save()
+            
         } catch {
             print("Failed to update service: \(error)")
         }
     }
-
+    
+    func deleteReminders(for service: Servis) {
+        // Fetch all reminders from the model context
+        let allReminders = fetchReminders()
+        
+        // Create a variable to track if any reminders were deleted
+        var remindersDeletedCount = 0
+        
+        // Iterate through the fetched reminders
+        for reminder in allReminders {
+            // Check if the reminder is associated with the specified service
+            if (reminder.service?.id.hashValue) == (service.id.hashValue) {
+                modelContext.delete(reminder) // Delete the reminder from the context
+                remindersDeletedCount += 1
+                print("Deleted reminder: \(reminder.sparepart)")
+            }
+            else {
+                print("failed to delete reminder: \(reminder.service?.id)")
+                print("failed to delete reminder service: \(service.id)")
+                
+            }
+        }
+        
+        service.reminders.removeAll()
+        
+        // Attempt to save the context after deletion
+        do {
+            try modelContext.save()
+            print("Successfully deleted \(remindersDeletedCount) reminders and saved context.")
+        } catch {
+            print("Failed to save context after deleting reminders: \(error)")
+        }
+        
+        // Log the number of reminders left after deletion
+        print("Total reminders after deletion: \(fetchReminders().count)")
+    }
+    
+    //    // Function to delete reminders associated with a service
+    //    func deleteReminders(for service: Servis) {
+    //        let remindersToDelete = service.reminders // Store references to reminders
+    //        for reminder in remindersToDelete {
+    //            modelContext.delete(reminder) // Delete each reminder from the context
+    //            saveModelContext()
+    //            print("Deleted reminder: \(reminder.sparepart)")
+    //        
+    //        }
+    //        
+    //        print("reminder count: \(remindersToDelete.count)")
+    //        
+    //        // Optional: clear the local reminders array
+    ////        service.reminders.removeAll()
+    //        
+    //        // Save the context after deletion
+    //        do {
+    //            try modelContext.save()
+    //            print("Successfully deleted reminders and saved context.")
+    //            print("reminder count 2: \(remindersToDelete.count)")
+    //        } catch {
+    //            print("Failed to save context after deleting reminders: \(error)")
+    //        }
+    //    }
+    
+    
+    
     // Function to create and insert a new Reminder for each selected spare part
     private func createReminder(for vehicle: Vehicle,
                                 with odometer: Float,
@@ -249,10 +324,10 @@ extension SwiftDataService {
             guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
                 continue
             }
-
+            
             let targetKM = odometer + Float(interval.kilometer)
             let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
-
+            
             let newReminder = Reminder(date: service.date,
                                        sparepart: sparepart,
                                        targetKM: targetKM,
@@ -263,10 +338,10 @@ extension SwiftDataService {
                                        isRepeat: true,
                                        isDraft: false,
                                        service: service)
-
+            
             modelContext.insert(newReminder)
         }
-
+        
         // Save the model context after adding the reminders
         do {
             try modelContext.save()
@@ -274,7 +349,7 @@ extension SwiftDataService {
             print("Failed to save reminder: \(error)")
         }
     }
-
+    
 }
 
 
