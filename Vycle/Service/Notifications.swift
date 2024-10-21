@@ -7,18 +7,41 @@
 import CoreLocation
 import UserNotifications
 
-class DistanceTracker {
+class DistanceTracker: NSObject, CLLocationManagerDelegate {
+    private var locationManager = CLLocationManager()
+    private var lastLocation: CLLocation?
     private var targetDistance: Double = 1.0
     private var distanceSinceLastNotification: Double = 0.0
     
+    override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
+    
+    // CLLocationManagerDelegate method to track location updates
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let newLocation = locations.last else { return }
+        
+        if let lastLocation = lastLocation {
+            let distance = newLocation.distance(from: lastLocation) // distance in meters
+            updateDistanceTraveled(distance)
+        }
+        
+        // Update lastLocation for the next distance calculation
+        lastLocation = newLocation
+    }
+    
+    // Your existing distance tracking method
     func updateDistanceTraveled(_ distance: Double) {
-        distanceSinceLastNotification += distance / 1000
+        distanceSinceLastNotification += distance / 1000 // Convert to kilometers
         print("Distance traveled since last notification: \(distanceSinceLastNotification) kilometers")
         
         if distanceSinceLastNotification >= targetDistance {
             print("Target distance of \(targetDistance) km reached.")
             sendTargetDistanceNotification(distance: targetDistance)
-            distanceSinceLastNotification = 0.0 
+            distanceSinceLastNotification = 0.0
         }
     }
     
@@ -38,6 +61,7 @@ class DistanceTracker {
         }
     }
 }
+
 
 //func scheduleNotification(for sparePart: String) {
 //    let content = UNMutableNotificationContent()
