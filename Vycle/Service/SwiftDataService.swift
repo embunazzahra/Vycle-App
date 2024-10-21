@@ -130,4 +130,87 @@ extension SwiftDataService {
     }
 }
 
+extension SwiftDataService {
+    // Function to save a new service to the database
+    func saveNewService(selectedDate: Date,
+                        selectedParts: Set<Sparepart>,
+                        odometerValue: Float,
+                        selectedImage: Data?,
+                        vehicle: Vehicle) {
+        
+        let newService = Servis(date: selectedDate,
+                                servicedSparepart: Array(selectedParts),
+                                photo: selectedImage,
+                                odometer: odometerValue,
+                                vehicle: vehicle)
+        
+        modelContext.insert(newService)
+        createReminder(for: newService.vehicle, with: odometerValue, service: newService, selectedParts: selectedParts)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save service: \(error)")
+        }
+    }
+
+    // Function to update an existing service
+    func updateService(service: Servis,
+                       selectedDate: Date,
+                       selectedParts: Set<Sparepart>,
+                       odometerValue: Float,
+                       selectedImage: Data?) {
+        
+        // Update properties of the existing service
+        service.date = selectedDate
+        service.odometer = odometerValue
+        service.servicedSparepart = Array(selectedParts)
+        service.photo = selectedImage
+        
+        // Save the changes in the model context
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to update service: \(error)")
+        }
+    }
+
+    // Function to create and insert a new Reminder for each selected spare part
+    private func createReminder(for vehicle: Vehicle,
+                                with odometer: Float,
+                                service: Servis,
+                                selectedParts: Set<Sparepart>) {
+        
+        for sparepart in selectedParts {
+            guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
+                continue
+            }
+
+            let targetKM = odometer + Float(interval.kilometer)
+            let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
+
+            let newReminder = Reminder(date: service.date,
+                                       sparepart: sparepart,
+                                       targetKM: targetKM,
+                                       kmInterval: Float(interval.kilometer),
+                                       dueDate: dueDate,
+                                       timeInterval: interval.month,
+                                       vehicle: vehicle,
+                                       isRepeat: true,
+                                       isDraft: false,
+                                       service: service)
+
+            modelContext.insert(newReminder)
+        }
+
+        // Save the model context after adding the reminders
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save reminder: \(error)")
+        }
+    }
+
+}
+
 
