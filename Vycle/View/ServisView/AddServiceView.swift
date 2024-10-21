@@ -130,7 +130,7 @@ struct AddServiceView: View {
                                               selectedParts: selectedParts,
                                               odometerValue: Float(odometerValue) ?? 0.0,
                                               selectedImage: selectedImage?.jpegData(compressionQuality: 1.0))
-    }   
+    }
 }
 
 #Preview {
