@@ -63,8 +63,9 @@ extension SwiftDataService {
         }
     }
     
-    func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date, trip: Trip){
-        let locationHistory = LocationHistory(latitude: latitude, longitude: longitude, time: time, trip: trip)
+    func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
+        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
+        let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time, trip: testTrip)
         modelContext.insert(locationHistory)
         
             do {
@@ -77,23 +78,26 @@ extension SwiftDataService {
 
 // MARK: OnBoarding
 extension SwiftDataService {
-    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
+    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
         
         let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
         let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
         
-        let servicedSparepart = serviceHistory.map { $0.sparepart }
-        let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
-        
+        // Only insert service data if serviceHistory is not nil or empty
+        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
+            let servicedSparepart = serviceHistory.map { $0.sparepart }
+            let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
+            modelContext.insert(serviceData)
+        }
         modelContext.insert(vehicleData)
         modelContext.insert(odometerData)
-        modelContext.insert(serviceData)
         
         saveModelContext()
         
         printAllData()
     }
 }
+
 
 // MARK: Debug
 extension SwiftDataService {
