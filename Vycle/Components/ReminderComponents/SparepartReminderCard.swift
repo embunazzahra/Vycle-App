@@ -10,7 +10,7 @@ import SwiftData
 
 struct SparepartReminderCard: View {
     var reminder: Reminder
-    var currentKilometer: Double
+    var currentKilometer: Double  // This is now linked to totalDistanceTraveled
     var serviceOdometer: Double
 
     var body: some View {
@@ -37,7 +37,9 @@ struct SparepartReminderCard: View {
 
                     ProgressBar(
                         currentKilometer: currentKilometer,
-                        maxKilometer: serviceOdometer + Double(reminder.kmInterval), serviceOdometer: serviceOdometer
+                        maxKilometer: serviceOdometer + Double(reminder.kmInterval),  // maxKilometer calculation
+                        serviceOdometer: serviceOdometer,
+                        sparepart: reminder.sparepart
                     )
                     .padding(.bottom, 3)
                 }
@@ -50,20 +52,18 @@ struct SparepartReminderCard: View {
 }
 
 
+
 struct SparepartReminderListView: View {
     @Binding var reminders: [Reminder]
     @Environment(\.modelContext) private var context
-    @EnvironmentObject var routes: Routes 
+    @EnvironmentObject var routes: Routes
+    @EnvironmentObject var locationManager: LocationManager  
 
-    var currentKilometer: Double = 10
-    var serviceOdometer: Double = 5
+    var serviceOdometer: Double = 0
 
     var body: some View {
         VStack {
             if reminders.isEmpty {
-//                Text("No Reminders Available")
-//                    .font(.headline)
-//                    .foregroundColor(.gray)
                 Spacer()
                 ReminderContentFar()
                 Spacer()
@@ -72,7 +72,7 @@ struct SparepartReminderListView: View {
                     ForEach($reminders) { $reminder in
                         SparepartReminderCard(
                             reminder: reminder,
-                            currentKilometer: currentKilometer,
+                            currentKilometer: locationManager.totalDistanceTraveled,
                             serviceOdometer: serviceOdometer
                         )
                         .contentShape(Rectangle())
@@ -105,6 +105,7 @@ struct SparepartReminderListView: View {
         }
     }
 }
+
 
 
 

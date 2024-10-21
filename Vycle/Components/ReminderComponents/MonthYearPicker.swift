@@ -45,11 +45,11 @@ struct DatePickerSheet: View {
     
     private let months = Calendar.current.monthSymbols
     private var years: [Int] {
-       let currentYear = Calendar.current.component(.year, from: Date())
+        let currentYear = Calendar.current.component(.year, from: Date())
         return Array(currentYear...currentYear + 5)
-   }
+    }
     
-    @State private var selectedMonth = Calendar.current.component(.month, from: Date())
+    @State private var selectedMonth = Calendar.current.component(.month, from: Date()) - 1
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
     
     var body: some View {
@@ -84,7 +84,7 @@ struct DatePickerSheet: View {
                 }
                 .padding(.horizontal)
                 
-                HStack (spacing: 110){
+                HStack (spacing: 110) {
                     Rectangle()
                         .foregroundColor(Color.grayTint300)
                         .frame(width: 60, height: 32)
@@ -103,7 +103,6 @@ struct DatePickerSheet: View {
                 updateSelectedDate()
                 isMonthYearChosen = true
                 dismiss()
-                print("Selected Year: \(selectedYear), Selected Month: \(selectedMonth + 1), New Date: \(selectedDate)")
             }
             .padding(.top, 10)
             
@@ -128,7 +127,7 @@ struct DatePickerSheet: View {
         var components = calendar.dateComponents([.year, .month], from: selectedDate)
         components.year = selectedYear
         components.month = selectedMonth + 1
-        components.day = 2
+        components.day = 1
         selectedDate = calendar.date(from: components) ?? Date().startOfMonth()
     }
 }

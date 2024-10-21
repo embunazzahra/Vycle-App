@@ -24,8 +24,11 @@ struct KilometerWheelPicker: View {
                     .cornerRadius(10)
             }
             .sheet(isPresented: $showSheet) {
-                KilometerPickerSheet(selectedNumber: $selectedNumber, isKilometerChosen: $isKilometerChosen)
-                    .presentationDetents([.medium])
+                KilometerPickerSheet(
+                    selectedNumber: $selectedNumber,
+                    isKilometerChosen: $isKilometerChosen
+                )
+                .presentationDetents([.medium])
             }
         }
         .padding()
@@ -38,17 +41,17 @@ struct KilometerPickerSheet: View {
     @Binding var isKilometerChosen: Bool
     
     private let numbers = Array(stride(from: 1, through: 100, by: 1))
-    
+
     var body: some View {
         VStack {
             HStack {
-                Text("Atur kilometer")
+                Text("Kilometer")
                     .title3(.emphasized)
                     .padding(.top, 16)
                     .padding(.leading, 16)
                 Spacer()
             }
-            
+
             ZStack {
                 Picker("Kilometer", selection: $selectedNumber) {
                     ForEach(numbers, id: \.self) { number in
@@ -58,8 +61,8 @@ struct KilometerPickerSheet: View {
                 .pickerStyle(.wheel)
                 .frame(width: 150, height: 254)
                 .clipped()
-                
-                HStack (spacing: 110){
+
+                HStack(spacing: 110) {
                     Rectangle()
                         .foregroundColor(Color.grayTint300)
                         .frame(width: 120, height: 32)
@@ -79,8 +82,14 @@ struct KilometerPickerSheet: View {
             
             Spacer()
         }
+        .onAppear {
+            if selectedNumber == 0 {
+                selectedNumber = numbers.first ?? 1
+            }
+        }
     }
 }
+
 
 //struct KilometerWheelPicker: View {
 //    @Binding var selectedNumber: Int
