@@ -60,7 +60,9 @@ struct ServiceHistoryView: View {
 
     // Update deleteHistory to remove from the model context
     func deleteHistory(_ history: Servis) {
-        modelContext.delete(history) // Deletes the history from the context
+//        SwiftDataService.shared.deleteHistory(for: history)
+//        print("reminders count is \(reminders.count)")
+        modelContext.delete(history)
     }
     
 }

@@ -20,8 +20,9 @@ class Reminder {
     @Relationship var vehicle: Vehicle
     var isRepeat: Bool
     var isDraft: Bool
+    @Relationship var service: Servis?
     
-    init(date: Date, sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+    init(date: Date, sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, service: Servis? = nil) {
         self.date = date
         self.sparepart = sparepart
         self.targetKM = targetKM
@@ -31,5 +32,6 @@ class Reminder {
         self.vehicle = vehicle
         self.isRepeat = isRepeat
         self.isDraft = isDraft
+        self.service = service
     }
 }
