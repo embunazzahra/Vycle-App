@@ -41,18 +41,18 @@ struct SparepartReminderCard: View {
                         currentKilometer: currentKilometer,
                         maxKilometer: Double(reminder.targetKM),
 //                        serviceOdometer: serviceOdometer,
-                        sparepart: reminder.sparepart,
-                        onProgressFull: {
-                            // Update the reminder date to today's date when progress is full
-                            reminder.date = Date()
-                            
-                            // Optionally, save the updated reminder
-                            do {
-                                try modelContext.save() // if you have a save method
-                            } catch {
-                                print("Failed to save reminder: \(error.localizedDescription)")
-                            }
-                        }
+                        sparepart: reminder.sparepart
+//                        onProgressFull: {
+//                            // Update the reminder date to today's date when progress is full
+//                            reminder.date = Date()
+//                            
+//                            // Optionally, save the updated reminder
+//                            do {
+//                                try modelContext.save() // if you have a save method
+//                            } catch {
+//                                print("Failed to save reminder: \(error.localizedDescription)")
+//                            }
+//                        }
                     )
                     .padding(.bottom, 3)
                 }
@@ -115,6 +115,8 @@ struct SparepartReminderListView: View {
     }
 }
 
+
+    
     
 //    import SwiftUI
 //    import SwiftData

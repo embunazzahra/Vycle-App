@@ -17,9 +17,6 @@ struct RoundedCornersShape: Shape {
     }
 }
 
-import SwiftUI
-import SwiftData
-
 struct PengingatView: View {
     @Query var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
@@ -30,7 +27,7 @@ struct PengingatView: View {
         VStack {
             VStack {
                 if !filteredReminders.isEmpty {
-                    ReminderHeader(reminders: filteredReminders) // Pass filtered reminders here
+                    ReminderHeader(reminders: filteredReminders)
                 } else {
                     ReminderHeaderNoData()
                 }
@@ -76,7 +73,23 @@ struct PengingatView: View {
         .navigationBarBackButtonHidden(true)
         .navigationTitle("Pengingat")
         .onAppear {
-            filteredReminders = getUniqueReminders(reminders)
+            updateFilteredReminders()
+        }
+        .onChange(of: reminders) { _ in
+            updateFilteredReminders()
+        }
+        .onChange(of: locationManager.totalDistanceTraveled) { _ in
+            updateFilteredReminders()
+        }
+    }
+
+    private func updateFilteredReminders() {
+        let uniqueReminders = getUniqueReminders(reminders)
+        
+        // Filter based on progress
+        filteredReminders = uniqueReminders.filter { reminder in
+            let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval)
+            return progress > 0.7
         }
     }
 
@@ -102,6 +115,7 @@ struct PengingatView: View {
         return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
     }
 }
+
 
 
 
