@@ -143,12 +143,12 @@ struct DashboardView: View {
                                         HaveReminderView().padding(.horizontal, 16)
                                     }
                                     
-                                    ForEach(reminders) { reminder in
-                                        SparepartReminderCard(reminder: reminder, currentKilometer: 10, serviceOdometer: 10)
-                                            .listRowInsets(EdgeInsets())
-                                            .listRowSeparator(.hidden)
-                                            .listSectionSeparator(.hidden)
-                                    }
+//                                    ForEach(reminders) { reminder in
+//                                        SparepartReminderCard(reminder: reminder, currentKilometer: 10, serviceOdometer: 10)
+//                                            .listRowInsets(EdgeInsets())
+//                                            .listRowSeparator(.hidden)
+//                                            .listSectionSeparator(.hidden)
+//                                    }
                                 } else {
                                     Spacer()
                                     NoReminderView()

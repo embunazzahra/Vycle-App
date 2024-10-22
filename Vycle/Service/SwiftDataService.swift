@@ -317,37 +317,37 @@ extension SwiftDataService {
     }
 }
 
-extension SwiftDataService {
-    func insertReminder(sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
-        let newReminder = Reminder(
-            date: Date(),
-            sparepart: sparepart,
-            targetKM: targetKM,
-            kmInterval: kmInterval,
-            dueDate: dueDate,
-            timeInterval: timeInterval,
-            vehicle: vehicle,
-            isRepeat: isRepeat,
-            isDraft: isDraft
-        )
-        modelContext.insert(newReminder)
-        saveModelContext()
-        print("Reminder inserted successfully!")
-    }
-    
-    func editReminder(reminder: Reminder, sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
-        reminder.sparepart = sparepart
-        reminder.targetKM = targetKM
-        reminder.kmInterval = kmInterval
-        reminder.dueDate = dueDate
-        reminder.timeInterval = timeInterval
-        reminder.vehicle = vehicle
-        reminder.isRepeat = isRepeat
-        reminder.isDraft = isDraft
-        saveModelContext()
-        print("Reminder edited successfully!")
-    }
-}
+//extension SwiftDataService {
+//    func insertReminder(sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+//        let newReminder = Reminder(
+//            date: Date(),
+//            sparepart: sparepart,
+//            targetKM: targetKM,
+//            kmInterval: kmInterval,
+//            dueDate: dueDate,
+//            timeInterval: timeInterval,
+//            vehicle: vehicle,
+//            isRepeat: isRepeat,
+//            isDraft: isDraft
+//        )
+//        modelContext.insert(newReminder)
+//        saveModelContext()
+//        print("Reminder inserted successfully!")
+//    }
+//    
+//    func editReminder(reminder: Reminder, sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+//        reminder.sparepart = sparepart
+//        reminder.targetKM = targetKM
+//        reminder.kmInterval = kmInterval
+//        reminder.dueDate = dueDate
+//        reminder.timeInterval = timeInterval
+//        reminder.vehicle = vehicle
+//        reminder.isRepeat = isRepeat
+//        reminder.isDraft = isDraft
+//        saveModelContext()
+//        print("Reminder edited successfully!")
+//    }
+//}
 
 
 
