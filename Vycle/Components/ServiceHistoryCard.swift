@@ -23,14 +23,14 @@ struct ServiceHistoryCard: View {
                     Color.neutral.shade100
                         .frame(width: 100)
                     if let photoData = service.photo {
-                        Image(uiImage: UIImage(data: photoData) ?? UIImage(systemName: "image_icon")!)
+                        Image(uiImage: UIImage(data: photoData) ?? UIImage(contentsOfFile: "image_icon")!)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 100, height: 100)
                             .clipped()
                             .clipShape(RoundedCorners(radius: 8, corners: [.topLeft, .bottomLeft]))
                     } else {
-                        Image(systemName: "image_icon")
+                        Image("image_icon")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 36, height: 36)

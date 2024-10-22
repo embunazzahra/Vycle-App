@@ -255,7 +255,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
             }
         } else {
-            print("beacons count is 0")
+//            print("beacons count is 0")
         }
     }
     
