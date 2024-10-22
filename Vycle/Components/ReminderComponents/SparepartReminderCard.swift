@@ -9,9 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct SparepartReminderCard: View {
-    var reminder: Reminder
+    @Binding var reminder: Reminder
     var currentKilometer: Double  // This is now linked to totalDistanceTraveled
-    var serviceOdometer: Double
+//    var serviceOdometer: Double
+    @Environment(\.modelContext) var modelContext
+    
 
     var body: some View {
         ZStack {
@@ -37,9 +39,20 @@ struct SparepartReminderCard: View {
 
                     ProgressBar(
                         currentKilometer: currentKilometer,
-                        maxKilometer: serviceOdometer + Double(reminder.kmInterval),  // maxKilometer calculation
-                        serviceOdometer: serviceOdometer,
-                        sparepart: reminder.sparepart
+                        maxKilometer: Double(reminder.targetKM),
+//                        serviceOdometer: serviceOdometer,
+                        sparepart: reminder.sparepart,
+                        onProgressFull: {
+                            // Update the reminder date to today's date when progress is full
+                            reminder.date = Date()
+                            
+                            // Optionally, save the updated reminder
+                            do {
+                                try modelContext.save() // if you have a save method
+                            } catch {
+                                print("Failed to save reminder: \(error.localizedDescription)")
+                            }
+                        }
                     )
                     .padding(.bottom, 3)
                 }
@@ -52,14 +65,11 @@ struct SparepartReminderCard: View {
 }
 
 
-
 struct SparepartReminderListView: View {
     @Binding var reminders: [Reminder]
     @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
-    @ObservedObject var locationManager: LocationManager  
-
-    var serviceOdometer: Double = 0
+    @ObservedObject var locationManager: LocationManager
 
     var body: some View {
         VStack {
@@ -71,9 +81,8 @@ struct SparepartReminderListView: View {
                 List {
                     ForEach($reminders) { $reminder in
                         SparepartReminderCard(
-                            reminder: reminder,
-                            currentKilometer: locationManager.totalDistanceTraveled,
-                            serviceOdometer: serviceOdometer
+                            reminder: $reminder,
+                            currentKilometer: locationManager.totalDistanceTraveled
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -106,10 +115,6 @@ struct SparepartReminderListView: View {
     }
 }
 
-
-
-
-    
     
 //    import SwiftUI
 //    import SwiftData

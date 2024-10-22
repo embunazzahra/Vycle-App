@@ -108,7 +108,7 @@ struct ContentView: View {
         
         .tint(.white)
         .onAppear {
-            locationManager.setContext(context)
+//            locationManager.setContext(context)
             locationManager.startTracking()  // Start tracking the location
         }
         /*.environmentObject(locationManager) */ // Provide LocationManager as EnvironmentObject

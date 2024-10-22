@@ -110,7 +110,6 @@ struct AddServiceView: View {
         return Date() // Return current date if conversion fails
     }
     
-    
     // MARK: SwiftData Service
     
     // Function to save a new service to the database

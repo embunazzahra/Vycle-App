@@ -160,6 +160,6 @@ struct HaveReminderView : View {
 }
 
 //#Preview {
-//    DashboardView()
-//        .environmentObject(LocationManager()) 
+//    DashboardView(locationManager: <#LocationManager#>)
+//        .environmentObject(LocationManager())
 //}

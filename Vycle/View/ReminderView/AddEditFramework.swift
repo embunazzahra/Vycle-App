@@ -11,10 +11,11 @@ import SwiftData
 struct AddEditFramework: View {
     @EnvironmentObject var routes: Routes
     @Environment(\.modelContext) private var context
-    
+    let swiftDataService = SwiftDataService.shared
+
     let title: String
     let successNotification: () -> AnyView
-    
+
     @State private var isPartChosen = false
     @State private var isMonthYearChosen = false
     @State private var isKilometerChosen = false
@@ -25,12 +26,17 @@ struct AddEditFramework: View {
     @State private var selectedSparepart: Sparepart
     @State private var isToggleOn = false
     @State private var showSheet = false
+    @State private var serviceOdometer: Float = 0 // Assuming you'll fetch this value
 
     @Binding var reminders: [Reminder]
     var reminderToEdit: Reminder?
 
     var isButtonEnabled: Bool {
         isPartChosen && isMonthYearChosen && isKilometerChosen
+    }
+
+    var targetKM: Float {
+        return Float(selectedNumber) + serviceOdometer
     }
 
     var monthInterval: Int {
@@ -57,15 +63,15 @@ struct AddEditFramework: View {
         self.title = title
         self._reminders = reminders
         self.reminderToEdit = reminderToEdit
-        
+
         if let reminder = reminderToEdit {
             self.selectedSparepart = reminder.sparepart
             self.selectedDate = reminder.dueDate
-            self.selectedNumber = Int(reminder.targetKM)
+            self.selectedNumber = Int(reminder.kmInterval)
             self.isPartChosen = true
-            self.isMonthYearChosen = true 
+            self.isMonthYearChosen = true
             self.isKilometerChosen = true
-            self.isToggleOn = reminder.isRepeat 
+            self.isToggleOn = reminder.isRepeat
         } else {
             self.selectedSparepart = selectedSparepart
             self.selectedDate = selectedDate
@@ -79,10 +85,9 @@ struct AddEditFramework: View {
         ZStack {
             VStack {
                 SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
-               
+
                 NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
-                
-                
+
                 VStack(alignment: .leading) {
                     Toggle(isOn: $isToggleOn) {
                         Text("Pengingat berulang")
@@ -91,7 +96,7 @@ struct AddEditFramework: View {
                     }
                     .toggleStyle(SwitchToggleStyle(tint: Color.blue))
                     .padding(.horizontal)
-                    
+
                     if isToggleOn {
                         HStack {
                             Image(systemName: "info.circle.fill")
@@ -104,43 +109,35 @@ struct AddEditFramework: View {
                         .padding(.leading, 16)
                     }
                 }
-                
+
                 Spacer()
 
                 CustomButton(title: reminderToEdit == nil ? "Tambahkan Pengingat" : "Edit Pengingat", iconName: "", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
                     isNotificationShowed = true
 
-                    let firstDayOfMonth = selectedDate.startOfMonth()
-                    
                     if let reminderToEdit = reminderToEdit {
-                        reminderToEdit.sparepart = selectedSparepart
-                        reminderToEdit.targetKM = Float(selectedNumber)
-                        reminderToEdit.kmInterval = Float(selectedNumber)
-                        reminderToEdit.dueDate = firstDayOfMonth
-                        reminderToEdit.timeInterval = monthInterval
-                        reminderToEdit.isRepeat = isToggleOn
-                        reminderToEdit.isDraft = false
-                    } else {
-                        let newReminder = Reminder(
-                            date: Date(),
+                        swiftDataService.editReminder(
+                            reminder: reminderToEdit,
                             sparepart: selectedSparepart,
-                            targetKM: Float(selectedNumber),
+                            targetKM: targetKM,
                             kmInterval: Float(selectedNumber),
-                            dueDate: firstDayOfMonth,
+                            dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
                             vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)),
                             isRepeat: isToggleOn,
                             isDraft: false
                         )
-                        context.insert(newReminder)
-                        reminders.append(newReminder)
-                    }
-                    
-                    do {
-                        try context.save()
-                        print("Reminder saved successfully!")
-                    } catch {
-                        print("Failed to save reminder: \(error.localizedDescription)")
+                    } else {
+                        swiftDataService.insertReminder(
+                            sparepart: selectedSparepart,
+                            targetKM: targetKM,
+                            kmInterval: Float(selectedNumber),
+                            dueDate: selectedDate.startOfMonth(),
+                            timeInterval: monthInterval,
+                            vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)),
+                            isRepeat: isToggleOn,
+                            isDraft: false
+                        )
                     }
                 }
                 .padding(.bottom, 16)

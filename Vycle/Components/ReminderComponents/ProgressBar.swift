@@ -11,13 +11,16 @@ import UserNotifications
 struct ProgressBar: View {
     var currentKilometer: Double
     var maxKilometer: Double?
-    var serviceOdometer: Double
+//    var serviceOdometer: Double
     var sparepart: Sparepart
     
     @State private var hasScheduledNotification = false
+    
+    // Closure to notify when progress is full
+    var onProgressFull: () -> Void = {}
 
     private var kilometerDifference: Double {
-        return (maxKilometer ?? 0.0) - currentKilometer 
+        return (maxKilometer ?? 0.0) - currentKilometer
     }
     
     private var progress: Double {
@@ -37,7 +40,10 @@ struct ProgressBar: View {
                                 scheduleNotificationForSparepart()
                                 hasScheduledNotification = true
                             }
+                            // Notify when progress is full
+                            onProgressFull()
                         }
+                    
                 } else if progress > 0.7 {
                     Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
@@ -95,8 +101,9 @@ struct ProgressBar: View {
     }
 }
 
+
 //#Preview {
-//    ProgressBar(currentKilometer: 200, maxKilometer: 200, serviceOdometer: 5, sparepart: Sparepart(rawValue: "Oil Filter"))
+//    ProgressBar(currentKilometer: 200, maxKilometer: 200, serviceOdometer: 5, sparepart: Sparepart(rawValue: "Oil Filter")!)
 //}
 
 

@@ -17,17 +17,20 @@ struct RoundedCornersShape: Shape {
     }
 }
 
+import SwiftUI
+import SwiftData
+
 struct PengingatView: View {
     @Query var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
-    @ObservedObject var locationManager: LocationManager  // Use actual distance from locationManager
+    @ObservedObject var locationManager: LocationManager
     @State private var filteredReminders: [Reminder] = []
 
     var body: some View {
         VStack {
             VStack {
-                if !reminders.isEmpty {
-                    ReminderHeader(reminders: reminders)
+                if !filteredReminders.isEmpty {
+                    ReminderHeader(reminders: filteredReminders) // Pass filtered reminders here
                 } else {
                     ReminderHeaderNoData()
                 }
@@ -42,9 +45,9 @@ struct PengingatView: View {
                     .ignoresSafeArea()
 
                 VStack {
-                    if !reminders.isEmpty {
+                    if !filteredReminders.isEmpty {
                         let hasHighProgress = filteredReminders.contains { reminder in
-                            let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
+                            let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval)
                             return progress > 0.7
                         }
                         
@@ -73,19 +76,34 @@ struct PengingatView: View {
         .navigationBarBackButtonHidden(true)
         .navigationTitle("Pengingat")
         .onAppear {
-            // Use locationManager data instead of hardcoded values
-            filteredReminders = reminders.filter { reminder in
-                let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
-                return progress > 0.7
-            }
+            filteredReminders = getUniqueReminders(reminders)
         }
     }
 
-    // Updated to use dynamic currentKilometer from locationManager
+    private func getUniqueReminders(_ reminders: [Reminder]) -> [Reminder] {
+        var uniqueReminders: [String: Reminder] = [:]
+
+        for reminder in reminders {
+            let sparepartKey = reminder.sparepart.rawValue
+            
+            if let existingReminder = uniqueReminders[sparepartKey] {
+                if reminder.dueDate > existingReminder.dueDate {
+                    uniqueReminders[sparepartKey] = reminder
+                }
+            } else {
+                uniqueReminders[sparepartKey] = reminder
+            }
+        }
+
+        return Array(uniqueReminders.values)
+    }
+
     private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
         return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
     }
 }
+
+
 
 //#Preview {
 //    PengingatView()
