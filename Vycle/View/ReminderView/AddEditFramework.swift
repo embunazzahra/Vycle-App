@@ -50,14 +50,14 @@ struct AddEditFramework: View {
     }
 
     init(title: String, reminders: Binding<[Reminder]>, selectedSparepart: Sparepart,
-         selectedDate: Date = Date().startOfMonth(), selectedNumber: Int = 1000,
+         selectedDate: Date = Calendar.current.date(byAdding: .month, value: 1, to: Date().startOfMonth()) ?? Date().startOfMonth(),
+         selectedNumber: Int = 1,
          reminderToEdit: Reminder? = nil,
          successNotification: @escaping () -> AnyView) {
         self.title = title
         self._reminders = reminders
         self.reminderToEdit = reminderToEdit
         
-        // Initialize selected properties based on whether we're editing an existing reminder or creating a new one
         if let reminder = reminderToEdit {
             self.selectedSparepart = reminder.sparepart
             self.selectedDate = reminder.dueDate
@@ -65,6 +65,7 @@ struct AddEditFramework: View {
             self.isPartChosen = true
             self.isMonthYearChosen = true 
             self.isKilometerChosen = true
+            self.isToggleOn = reminder.isRepeat 
         } else {
             self.selectedSparepart = selectedSparepart
             self.selectedDate = selectedDate
@@ -81,9 +82,10 @@ struct AddEditFramework: View {
                
                 NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
                 
+                
                 VStack(alignment: .leading) {
                     Toggle(isOn: $isToggleOn) {
-                        Text("Pengingat Repetitif")
+                        Text("Pengingat berulang")
                             .font(.headline)
                             .foregroundColor(Color.neutral.shade300)
                     }
