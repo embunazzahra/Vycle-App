@@ -17,6 +17,9 @@ struct RoundedCornersShape: Shape {
     }
 }
 
+import SwiftUI
+import SwiftData
+
 struct PengingatView: View {
     @Query var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
@@ -115,7 +118,6 @@ struct PengingatView: View {
         return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
     }
 }
-
 
 
 
