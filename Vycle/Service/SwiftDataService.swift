@@ -99,18 +99,18 @@ extension SwiftDataService {
 extension SwiftDataService {
     func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
         
-        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+//        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
 
-        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
         
         // Insert the vehicle and odometer data
         // Only insert service data if serviceHistory is not nil or empty
         if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
             let servicedSparepart = serviceHistory.map { $0.sparepart }
-            let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
+            let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
             modelContext.insert(serviceData)
         }
-        modelContext.insert(vehicleData)
+        modelContext.insert(Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
         modelContext.insert(odometerData)
         
 //        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
@@ -129,6 +129,12 @@ extension SwiftDataService {
         saveModelContext()
         printAllData()
     }
+    
+//    func insertOdometerData(vehicleData: Vehicle, odometer: Float){
+//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+//        modelContext.insert(odometerData)
+//        saveModelContext()
+//    }
 }
 
 
