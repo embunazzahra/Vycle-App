@@ -19,7 +19,7 @@ struct ContentView: View {
         case servis = "Servis"
         case pengingat = "Pengingat"
     }
-    
+    @State private var odometer: Float? = nil
     @State private var isShowSplash = true
     @State private var selectedTab: Tab = .dashboard
     @State private var reminders: [Reminder] = []
@@ -41,7 +41,7 @@ struct ContentView: View {
                         }
                     }
             } else if vehicleData.isEmpty {
-                OnBoardingView()
+                OnBoardingView(odometer: $odometer)
             } else {
                 TabView(selection: $selectedTab) {
                     DashboardView(locationManager: locationManager).tabItem {

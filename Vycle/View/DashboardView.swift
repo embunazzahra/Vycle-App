@@ -56,21 +56,17 @@ struct DashboardView: View {
                                     //                                    Text("\(locationHistory[0].distance ?? 0, specifier: "%.2f") Kilometer")
                                     //                                        .headline()
                                     //                                        .foregroundStyle(.grayShade300)
-                                    let initialOdo = initialOdometer.first?.currentKM ?? 0
-                                    ForEach(initialOdometer){odometer in
-                                        Text("\(Int(odometer.currentKM)) Kilometer Odo")
-                                    }
-                                    Text("\(Int(initialOdo)) Kilometer Odo")
-                                    if let firstLocation = locationHistory.first {
+                                    let latestOdo = initialOdometer.last?.currentKM ?? 0
+                                    Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
+                                    if let lastLocation = locationHistory.last?.distance {
 //                                        let totalDistance = (Double(initialOdo) + (firstLocation.distance ?? 0))
                                         let totalDistance = calculateTotalDistance() ?? 0
-//                                        odometer = Float(totalDistance)
                                         Text("\(Int(totalDistance)) Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
                                         
                                     } else {
-                                        Text("\(Int(initialOdo)) Kilometer")
+                                        Text("\(Int(latestOdo)) odo Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
                                     }
@@ -131,6 +127,7 @@ struct DashboardView: View {
                                                     odometer: odometer ?? 0,
                                                     serviceHistory: []
                                                 )
+                                                SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
                                                 showSheet.toggle()
                                                 _ = calculateTotalDistance()
                                             }
@@ -176,7 +173,7 @@ struct DashboardView: View {
     }
     
     func calculateTotalDistance() -> Double? {
-        let initialOdoValue = initialOdometer.first?.currentKM ?? 0
+        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
         if let firstLocation = locationHistory.first {
             let totalDistance = Double(initialOdoValue) + (firstLocation.distance ?? 0)
             // Update the odometer state here

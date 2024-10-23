@@ -11,6 +11,7 @@ import Foundation
 
 @Model
 class Reminder {
+    var reminderID: UUID = UUID()
     var date: Date
     var sparepart: Sparepart
     var targetKM: Float = 1000 

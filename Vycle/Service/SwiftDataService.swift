@@ -56,10 +56,16 @@ extension SwiftDataService {
     }
     
     func resetPersistentStore() {
+        let odometers = fetchOdometers()
         do {
             try modelContext.delete(model: LocationHistory.self)
+            saveModelContext()
+            print("\nOdometers:")
+            for odometer in odometers {
+                print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
+            }
         } catch {
-            print("Failed to clear all Country and City data.")
+            print("Failed to clear all location")
         }
     }
     

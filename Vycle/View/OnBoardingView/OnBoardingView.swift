@@ -12,7 +12,8 @@ struct OnBoardingView: View {
     @State private var vehicleType: VehicleType? = nil
     @State private var vehicleBrand: VehicleBrand? = nil
     @State private var otherBrandsList: [String] = []
-    @State private var odometer: Float? = nil
+    @Binding var odometer: Float?
+//    @State private var odometer: Float? = nil
     @State private var serviceHistory: [ServiceHistory] = []
     @StateObject private var keyboardResponder = KeyboardResponder()
     
@@ -140,9 +141,9 @@ struct OnBoardingView: View {
     }
 }
 
-#Preview {
-    OnBoardingView()
-}
+//#Preview {
+//    OnBoardingView()
+//}
 
 
 

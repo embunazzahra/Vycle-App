@@ -11,6 +11,7 @@ import Foundation
 
 @Model
 final class Odometer {
+    
     var date: Date = Date()
     var currentKM: Float
     @Relationship var vehicle: Vehicle
