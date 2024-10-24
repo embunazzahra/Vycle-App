@@ -10,11 +10,11 @@ import SwiftData
 
 struct AddServiceView: View {
     @EnvironmentObject var routes: Routes
-//    @Environment(\.modelContext) var modelContext
+    //    @Environment(\.modelContext) var modelContext
     
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in textfield
-    @State private var userOdometer: Int = 78250
+    @State private var userOdometer: Int = 0
     
     // For date selection
     @State private var showDatePicker = false
@@ -46,7 +46,7 @@ struct AddServiceView: View {
     
     
     var body: some View {
-        ScrollView {
+        ScrollView (showsIndicators: false){
             VStack(alignment: .leading, spacing: 20) {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
@@ -74,6 +74,7 @@ struct AddServiceView: View {
         .navigationTitle(service == nil ? "Tambahkan servis" : "Edit catatan servis")
         .navigationBarBackButtonHidden(false)
         .onAppear {
+            // initiate edit service view
             if let service = service {
                 self.odometerValue = "\(Int(service.odometer ?? 0))"
                 self.userOdometer = Int(service.odometer ?? 0)
@@ -82,6 +83,13 @@ struct AddServiceView: View {
                 
                 if let photoData = service.photo, selectedImage == nil {
                     self.selectedImage = UIImage(data: photoData)
+                }
+            } else {
+                let odometers = SwiftDataService.shared.fetchOdometers()
+                
+                if let latestOdometer = odometers.last {
+                    userOdometer = Int(latestOdometer.currentKM)
+                    odometerValue = "\(Int(latestOdometer.currentKM))"
                 }
             }
         }
@@ -115,9 +123,15 @@ struct AddServiceView: View {
     
     // Function to save a new service to the database
     private func saveNewService() {
-        //        let odometer = Float(odometerValue) ?? 0.0
+        let vehicle = SwiftDataService.shared.fetchVehicles()
         
-        SwiftDataService.shared.saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: Float(odometerValue) ?? 0.0, selectedImage: selectedImage?.jpegData(compressionQuality: 1.0), vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
+        
+        if let latestVehicle = vehicle.last {
+            SwiftDataService.shared.saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: Float(odometerValue) ?? 0.0, selectedImage: selectedImage?.jpegData(compressionQuality: 1.0), vehicle: latestVehicle)
+            print("vehicle brand saved is:\(latestVehicle.brand)")
+        }
+        
+        
     }
     
     // Function to update an existing service

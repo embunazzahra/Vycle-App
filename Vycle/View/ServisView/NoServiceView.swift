@@ -14,10 +14,10 @@ struct NoServiceView: View {
     
     var body: some View {
         VStack {
-            Image(systemName: "star.fill")
+            Image("service_empty_state_icon")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 232, height: 232)
+                .frame(width: 236, height: 200)
                 .foregroundStyle(.yellow)
             Text("Kamu belum pernah mencatat servis nih 🙁").font(.headline)
                 .padding(.bottom,4)

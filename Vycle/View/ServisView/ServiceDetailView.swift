@@ -15,7 +15,7 @@ struct ServiceDetailView: View {
     @State private var odometerValue: String = "" // track user input in
     
     var body: some View {
-        ScrollView {
+        ScrollView (showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading) {
                     Text("Tanggal servis")
