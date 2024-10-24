@@ -18,12 +18,11 @@ struct DashboardView: View {
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
-    
+    @State private var filteredReminders: [Reminder] = []
     var body: some View {
 //        let limitedLocationHistory = locationHistory.prefix(10)
         
         NavigationView {
-            ScrollView{
                 ZStack{
                     VStack{
                         ZStack {
@@ -59,9 +58,8 @@ struct DashboardView: View {
                                     let latestOdo = initialOdometer.last?.currentKM ?? 0
                                     Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
                                     if let lastLocation = locationHistory.last?.distance {
-//                                        let totalDistance = (Double(initialOdo) + (firstLocation.distance ?? 0))
                                         let totalDistance = calculateTotalDistance() ?? 0
-                                        Text("\(Int(totalDistance)) Kilometer")
+                                        Text("\(Int(odometer ?? Float(totalDistance))) Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
                                         
@@ -147,13 +145,7 @@ struct DashboardView: View {
                                     HStack{
                                         HaveReminderView().padding(.horizontal, 16)
                                     }
-                                    
-                                    ForEach(reminders) { reminder in
-                                        SparepartReminderCard(reminder: reminder, currentKilometer: 10, serviceOdometer: 10)
-                                            .listRowInsets(EdgeInsets())
-                                            .listRowSeparator(.hidden)
-                                            .listSectionSeparator(.hidden)
-                                    }
+                                    SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                                 } else {
                                     Spacer()
                                     NoReminderView()
@@ -167,11 +159,19 @@ struct DashboardView: View {
                     
                 }
                 
+            
+        }.onAppear {
+            // Use locationManager data instead of hardcoded values
+            filteredReminders = reminders.filter { reminder in
+                let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
+                return progress > 0.7
             }
         }
         
     }
-    
+    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+    }
     func calculateTotalDistance() -> Double? {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
         if let firstLocation = locationHistory.first {
