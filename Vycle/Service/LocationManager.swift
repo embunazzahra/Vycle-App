@@ -139,7 +139,7 @@
 
 
 
-// codingan vincent di bawah ini
+//// codingan vincent di bawah ini
 
 import CoreLocation
 import Combine
@@ -215,7 +215,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self.saveLocationHistory(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
                 print("Location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
             } else {
-                print("Significant location change occurred, but outside of beacon region. No data saved.")
+//                print("Significant location change occurred, but outside of beacon region. No data saved.")
             }
         }
     }
@@ -302,8 +302,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     //it works for SLC
-    
-
     
     func calculateRoute(from start: CLLocationCoordinate2D, to end: CLLocationCoordinate2D, completion: @escaping (Double?) -> Void) {
         let request = MKDirections.Request()

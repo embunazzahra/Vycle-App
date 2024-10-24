@@ -17,20 +17,18 @@ struct RoundedCornersShape: Shape {
     }
 }
 
-import SwiftUI
-import SwiftData
-
 struct PengingatView: View {
     @Query var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
     @ObservedObject var locationManager: LocationManager
     @State private var filteredReminders: [Reminder] = []
+    
 
     var body: some View {
         VStack {
             VStack {
-                if !filteredReminders.isEmpty {
-                    ReminderHeader(reminders: filteredReminders)
+                if !reminders.isEmpty {
+                    ReminderHeader(reminders: reminders)
                 } else {
                     ReminderHeaderNoData()
                 }
@@ -45,7 +43,7 @@ struct PengingatView: View {
                     .ignoresSafeArea()
 
                 VStack {
-                    if !filteredReminders.isEmpty {
+                    if !reminders.isEmpty {
                         let hasHighProgress = filteredReminders.contains { reminder in
                             let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval)
                             return progress > 0.7

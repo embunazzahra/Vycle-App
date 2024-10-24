@@ -198,6 +198,7 @@ extension SwiftDataService {
         modelContext.insert(newReminder)
         saveModelContext()
         print("Reminder inserted successfully!")
+        print("Added reminder: \(newReminder.sparepart.rawValue)")
     }
     
     func editReminder(reminder: Reminder, sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {

@@ -127,9 +127,7 @@ struct DashboardView: View {
                                                 showSheet.toggle()
                                             }
                                         }
-                                        
                                     }
-                                    
                                 }
                             }
                             .padding()

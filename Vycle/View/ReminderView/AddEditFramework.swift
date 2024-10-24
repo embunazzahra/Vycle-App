@@ -26,7 +26,7 @@ struct AddEditFramework: View {
     @State private var selectedSparepart: Sparepart
     @State private var isToggleOn = false
     @State private var showSheet = false
-    @State private var serviceOdometer: Float = 0 // Assuming you'll fetch this value
+//    @State private var serviceOdometer: Float = 0 // Assuming you'll fetch this value
 
     @Binding var reminders: [Reminder]
     var reminderToEdit: Reminder?
@@ -36,7 +36,7 @@ struct AddEditFramework: View {
     }
 
     var targetKM: Float {
-        return Float(selectedNumber) + serviceOdometer
+        return Float(selectedNumber)
     }
 
     var monthInterval: Int {

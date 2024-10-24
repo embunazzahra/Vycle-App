@@ -9,23 +9,21 @@ import SwiftUI
 import UserNotifications
 
 struct ProgressBar: View {
-    var currentKilometer: Double
+    var currentKM: Double
     var maxKilometer: Double?
-//    var serviceOdometer: Double
     var sparepart: Sparepart
+    @Binding var reminder: Reminder
     
     @State private var hasScheduledNotification = false
+    let swiftDataService = SwiftDataService.shared
     
-    // Closure to notify when progress is full
-    var onProgressFull: () -> Void = {}
-
     private var kilometerDifference: Double {
-        return (maxKilometer ?? 0.0) - currentKilometer
+        return (maxKilometer ?? 0.0) - currentKM
     }
     
     private var progress: Double {
         guard let maxKM = maxKilometer, maxKM > 0 else { return 0.0 }
-        return min(currentKilometer / maxKM, 1.0)
+        return min(currentKM / maxKM, 1.0)
     }
     
     var body: some View {
@@ -37,13 +35,12 @@ struct ProgressBar: View {
                         .foregroundColor(Color.persianRed600)
                         .onAppear {
                             if !hasScheduledNotification {
-                                scheduleNotificationForSparepart()
+//                                scheduleNotificationForSparepart()
+                                scheduleNotification(for: sparepart)
                                 hasScheduledNotification = true
+                                updateReminderDateToNow()
                             }
-                            // Notify when progress is full
-                            onProgressFull()
                         }
-                    
                 } else if progress > 0.7 {
                     Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
@@ -74,19 +71,36 @@ struct ProgressBar: View {
                     .cornerRadius(4)
                     .foregroundColor(
                         progress > 0.7 ? .persianRed600 :
-                        (progress > 0.3 ? .amber600 : .lima600)
+                            (progress > 0.3 ? .amber600 : .lima600)
                     )
                     .animation(.linear, value: progress)
             }
         }
     }
     
-    func scheduleNotificationForSparepart() {
+    private func updateReminderDateToNow() {
+        if progress >= 1.0 {
+            swiftDataService.editReminder(
+                reminder: reminder,
+                sparepart: reminder.sparepart,
+                targetKM: reminder.targetKM,
+                kmInterval: reminder.kmInterval,
+                dueDate: Date(),
+                timeInterval: reminder.timeInterval,
+                vehicle: reminder.vehicle!,
+                isRepeat: reminder.isRepeat,
+                isDraft: reminder.isDraft
+            )
+        }
+    }
+    
+    func scheduleNotification(for sparepart: Sparepart) {
         let content = UNMutableNotificationContent()
-        content.title = "🚗 Honk! Kilometer \(sparepart.rawValue) sudah mendekat, siap ganti!"
-        content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
+        content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
+        content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
         content.sound = .default
-
+        
+        // Immediate notification for testing (use timeInterval: 1 to trigger after 1 second)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
         
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
@@ -100,6 +114,7 @@ struct ProgressBar: View {
         }
     }
 }
+
 
 
 //#Preview {

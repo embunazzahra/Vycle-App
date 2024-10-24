@@ -82,7 +82,7 @@ struct AllReminderView: View {
         let filtered = uniqueReminders.filter {
             calendar.isDate($0.dueDate, equalTo: selectedDate, toGranularity: .month)
         }
-        print("Filtered reminders for \(selectedOption): \(filtered.hashValue)")
+//        print("Filtered reminders for \(selectedOption): \(filtered.hashValue)")
         return filtered
     }
 
@@ -91,19 +91,16 @@ struct AllReminderView: View {
         var latestReminders: [String: Reminder] = [:]  // Key: sparepart name, Value: Reminder
 
         for reminder in reminders {
-            let sparepartKey = reminder.sparepart.rawValue  // Use sparepart's name as key
+            let sparepartKey = reminder.sparepart.rawValue  
             
-            // Check if the sparepart is already in the dictionary
             if let existingReminder = latestReminders[sparepartKey] {
-                // Compare dueDates; keep the latest one
                 if reminder.dueDate > existingReminder.dueDate {
                     latestReminders[sparepartKey] = reminder
                     print("Updated dictionary with new latest reminder for \(sparepartKey)")
                 }
             } else {
-                // If it's not in the dictionary, add it
                 latestReminders[sparepartKey] = reminder
-                print("Added new reminder for \(sparepartKey) to dictionary")
+//                print("Added new reminder for \(sparepartKey) to dictionary")
             }
         }
 
