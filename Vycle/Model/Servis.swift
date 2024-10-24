@@ -12,6 +12,7 @@ import SwiftData
 
 @Model
 class Servis {
+    var servisID: UUID = UUID()
     var date: Date
     var servicedSparepart: [Sparepart]
     var photo: Data?

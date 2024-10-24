@@ -56,10 +56,16 @@ extension SwiftDataService {
     }
     
     func resetPersistentStore() {
+        let odometers = fetchOdometers()
         do {
             try modelContext.delete(model: LocationHistory.self)
+            saveModelContext()
+            print("\nOdometers:")
+            for odometer in odometers {
+                print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
+            }
         } catch {
-            print("Failed to clear all Country and City data.")
+            print("Failed to clear all location")
         }
     }
     
@@ -100,13 +106,13 @@ extension SwiftDataService {
                 let serviceData = Servis(
                     date: date,
                     servicedSparepart: servicedSpareparts,
-                    vehicle: vehicleData
+                    vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
                 )
                 modelContext.insert(serviceData)
                 
                 for sparepart in servicedSpareparts {
                     // Insert Reminder
-                    guard let interval = vehicleData.brand.intervalForSparepart(sparepart) else {
+                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand).brand.intervalForSparepart(sparepart) else {
                         continue
                     }
 
@@ -119,7 +125,7 @@ extension SwiftDataService {
                         kmInterval: Float(interval.kilometer),
                         dueDate: dueDate,
                         timeInterval: interval.month,
-                        vehicle: vehicleData,
+                        vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand),
                         isRepeat: true, // Set true if you want reminders to repeat
                         isDraft: false
                     )
@@ -132,6 +138,12 @@ extension SwiftDataService {
         saveModelContext()
         printAllData()
     }
+    
+//    func insertOdometerData(vehicleData: Vehicle, odometer: Float){
+//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+//        modelContext.insert(odometerData)
+//        saveModelContext()
+//    }
 }
 
 
