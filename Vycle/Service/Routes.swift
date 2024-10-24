@@ -11,7 +11,7 @@ import SwiftUI
 @Observable final class Routes: ObservableObject {
     var navPath = NavigationPath()
     
-
+    
     public enum Destination: Hashable {
         case DashboardView
         case PengingatView

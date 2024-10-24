@@ -10,7 +10,7 @@ import SwiftData
 
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
-    @ObservedObject var locationManager: LocationManager  // Add LocationManager to DashboardView
+    @ObservedObject var locationManager: LocationManager
     @Query var trips: [Trip]
     @Query var vehicles : [Vehicle]
     
@@ -20,18 +20,17 @@ struct DashboardView: View {
     //    @Query var locationHistory : [LocationHistory]
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
-    
-    
-    @State private var odometer: Float? = 10000
+    @State private var odometer: Float?
+    @State private var filteredReminders: [Reminder] = []
     var body: some View {
-        let limitedLocationHistory = locationHistory.prefix(10)
+        //        let limitedLocationHistory = locationHistory.prefix(10)
         
         NavigationView {
             ScrollView{
                 
-//                ForEach(limitedLocationHistory){ history in
-//                    Text("Lati: \(history.latitude), Long: \(history.longitude) Dis: \(history.distance) Date: \(history.time)")
-//                }
+                //                ForEach(limitedLocationHistory){ history in
+                //                    Text("Lati: \(history.latitude), Long: \(history.longitude) Dis: \(history.distance) Date: \(history.time)")
+                //                }
                 ZStack{
                     VStack{
                         ZStack {
@@ -64,27 +63,29 @@ struct DashboardView: View {
                                     //                                    Text("\(locationHistory[0].distance ?? 0, specifier: "%.2f") Kilometer")
                                     //                                        .headline()
                                     //                                        .foregroundStyle(.grayShade300)
-                                    let odometer = initialOdometer.first?.currentKM ?? 0
-                                    
-                                   
-                                    if let firstLocation = locationHistory.first {
-                                        let totalDistance = (Double(odometer) + (firstLocation.distance ?? 0))
-                                        Text("\(Int(totalDistance)) Kilometer")
+                                    let latestOdo = initialOdometer.last?.currentKM ?? 0
+                                    Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
+                                    if let lastLocation = locationHistory.last?.distance {
+                                        let totalDistance = calculateTotalDistance() ?? 0
+                                        Text("\(Int(odometer ?? Float(totalDistance))) Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
+                                        
                                     } else {
-                                        Text("\(Int(odometer)) Kilometer")
+                                        Text("\(Int(latestOdo)) odo Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
                                     }
-
+                                    
                                     
                                 }.padding(.horizontal, 10)
                                 Spacer()
                                 
                                 Button(action: {
                                     // Action for editing
+                                    _ = calculateTotalDistance()
                                     showSheet.toggle()
+                                    
                                 }) {
                                     Image(systemName: "pencil").foregroundStyle(Color.white)
                                 }.frame(width: 28, height: 28).background(Color.blue).cornerRadius(8).sheet(isPresented : $showSheet){
@@ -113,6 +114,8 @@ struct DashboardView: View {
                                         }
                                         VStack(alignment: .center){
                                             ZStack (alignment: .center){
+                                                
+                                                
                                                 Image("odometer")
                                                 VStack {
                                                     Text("KM")
@@ -124,7 +127,15 @@ struct DashboardView: View {
                                         VStack{
                                             Spacer()
                                             CustomButton(title: "Simpan Perubahan"){
+                                                SwiftDataService.shared.insertOnBoarding(
+                                                    vehicleType: .car,
+                                                    vehicleBrand: .car(.honda),
+                                                    odometer: odometer ?? 0,
+                                                    serviceHistory: []
+                                                )
+                                                SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
                                                 showSheet.toggle()
+                                                _ = calculateTotalDistance()
                                             }
                                         }
                                     }
@@ -135,79 +146,98 @@ struct DashboardView: View {
                             .cornerRadius(12)
                             .shadow(radius: 4, y: 2)
                         }.padding(.horizontal, 16).offset(y: -45)
-                            VStack {
-                                if !reminders.isEmpty {
-                                    HStack{
-                                        HaveReminderView().padding(.horizontal, 16)
-                                    }
-                                    
-//                                    ForEach(reminders) { reminder in
-//                                        SparepartReminderCard(reminder: reminder, currentKilometer: 10, serviceOdometer: 10)
-//                                            .listRowInsets(EdgeInsets())
-//                                            .listRowSeparator(.hidden)
-//                                            .listSectionSeparator(.hidden)
-//                                    }
-                                } else {
-                                    Spacer()
-                                    NoReminderView()
-                                    
+                        VStack {
+                            if !reminders.isEmpty {
+                                HStack{
+                                    HaveReminderView().padding(.horizontal, 16)
                                 }
-                               
-                            }.padding(.horizontal, 16)
+                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                            } else {
+                                Spacer()
+                                NoReminderView()
+                                
+                            }
                             
+                        }.padding(.horizontal, 16)
+                        
                         
                     }
                     
                 }
                 
+                
+            }.onAppear {
+                // Use locationManager data instead of hardcoded values
+                filteredReminders = reminders.filter { reminder in
+                    let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
+                    return progress > 0.7
+                }
             }
+            
+        }}
+        private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+            return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
         }
-        
-    }
-//    private var filteredReminders: [Reminder] {
-//        return reminders.filter { reminder in
-//            let progress = getProgress(currentKilometer: 10, targetKilometer: reminder.targetKM)
-//            return progress >= 0.66
-//        }
-//    }
-//
-//    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-//        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
-//    }
-}
-
-struct NoReminderView : View {
-    var body: some View {
-        Image("no-service-dashboard")
-        Text("Belum ada suku cadang yang mendesak").headline().foregroundColor(.neutral.shade300)
-        Text("Saat ini aman, tapi pastikan siap sebelum waktunya tiba").footnote(.regular).foregroundColor(.neutral.tone300)
-        
-    }
-}
-
-struct HaveReminderView : View {
-    @EnvironmentObject var routes: Routes
-    var body: some View {
-        HStack{
-            VStack(alignment: .leading){
-                Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
-                Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
+        func calculateTotalDistance() -> Double? {
+            let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+            if let firstLocation = locationHistory.first {
+                let totalDistance = Double(initialOdoValue) + (firstLocation.distance ?? 0)
+                // Update the odometer state here
+                odometer = Float(totalDistance)
+                return totalDistance
+            } else {
+                // If no location history, just return the initial odometer value
+                odometer = Float(initialOdoValue)
+                return Double(initialOdoValue)
             }
-            Spacer()
-            Button(action: {
-                routes.navigate(to: .AllReminderView)
-            }){
-                ZStack{
-                    Color.primary.base
-                    Text("Lihat Semua").foregroundStyle(Color.background)
-                }.cornerRadius(14)
-            }.frame(width: 120, height: 35)
-        } .padding(.top, -30)
-        
+            
+        }
+        //    private var filteredReminders: [Reminder] {
+        //        return reminders.filter { reminder in
+        //            let progress = getProgress(currentKilometer: 10, targetKilometer: reminder.targetKM)
+        //            return progress >= 0.66
+        //        }
+        //    }
+        //
+        //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+        //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+        //    }
     }
-}
 
-//#Preview {
-//    DashboardView(locationManager: <#LocationManager#>)
-//        .environmentObject(LocationManager())
-//}
+    
+    struct NoReminderView : View {
+        var body: some View {
+            Image("no-service-dashboard")
+            Text("Belum ada suku cadang yang mendesak").headline().foregroundColor(.neutral.shade300)
+            Text("Saat ini aman, tapi pastikan siap sebelum waktunya tiba").footnote(.regular).foregroundColor(.neutral.tone300)
+            
+        }
+    }
+    
+    struct HaveReminderView : View {
+        @EnvironmentObject var routes: Routes
+        var body: some View {
+            HStack{
+                VStack(alignment: .leading){
+                    Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
+                    Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
+                }
+                Spacer()
+                Button(action: {
+                    routes.navigate(to: .AllReminderView)
+                }){
+                    ZStack{
+                        Color.primary.base
+                        Text("Lihat Semua").foregroundStyle(Color.background)
+                    }.cornerRadius(14)
+                }.frame(width: 120, height: 35)
+            } .padding(.top, -30)
+            
+        }
+    }
+    
+    //#Preview {
+    //    DashboardView(locationManager: <#LocationManager#>)
+    //        .environmentObject(LocationManager())
+    //}
+

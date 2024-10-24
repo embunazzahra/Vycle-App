@@ -37,7 +37,7 @@ struct SparepartReminderCard: View {
 
                     ProgressBar(
                         currentKM: currentKM,
-                        maxKilometer: Double(reminder.targetKM),
+//                        targetKM: Double(reminder.reminderOdo),
                         sparepart: reminder.sparepart,
                         reminder: $reminder
                     )
@@ -57,6 +57,9 @@ struct SparepartReminderListView: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
     @ObservedObject var locationManager: LocationManager
+    @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
+    @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
+    
 
     var body: some View {
         VStack {
@@ -69,7 +72,7 @@ struct SparepartReminderListView: View {
                     ForEach($reminders, id: \.self) { $reminder in
                         SparepartReminderCard(
                             reminder: $reminder, 
-                            currentKM: locationManager.totalDistanceTraveled
+                            currentKM: Double(initialOdometer.last?.currentKM ?? 0)
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {

@@ -154,7 +154,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var context: ModelContext?
     private var bleManager: BLEManager?
     private var lastSavedLocation: CLLocation?
-    @Published var totalDistanceTraveled: Double = 10.0
+    @Published var totalDistanceTraveled: Double = 0.0
     @Published var isInsideBeaconRegion: Bool = false
 //    @Published var locationHistory: [LocationHistory] = []
     private let beaconUUID = UUID(uuidString: "2D7A9F0C-E0E8-4CC9-A71B-A21DB2D034A1")!

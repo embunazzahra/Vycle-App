@@ -7,28 +7,38 @@
 
 import SwiftUI
 import UserNotifications
+import SwiftData
 
 struct ProgressBar: View {
     var currentKM: Double
-    var maxKilometer: Double?
+//    var maxKilometer: Double?
     var sparepart: Sparepart
     @Binding var reminder: Reminder
+    @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
+    @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     
+//    @Binding var selectedNumber: Int
+
     @State private var hasScheduledNotification = false
+    
     let swiftDataService = SwiftDataService.shared
     
-    private var kilometerDifference: Double {
-        return (maxKilometer ?? 0.0) - currentKM
+    var targetKM: Float {
+        return Float(reminder.kmInterval)
     }
-    
-    private var progress: Double {
-        guard let maxKM = maxKilometer, maxKM > 0 else { return 0.0 }
-        return min(currentKM / maxKM, 1.0)
+
+    private var kilometerDifference: Float {
+        return targetKM - (Float(currentKM) - Float(reminder.reminderOdo))
     }
-    
+
+    private var progress: Float {
+        guard targetKM > 0 else { return 0.0 }
+        return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+    }
+
     var body: some View {
         VStack(alignment: .leading) {
-            if maxKilometer != nil {
+            if targetKM != nil {
                 if progress >= 1.0 {
                     Text("Sudah tiba bulannya nih!")
                         .footnote(.emphasized)
@@ -83,7 +93,7 @@ struct ProgressBar: View {
             swiftDataService.editReminder(
                 reminder: reminder,
                 sparepart: reminder.sparepart,
-                targetKM: reminder.targetKM,
+                reminderOdo: reminder.reminderOdo,
                 kmInterval: reminder.kmInterval,
                 dueDate: Date(),
                 timeInterval: reminder.timeInterval,

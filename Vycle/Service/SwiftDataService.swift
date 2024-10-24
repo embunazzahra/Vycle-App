@@ -51,15 +51,21 @@ extension SwiftDataService {
     }
     
     func insertReminder(){
-        let testVehicle = Reminder(date: Date(), sparepart: .busi, targetKM: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
+        let testVehicle = Reminder(date: Date(), sparepart: .busi, reminderOdo: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
         modelContext.insert(testVehicle)
     }
     
     func resetPersistentStore() {
+        let odometers = fetchOdometers()
         do {
             try modelContext.delete(model: LocationHistory.self)
+            saveModelContext()
+            print("\nOdometers:")
+            for odometer in odometers {
+                print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
+            }
         } catch {
-            print("Failed to clear all Country and City data.")
+            print("Failed to clear all location")
         }
     }
     
@@ -77,59 +83,68 @@ extension SwiftDataService {
 }
 
 // MARK: OnBoarding
-//extension SwiftDataService {
-//    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
-//        
-//        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
-//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-//        
-//        let servicedSparepart = serviceHistory.map { $0.sparepart }
-//        let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
-//        
-//        modelContext.insert(vehicleData)
-//        modelContext.insert(odometerData)
-//        modelContext.insert(serviceData)
-//        
-//        saveModelContext()
-//        
-//        printAllData()
-//    }
-//}
 
 extension SwiftDataService {
     func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
         
         let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
-
-        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-        
-        // Insert the vehicle and odometer data
-       
-        
-        // Only insert service data if serviceHistory is not nil or empty
-        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
-            let servicedSparepart = serviceHistory.map { $0.sparepart }
-            let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
-            modelContext.insert(serviceData)
-        }
         modelContext.insert(vehicleData)
+        saveModelContext()
+        // Insert Odometer
+        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
         modelContext.insert(odometerData)
         
-//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-//        modelContext.insert(odometerData)
         
-//        let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
-//        saveModelContext()
-        
-//        for (date, historyForDate) in groupedServiceHistory {
-//            let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
-//            let serviceData = Servis(date: date, servicedSparepart: servicedSpareparts, vehicle: vehicleData)
-//            modelContext.insert(serviceData)
-//        }
+        // Check if serviceHistory is not nil and not empty
+        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
+                
+            let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
+            
+            for (date, historyForDate) in groupedServiceHistory {
+                // Insert Service History
+                let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
+                let serviceData = Servis(
+                    date: date,
+                    servicedSparepart: servicedSpareparts,
+                    vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+                )
+                modelContext.insert(serviceData)
+                
+                for sparepart in servicedSpareparts {
+                    // Insert Reminder
+                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand).brand.intervalForSparepart(sparepart) else {
+                        continue
+                    }
+
+                    let reminderOdo = odometer + Float(interval.kilometer)
+                    print("target km : \(reminderOdo)")
+                    let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
+                    let reminderData = Reminder(
+                        date: date,
+                        sparepart: sparepart,
+                        reminderOdo: reminderOdo,
+                        kmInterval: Float(interval.kilometer),
+                        dueDate: dueDate,
+                        timeInterval: interval.month,
+                        vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand),
+                        isRepeat: true, // Set true if you want reminders to repeat
+                        isDraft: false
+                    )
+                    modelContext.insert(reminderData)
+                }
+            }
+        }
+
 
         saveModelContext()
         printAllData()
     }
+    
+//    func insertOdometerData(vehicleData: Vehicle, odometer: Float){
+//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+//        modelContext.insert(odometerData)
+//        saveModelContext()
+//    }
 }
 
 
@@ -142,16 +157,16 @@ extension SwiftDataService {
         return vehicles
     }
     
-    func fetchServices() -> [Servis] {
-        let fetchRequest = FetchDescriptor<Servis>()
-        let services = (try? modelContext.fetch(fetchRequest)) ?? []
-        return services
-    }
-    
     func fetchOdometers() -> [Odometer] {
         let fetchRequest = FetchDescriptor<Odometer>()
         let odometers = (try? modelContext.fetch(fetchRequest)) ?? []
         return odometers
+    }
+    
+    func fetchServices() -> [Servis] {
+        let fetchRequest = FetchDescriptor<Servis>()
+        let services = (try? modelContext.fetch(fetchRequest)) ?? []
+        return services
     }
     
     func fetchReminders() -> [Reminder] {
@@ -162,9 +177,10 @@ extension SwiftDataService {
     
     func printAllData() {
         let vehicles = fetchVehicles()
-        let services = fetchServices()
         let odometers = fetchOdometers()
-        
+        let services = fetchServices()
+        let reminders = fetchReminders()
+
         print("Vehicles:")
         for vehicle in vehicles {
             print("ID: \(vehicle.vehicleID), Type: \(vehicle.vehicleType), Brand: \(vehicle.brand)")
@@ -183,11 +199,11 @@ extension SwiftDataService {
 }
 
 extension SwiftDataService {
-    func insertReminder(sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
         let newReminder = Reminder(
             date: Date(),
             sparepart: sparepart,
-            targetKM: targetKM,
+            reminderOdo: reminderOdo,
             kmInterval: kmInterval,
             dueDate: dueDate,
             timeInterval: timeInterval,
@@ -201,9 +217,9 @@ extension SwiftDataService {
         print("Added reminder: \(newReminder.sparepart.rawValue)")
     }
     
-    func editReminder(reminder: Reminder, sparepart: Sparepart, targetKM: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+    func editReminder(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
         reminder.sparepart = sparepart
-        reminder.targetKM = targetKM
+        reminder.reminderOdo = reminderOdo
         reminder.kmInterval = kmInterval
         reminder.dueDate = dueDate
         reminder.timeInterval = timeInterval
@@ -291,13 +307,13 @@ extension SwiftDataService {
                 continue
             }
             
-            let targetKM = odometer + Float(interval.kilometer)
+            let reminderOdo = odometer + Float(interval.kilometer)
             let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
             
             //            let newService = service
             let newReminder = Reminder(date: service.date,
                                        sparepart: sparepart,
-                                       targetKM: targetKM,
+                                       reminderOdo: reminderOdo,
                                        kmInterval: Float(interval.kilometer),
                                        dueDate: dueDate,
                                        timeInterval: interval.month,
@@ -349,8 +365,6 @@ extension SwiftDataService {
 //        print("Reminder edited successfully!")
 //    }
 //}
-
-
 
 extension ModelContext {
 

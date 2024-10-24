@@ -14,13 +14,12 @@ struct ContentView: View {
     @EnvironmentObject var routes: Routes
     @StateObject var locationManager = LocationManager()
     @Query(sort: \Vehicle.vehicleID) var vehicleData: [Vehicle]
-    
     enum Tab: String {
         case dashboard = "Dashboard"
         case servis = "Servis"
         case pengingat = "Pengingat"
     }
-    
+    @State private var odometer: Float? = nil
     @State private var isShowSplash = true
     @State private var selectedTab: Tab = .dashboard
     @State private var reminders: [Reminder] = []
@@ -44,24 +43,24 @@ struct ContentView: View {
                         }
                     }
             } else if vehicleData.isEmpty {
-                OnBoardingView()
+                OnBoardingView(odometer: $odometer)
             } else {
                 TabView(selection: $selectedTab) {
                     DashboardView(locationManager: locationManager).tabItem {
-                        Image(systemName: "house.fill")
+                        Image(selectedTab == .dashboard ? "dashboard_icon_blue" : "dashboard_icon")
                         Text("Dashboard")
                     }.tag(Tab.dashboard)
                     ServiceView().tabItem {
-                        Image(systemName: "list.bullet.rectangle.fill")
+                        Image(selectedTab == .servis ? "service_icon_blue" : "service_icon")
                         Text("Servis")
                     }.tag(Tab.servis)
                     PengingatView(locationManager: locationManager).tabItem {
-                        Image(systemName: "bell.fill")
+                        Image(selectedTab == .pengingat ? "reminder_icon_blue" : "reminder_icon")
                         Text("Pengingat")
                     }.tag(Tab.pengingat)
                     
                     
-                }.tint(.blue)
+                }.tint(Color.primary.shade200)
                     .navigationTitle(selectedTab.rawValue)
                     .navigationDestination(for: Routes.Destination.self) { destination in
                         switch destination {

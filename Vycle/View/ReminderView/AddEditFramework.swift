@@ -27,6 +27,9 @@ struct AddEditFramework: View {
     @State private var isToggleOn = false
     @State private var showSheet = false
 //    @State private var serviceOdometer: Float = 0 // Assuming you'll fetch this value
+    @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
+    @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
+
 
     @Binding var reminders: [Reminder]
     var reminderToEdit: Reminder?
@@ -35,8 +38,12 @@ struct AddEditFramework: View {
         isPartChosen && isMonthYearChosen && isKilometerChosen
     }
 
+    var reminderOdo: Float {
+        return Float(initialOdometer.last?.currentKM ?? 0)
+    }
+    
     var targetKM: Float {
-        return Float(selectedNumber)
+        return Float(selectedNumber) + Float(initialOdometer.last?.currentKM ?? 0)
     }
 
     var monthInterval: Int {
@@ -119,7 +126,7 @@ struct AddEditFramework: View {
                         swiftDataService.editReminder(
                             reminder: reminderToEdit,
                             sparepart: selectedSparepart,
-                            targetKM: targetKM,
+                            reminderOdo: reminderOdo,
                             kmInterval: Float(selectedNumber),
                             dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
@@ -130,7 +137,7 @@ struct AddEditFramework: View {
                     } else {
                         swiftDataService.insertReminder(
                             sparepart: selectedSparepart,
-                            targetKM: targetKM,
+                            reminderOdo: reminderOdo,
                             kmInterval: Float(selectedNumber),
                             dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
