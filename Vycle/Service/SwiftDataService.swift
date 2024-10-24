@@ -83,24 +83,6 @@ extension SwiftDataService {
 }
 
 // MARK: OnBoarding
-//extension SwiftDataService {
-//    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]){
-//        
-//        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
-//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-//        
-//        let servicedSparepart = serviceHistory.map { $0.sparepart }
-//        let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: vehicleData)
-//        
-//        modelContext.insert(vehicleData)
-//        modelContext.insert(odometerData)
-//        modelContext.insert(serviceData)
-//        
-//        saveModelContext()
-//        
-//        printAllData()
-//    }
-//}
 
 extension SwiftDataService {
     func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
@@ -118,18 +100,51 @@ extension SwiftDataService {
         }
         modelContext.insert(Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
         modelContext.insert(odometerData)
+
         
-//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-//        modelContext.insert(odometerData)
+        // Insert Odometer
+        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+        modelContext.insert(odometerData)
         
-//        let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
-//        saveModelContext()
         
-//        for (date, historyForDate) in groupedServiceHistory {
-//            let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
-//            let serviceData = Servis(date: date, servicedSparepart: servicedSpareparts, vehicle: vehicleData)
-//            modelContext.insert(serviceData)
-//        }
+        // Check if serviceHistory is not nil and not empty
+        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
+                
+            let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
+            
+            for (date, historyForDate) in groupedServiceHistory {
+                // Insert Service History
+                let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
+                let serviceData = Servis(
+                    date: date,
+                    servicedSparepart: servicedSpareparts,
+                    vehicle: vehicleData
+                )
+                modelContext.insert(serviceData)
+                
+                for sparepart in servicedSpareparts {
+                    // Insert Reminder
+                    guard let interval = vehicleData.brand.intervalForSparepart(sparepart) else {
+                        continue
+                    }
+
+                    let targetKM = odometer + Float(interval.kilometer)
+                    let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
+                    let reminderData = Reminder(
+                        date: date,
+                        sparepart: sparepart,
+                        targetKM: targetKM,
+                        kmInterval: Float(interval.kilometer),
+                        dueDate: dueDate,
+                        timeInterval: interval.month,
+                        vehicle: vehicleData,
+                        isRepeat: true, // Set true if you want reminders to repeat
+                        isDraft: false
+                    )
+                    modelContext.insert(reminderData)
+                }
+            }
+        }
 
 
         saveModelContext()
@@ -153,16 +168,16 @@ extension SwiftDataService {
         return vehicles
     }
     
-    func fetchServices() -> [Servis] {
-        let fetchRequest = FetchDescriptor<Servis>()
-        let services = (try? modelContext.fetch(fetchRequest)) ?? []
-        return services
-    }
-    
     func fetchOdometers() -> [Odometer] {
         let fetchRequest = FetchDescriptor<Odometer>()
         let odometers = (try? modelContext.fetch(fetchRequest)) ?? []
         return odometers
+    }
+    
+    func fetchServices() -> [Servis] {
+        let fetchRequest = FetchDescriptor<Servis>()
+        let services = (try? modelContext.fetch(fetchRequest)) ?? []
+        return services
     }
     
     func fetchReminders() -> [Reminder] {
@@ -173,12 +188,18 @@ extension SwiftDataService {
     
     func printAllData() {
         let vehicles = fetchVehicles()
-        let services = fetchServices()
         let odometers = fetchOdometers()
-        
+        let services = fetchServices()
+        let reminders = fetchReminders()
+
         print("Vehicles:")
         for vehicle in vehicles {
             print("ID: \(vehicle.vehicleID), Type: \(vehicle.vehicleType), Brand: \(vehicle.brand)")
+        }
+
+        print("\nOdometers:")
+        for odometer in odometers {
+            print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
         }
         
         print("\nServices:")
@@ -186,9 +207,9 @@ extension SwiftDataService {
             print("Date: \(service.date), Spareparts: \(service.servicedSparepart), Vehicle ID: \(service.vehicle.vehicleID)")
         }
         
-        print("\nOdometers:")
-        for odometer in odometers {
-            print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
+        print("\nReminders:")
+        for reminder in reminders {
+            print("Date: \(reminder.date), Sparepart: \(reminder.sparepart), Target KM: \(reminder.targetKM), KM Interval: \(reminder.kmInterval), Due Date: \(reminder.dueDate), Time Interval: \(reminder.timeInterval) months, Vehicle ID: \(reminder.vehicle.vehicleID), Repeat: \(reminder.isRepeat ? "Yes" : "No"), Draft: \(reminder.isDraft ? "Yes" : "No")")
         }
     }
 }
