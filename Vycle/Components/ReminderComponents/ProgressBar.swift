@@ -7,35 +7,48 @@
 
 import SwiftUI
 import UserNotifications
+import SwiftData
 
 struct ProgressBar: View {
-    var currentKilometer: Double
-    var maxKilometer: Double?
-    var serviceOdometer: Double
+    var currentKM: Double
+//    var maxKilometer: Double?
     var sparepart: Sparepart
+    @Binding var reminder: Reminder
+    @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
+    @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     
-    @State private var hasScheduledNotification = false
+//    @Binding var selectedNumber: Int
 
-    private var kilometerDifference: Double {
-        return (maxKilometer ?? 0.0) - currentKilometer 
-    }
+    @State private var hasScheduledNotification = false
     
-    private var progress: Double {
-        guard let maxKM = maxKilometer, maxKM > 0 else { return 0.0 }
-        return min(currentKilometer / maxKM, 1.0)
-    }
+    let swiftDataService = SwiftDataService.shared
     
+    var targetKM: Float {
+        return Float(reminder.kmInterval)
+    }
+
+    private var kilometerDifference: Float {
+        return targetKM - (Float(currentKM) - Float(reminder.reminderOdo))
+    }
+
+    private var progress: Float {
+        guard targetKM > 0 else { return 0.0 }
+        return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+    }
+
     var body: some View {
         VStack(alignment: .leading) {
-            if maxKilometer != nil {
+            if targetKM != nil {
                 if progress >= 1.0 {
                     Text("Sudah tiba bulannya nih!")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
                         .onAppear {
                             if !hasScheduledNotification {
-                                scheduleNotificationForSparepart()
+//                                scheduleNotificationForSparepart()
+                                scheduleNotification(for: sparepart)
                                 hasScheduledNotification = true
+                                updateReminderDateToNow()
                             }
                         }
                 } else if progress > 0.7 {
@@ -68,19 +81,36 @@ struct ProgressBar: View {
                     .cornerRadius(4)
                     .foregroundColor(
                         progress > 0.7 ? .persianRed600 :
-                        (progress > 0.3 ? .amber600 : .lima600)
+                            (progress > 0.3 ? .amber600 : .lima600)
                     )
                     .animation(.linear, value: progress)
             }
         }
     }
     
-    func scheduleNotificationForSparepart() {
+    private func updateReminderDateToNow() {
+        if progress >= 1.0 {
+            swiftDataService.editReminder(
+                reminder: reminder,
+                sparepart: reminder.sparepart,
+                reminderOdo: reminder.reminderOdo,
+                kmInterval: reminder.kmInterval,
+                dueDate: Date(),
+                timeInterval: reminder.timeInterval,
+                vehicle: reminder.vehicle!,
+                isRepeat: reminder.isRepeat,
+                isDraft: reminder.isDraft
+            )
+        }
+    }
+    
+    func scheduleNotification(for sparepart: Sparepart) {
         let content = UNMutableNotificationContent()
-        content.title = "🚗 Honk! Kilometer \(sparepart.rawValue) sudah mendekat, siap ganti!"
-        content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
+        content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
+        content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
         content.sound = .default
-
+        
+        // Immediate notification for testing (use timeInterval: 1 to trigger after 1 second)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
         
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
@@ -95,8 +125,10 @@ struct ProgressBar: View {
     }
 }
 
+
+
 //#Preview {
-//    ProgressBar(currentKilometer: 200, maxKilometer: 200, serviceOdometer: 5, sparepart: Sparepart(rawValue: "Oil Filter"))
+//    ProgressBar(currentKilometer: 200, maxKilometer: 200, serviceOdometer: 5, sparepart: Sparepart(rawValue: "Oil Filter")!)
 //}
 
 
