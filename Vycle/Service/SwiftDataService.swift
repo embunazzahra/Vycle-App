@@ -83,7 +83,7 @@ extension SwiftDataService {
         
         let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
         modelContext.insert(vehicleData)
-        
+        saveModelContext()
         // Insert Odometer
         let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
         modelContext.insert(odometerData)
