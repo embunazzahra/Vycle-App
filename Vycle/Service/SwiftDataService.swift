@@ -56,10 +56,16 @@ extension SwiftDataService {
     }
     
     func resetPersistentStore() {
+        let odometers = fetchOdometers()
         do {
             try modelContext.delete(model: LocationHistory.self)
+            saveModelContext()
+            print("\nOdometers:")
+            for odometer in odometers {
+                print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
+            }
         } catch {
-            print("Failed to clear all Country and City data.")
+            print("Failed to clear all location")
         }
     }
     
@@ -81,8 +87,20 @@ extension SwiftDataService {
 extension SwiftDataService {
     func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
         
-        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
-        modelContext.insert(vehicleData)
+//        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+
+        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
+        
+        // Insert the vehicle and odometer data
+        // Only insert service data if serviceHistory is not nil or empty
+        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
+            let servicedSparepart = serviceHistory.map { $0.sparepart }
+            let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
+            modelContext.insert(serviceData)
+        }
+        modelContext.insert(Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
+        modelContext.insert(odometerData)
+
         
         // Insert Odometer
         let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
@@ -132,6 +150,12 @@ extension SwiftDataService {
         saveModelContext()
         printAllData()
     }
+    
+//    func insertOdometerData(vehicleData: Vehicle, odometer: Float){
+//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+//        modelContext.insert(odometerData)
+//        saveModelContext()
+//    }
 }
 
 

@@ -10,28 +10,19 @@ import SwiftData
 
 struct DashboardView: View {
     @EnvironmentObject var routes: Routes
-    @ObservedObject var locationManager: LocationManager  // Add LocationManager to DashboardView
+    @ObservedObject var locationManager: LocationManager
     @Query var trips: [Trip]
     @Query var vehicles : [Vehicle]
-    
     @Query var reminders : [Reminder]
-    
     @State private var showSheet = false
-    //    @Query var locationHistory : [LocationHistory]
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
-    
-    
-    @State private var odometer: Float? = 10000
+    @State private var odometer: Float?
+    @State private var filteredReminders: [Reminder] = []
     var body: some View {
-        let limitedLocationHistory = locationHistory.prefix(10)
+//        let limitedLocationHistory = locationHistory.prefix(10)
         
         NavigationView {
-            ScrollView{
-                
-//                ForEach(limitedLocationHistory){ history in
-//                    Text("Lati: \(history.latitude), Long: \(history.longitude) Dis: \(history.distance) Date: \(history.time)")
-//                }
                 ZStack{
                     VStack{
                         ZStack {
@@ -64,16 +55,16 @@ struct DashboardView: View {
                                     //                                    Text("\(locationHistory[0].distance ?? 0, specifier: "%.2f") Kilometer")
                                     //                                        .headline()
                                     //                                        .foregroundStyle(.grayShade300)
-                                    let odometer = initialOdometer.first?.currentKM ?? 0
-                                    
-                                   
-                                    if let firstLocation = locationHistory.first {
-                                        let totalDistance = (Double(odometer) + (firstLocation.distance ?? 0))
-                                        Text("\(Int(totalDistance)) Kilometer")
+                                    let latestOdo = initialOdometer.last?.currentKM ?? 0
+                                    Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
+                                    if let lastLocation = locationHistory.last?.distance {
+                                        let totalDistance = calculateTotalDistance() ?? 0
+                                        Text("\(Int(odometer ?? Float(totalDistance))) Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
+                                        
                                     } else {
-                                        Text("\(Int(odometer)) Kilometer")
+                                        Text("\(Int(latestOdo)) odo Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
                                     }
@@ -84,7 +75,9 @@ struct DashboardView: View {
                                 
                                 Button(action: {
                                     // Action for editing
+                                    _ = calculateTotalDistance()
                                     showSheet.toggle()
+                                    
                                 }) {
                                     Image(systemName: "pencil").foregroundStyle(Color.white)
                                 }.frame(width: 28, height: 28).background(Color.blue).cornerRadius(8).sheet(isPresented : $showSheet){
@@ -113,6 +106,8 @@ struct DashboardView: View {
                                         }
                                         VStack(alignment: .center){
                                             ZStack (alignment: .center){
+                                                
+
                                                 Image("odometer")
                                                 VStack {
                                                     Text("KM")
@@ -124,7 +119,15 @@ struct DashboardView: View {
                                         VStack{
                                             Spacer()
                                             CustomButton(title: "Simpan Perubahan"){
+                                                SwiftDataService.shared.insertOnBoarding(
+                                                    vehicleType: .car,
+                                                    vehicleBrand: .car(.honda),
+                                                    odometer: odometer ?? 0,
+                                                    serviceHistory: []
+                                                )
+                                                SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
                                                 showSheet.toggle()
+                                                _ = calculateTotalDistance()
                                             }
                                         }
                                         
@@ -142,13 +145,7 @@ struct DashboardView: View {
                                     HStack{
                                         HaveReminderView().padding(.horizontal, 16)
                                     }
-                                    
-                                    ForEach(reminders) { reminder in
-                                        SparepartReminderCard(reminder: reminder, currentKilometer: 10, serviceOdometer: 10)
-                                            .listRowInsets(EdgeInsets())
-                                            .listRowSeparator(.hidden)
-                                            .listSectionSeparator(.hidden)
-                                    }
+                                    SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                                 } else {
                                     Spacer()
                                     NoReminderView()
@@ -162,20 +159,32 @@ struct DashboardView: View {
                     
                 }
                 
+            
+        }.onAppear {
+            // Use locationManager data instead of hardcoded values
+            filteredReminders = reminders.filter { reminder in
+                let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
+                return progress > 0.7
             }
         }
         
     }
-//    private var filteredReminders: [Reminder] {
-//        return reminders.filter { reminder in
-//            let progress = getProgress(currentKilometer: 10, targetKilometer: reminder.targetKM)
-//            return progress >= 0.66
-//        }
-//    }
-//
-//    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-//        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
-//    }
+    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+    }
+    func calculateTotalDistance() -> Double? {
+        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+        if let firstLocation = locationHistory.first {
+            let totalDistance = Double(initialOdoValue) + (firstLocation.distance ?? 0)
+            // Update the odometer state here
+            odometer = Float(totalDistance)
+            return totalDistance
+        } else {
+            // If no location history, just return the initial odometer value
+            odometer = Float(initialOdoValue)
+            return Double(initialOdoValue)
+        }
+    }
 }
 
 struct NoReminderView : View {
