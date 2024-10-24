@@ -93,18 +93,18 @@ extension SwiftDataService {
         
         // Insert the vehicle and odometer data
         // Only insert service data if serviceHistory is not nil or empty
-        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
-            let servicedSparepart = serviceHistory.map { $0.sparepart }
-            let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
-            modelContext.insert(serviceData)
-        }
+//        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
+//            let servicedSparepart = serviceHistory.map { $0.sparepart }
+//            let serviceData = Servis(date: Date(), servicedSparepart: servicedSparepart, vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
+//            modelContext.insert(serviceData)
+//        }
         modelContext.insert(Vehicle(vehicleType: vehicleType, brand: vehicleBrand))
         modelContext.insert(odometerData)
 
         
-        // Insert Odometer
-        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-        modelContext.insert(odometerData)
+//        // Insert Odometer
+//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+//        modelContext.insert(odometerData)
         
         
         // Check if serviceHistory is not nil and not empty
@@ -118,13 +118,13 @@ extension SwiftDataService {
                 let serviceData = Servis(
                     date: date,
                     servicedSparepart: servicedSpareparts,
-                    vehicle: vehicleData
+                    vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
                 )
                 modelContext.insert(serviceData)
                 
                 for sparepart in servicedSpareparts {
                     // Insert Reminder
-                    guard let interval = vehicleData.brand.intervalForSparepart(sparepart) else {
+                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand).brand.intervalForSparepart(sparepart) else {
                         continue
                     }
 
@@ -137,7 +137,7 @@ extension SwiftDataService {
                         kmInterval: Float(interval.kilometer),
                         dueDate: dueDate,
                         timeInterval: interval.month,
-                        vehicle: vehicleData,
+                        vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand),
                         isRepeat: true, // Set true if you want reminders to repeat
                         isDraft: false
                     )
