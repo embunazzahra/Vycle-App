@@ -41,6 +41,7 @@ struct AllServiceHistoryView: View {
             }
             .listStyle(PlainListStyle()) // Remove default list styling
             .padding(.all, 0) // Remove all padding around the list
+            .scrollIndicators(.hidden)
             
             //            }
             

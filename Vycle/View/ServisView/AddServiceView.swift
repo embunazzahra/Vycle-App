@@ -46,7 +46,7 @@ struct AddServiceView: View {
     
     
     var body: some View {
-        ScrollView {
+        ScrollView (showsIndicators: false){
             VStack(alignment: .leading, spacing: 20) {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
