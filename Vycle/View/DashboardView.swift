@@ -148,7 +148,7 @@ struct DashboardView: View {
                                 HStack{
                                     HaveReminderView().padding(.horizontal, 16)
                                 }
-                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+//                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                                 List{
                                     ForEach(locationHistory){location in
                                         Text("longitude: \(location.longitude) latitude: \(location.latitude) distance: \(location.distance)")
