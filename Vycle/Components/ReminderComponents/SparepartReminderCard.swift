@@ -37,7 +37,7 @@ struct SparepartReminderCard: View {
 
                     ProgressBar(
                         currentKM: currentKM,
-//                        targetKM: Double(reminder.reminderOdo),
+//                        maxKilometer: Double(reminder.targetKM) + ,
                         sparepart: reminder.sparepart,
                         reminder: $reminder
                     )
@@ -89,7 +89,7 @@ struct SparepartReminderListView: View {
                 .listSectionSeparator(.hidden)
             }
         }
-        .onChange(of: locationManager.totalDistanceTraveled) { newValue in
+        .onChange(of: initialOdometer.last?.currentKM ?? 0) { newValue in
                print("Total distance traveled changed AAA: \(newValue)")
            }
     }
@@ -114,7 +114,10 @@ struct SparepartReminderListView: View {
             }
             
             remindersToDelete.forEach { reminder in
-                print("Deleting reminder with sparepart: \(reminder.sparepart.rawValue), dueDate: \(reminder.dueDate)")
+//                print("Deleting reminder with sparepart: \(reminder.sparepart.rawValue), dueDate: \(reminder.dueDate)")
+                
+                NotificationManager.shared.cancelNotification(for: reminder)
+                            
                 context.delete(reminder)
             }
 
@@ -129,7 +132,6 @@ struct SparepartReminderListView: View {
             print("Failed to fetch or save context: \(error.localizedDescription)")
         }
     }
-
 
 }
 

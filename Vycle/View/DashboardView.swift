@@ -171,7 +171,7 @@ struct DashboardView: View {
             }.onAppear {
                 // Use locationManager data instead of hardcoded values
                 filteredReminders = reminders.filter { reminder in
-                    let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
+                    let progress = getProgress(currentKilometer: Double(initialOdometer.last?.currentKM ?? 0), targetKilometer: reminder.kmInterval)
                     return progress > 0.7
                 }
             }
