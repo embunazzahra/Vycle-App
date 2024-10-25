@@ -60,9 +60,6 @@ struct DashboardView: View {
                                     .frame(height: 40)
                                 VStack(alignment: .leading, spacing: 4){
                                     Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
-                                    //                                    Text("\(locationHistory[0].distance ?? 0, specifier: "%.2f") Kilometer")
-                                    //                                        .headline()
-                                    //                                        .foregroundStyle(.grayShade300)
                                     let latestOdo = initialOdometer.last?.currentKM ?? 0
                                     Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
                                     if let lastLocation = locationHistory.last?.distance {
@@ -152,6 +149,11 @@ struct DashboardView: View {
                                     HaveReminderView().padding(.horizontal, 16)
                                 }
                                 SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                                List{
+                                    ForEach(locationHistory){location in
+                                        Text("longitude: \(location.longitude) latitude: \(location.latitude) distance: \(location.distance)")
+                                    }
+                                }
                             } else {
                                 Spacer()
                                 NoReminderView()
@@ -175,69 +177,54 @@ struct DashboardView: View {
             }
             
         }}
-        private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-            return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
-        }
-        func calculateTotalDistance() -> Double? {
-            let initialOdoValue = initialOdometer.last?.currentKM ?? 0
-            if let firstLocation = locationHistory.first {
-                let totalDistance = Double(initialOdoValue) + (firstLocation.distance ?? 0)
-                // Update the odometer state here
-                odometer = Float(totalDistance)
-                return totalDistance
-            } else {
-                // If no location history, just return the initial odometer value
-                odometer = Float(initialOdoValue)
-                return Double(initialOdoValue)
-            }
-            
-        }
-        //    private var filteredReminders: [Reminder] {
-        //        return reminders.filter { reminder in
-        //            let progress = getProgress(currentKilometer: 10, targetKilometer: reminder.targetKM)
-        //            return progress >= 0.66
-        //        }
-        //    }
-        //
-        //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-        //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
-        //    }
+    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
     }
+    func calculateTotalDistance() -> Double? {
+        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+        if let firstLocation = locationHistory.first {
+            let totalDistance = Double(initialOdoValue) + (firstLocation.distance ?? 0)
+            // Update the odometer state here
+            odometer = Float(totalDistance)
+            return totalDistance
+        } else {
+            // If no location history, just return the initial odometer value
+            odometer = Float(initialOdoValue)
+            return Double(initialOdoValue)
+        }
+        
+    }
+}
 
-    
-    struct NoReminderView : View {
-        var body: some View {
-            Image("no-service-dashboard")
-            Text("Belum ada suku cadang yang mendesak").headline().foregroundColor(.neutral.shade300)
-            Text("Saat ini aman, tapi pastikan siap sebelum waktunya tiba").footnote(.regular).foregroundColor(.neutral.tone300)
-            
-        }
+
+struct NoReminderView : View {
+    var body: some View {
+        Image("no-service-dashboard")
+        Text("Belum ada suku cadang yang mendesak").headline().foregroundColor(.neutral.shade300)
+        Text("Saat ini aman, tapi pastikan siap sebelum waktunya tiba").footnote(.regular).foregroundColor(.neutral.tone300)
+        
     }
-    
-    struct HaveReminderView : View {
-        @EnvironmentObject var routes: Routes
-        var body: some View {
-            HStack{
-                VStack(alignment: .leading){
-                    Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
-                    Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
-                }
-                Spacer()
-                Button(action: {
-                    routes.navigate(to: .AllReminderView)
-                }){
-                    ZStack{
-                        Color.primary.base
-                        Text("Lihat Semua").foregroundStyle(Color.background)
-                    }.cornerRadius(14)
-                }.frame(width: 120, height: 35)
-            } .padding(.top, -30)
-            
-        }
+}
+
+struct HaveReminderView : View {
+    @EnvironmentObject var routes: Routes
+    var body: some View {
+        HStack{
+            VStack(alignment: .leading){
+                Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
+                Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
+            }
+            Spacer()
+            Button(action: {
+                routes.navigate(to: .AllReminderView)
+            }){
+                ZStack{
+                    Color.primary.base
+                    Text("Lihat Semua").foregroundStyle(Color.background)
+                }.cornerRadius(14)
+            }.frame(width: 120, height: 35)
+        } .padding(.top, -30)
+        
     }
-    
-    //#Preview {
-    //    DashboardView(locationManager: <#LocationManager#>)
-    //        .environmentObject(LocationManager())
-    //}
+}
 
