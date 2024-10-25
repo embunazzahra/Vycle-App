@@ -95,6 +95,12 @@ struct AllReminderView: View {
             
             if let existingReminder = latestReminders[sparepartKey] {
                 if reminder.dueDate > existingReminder.dueDate {
+//                    NotificationManager.shared.cancelNotification(for: existingReminder)
+//                    print("Cancelled notification for existing reminder with sparepart: \(existingReminder.sparepart.rawValue), due: \(existingReminder.dueDate)")
+//
+//                    NotificationManager.shared.scheduleNotification(for: reminder)
+//                    print("notif created for \(reminder.sparepart.rawValue), due\(reminder.dueDate)")
+                    
                     latestReminders[sparepartKey] = reminder
                     print("Updated dictionary with new latest reminder for \(sparepartKey)")
                 }

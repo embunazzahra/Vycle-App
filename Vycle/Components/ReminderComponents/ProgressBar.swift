@@ -39,8 +39,9 @@ struct ProgressBar: View {
     var body: some View {
         VStack(alignment: .leading) {
             if targetKM != nil {
-                if progress >= 1.0 {
-                    Text("Sudah tiba bulannya nih!")
+                if kilometerDifference <= 500 {
+//                    Text("Sudah tiba bulannya nih!")
+                    Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
                         .onAppear {
@@ -51,18 +52,33 @@ struct ProgressBar: View {
                                 updateReminderDateToNow()
                             }
                         }
-                } else if progress > 0.7 {
-                    Text("\(Int(kilometerDifference)) Kilometer lagi")
-                        .footnote(.emphasized)
-                        .foregroundColor(Color.persianRed600)
-                } else if progress > 0.3 {
-                    Text("\(Int(kilometerDifference)) Kilometer lagi")
-                        .footnote(.emphasized)
-                        .foregroundColor(Color.amber600)
                 } else {
-                    Text("\(Int(kilometerDifference)) Kilometer lagi")
-                        .footnote(.emphasized)
-                        .foregroundColor(Color.lima600)
+//                    if progress >= 1.0 {
+//                        Text("Sudah tiba bulannya nih!")
+//                            .footnote(.emphasized)
+//                            .foregroundColor(Color.persianRed600)
+//                            .onAppear {
+//                                if !hasScheduledNotification {
+//    //                                scheduleNotificationForSparepart()
+//                                    scheduleNotification(for: sparepart)
+//                                    hasScheduledNotification = true
+//                                    updateReminderDateToNow()
+//                                }
+//                            }
+//                    } else if progress > 0.7 {
+//                        Text("\(Int(kilometerDifference)) Kilometer lagi")
+//                            .footnote(.emphasized)
+//                            .foregroundColor(Color.persianRed600)
+//                    } else
+                    if progress > 0.3 {
+                        Text("\(Int(kilometerDifference)) Kilometer lagi")
+                            .footnote(.emphasized)
+                            .foregroundColor(Color.amber600)
+                    } else {
+                        Text("\(Int(kilometerDifference)) Kilometer lagi")
+                            .footnote(.emphasized)
+                            .foregroundColor(Color.lima600)
+                    }
                 }
             } else {
                 Text("Belum ada data kilometer")
@@ -80,7 +96,7 @@ struct ProgressBar: View {
                     .frame(width: CGFloat(progress) * 265, height: 8)
                     .cornerRadius(4)
                     .foregroundColor(
-                        progress > 0.7 ? .persianRed600 :
+                        kilometerDifference <= 500 ? .persianRed600 :
                             (progress > 0.3 ? .amber600 : .lima600)
                     )
                     .animation(.linear, value: progress)
@@ -89,7 +105,7 @@ struct ProgressBar: View {
     }
     
     private func updateReminderDateToNow() {
-        if progress >= 1.0 {
+        if kilometerDifference <= 500 {
             swiftDataService.editReminder(
                 reminder: reminder,
                 sparepart: reminder.sparepart,
@@ -124,7 +140,6 @@ struct ProgressBar: View {
         }
     }
 }
-
 
 
 //#Preview {
