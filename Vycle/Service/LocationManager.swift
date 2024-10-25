@@ -116,6 +116,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             handleBeaconConnection(isConnected: true)
             if let currentLocation = currentLocation {
                 self.saveLocationHistory(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
+            }
         }
     }
     func startBackgroundTask() {
