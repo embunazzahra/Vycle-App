@@ -13,17 +13,19 @@ struct ContentView: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject var routes: Routes
     @StateObject var locationManager = LocationManager() // @StateObject for lifecycle management
-    @Query(sort: \Vehicle.vehicleID) var vehicleData: [Vehicle]
+    @State private var isShowSplash = true
     enum Tab: String {
         case dashboard = "Dashboard"
         case servis = "Servis"
         case pengingat = "Pengingat"
     }
-    @State private var odometer: Float? = nil
-    @State private var isShowSplash = true
     @State private var selectedTab: Tab = .dashboard
+    @Query(sort: \Vehicle.vehicleID) var vehicleData: [Vehicle]
+    @State private var odometer: Float? = nil
     @State private var reminders: [Reminder] = []
     @Query var services : [Servis]
+    @State private var vBeaconID: String = UserDefaults.standard.string(forKey: "vBeaconID") ?? "" 
+    
     
     init() {
         setupNavigationBarWithoutScroll()
@@ -41,7 +43,7 @@ struct ContentView: View {
                         }
                     }
             } else if vehicleData.isEmpty {
-                OnBoardingView(odometer: $odometer)
+                OnBoardingView(locationManager: locationManager, odometer: $odometer, vBeaconID: $vBeaconID)
             } else {
                 TabView(selection: $selectedTab) {
                     DashboardView(locationManager: locationManager).tabItem {

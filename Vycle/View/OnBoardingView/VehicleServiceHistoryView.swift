@@ -10,6 +10,12 @@ import SwiftUI
 struct VehicleServiceHistoryView: View {
     @Binding var serviceHistory: [ServiceHistory]
     
+    @Binding var currentPage: Int
+    
+    var isButtonEnabled: Bool {
+        serviceHistory.allSatisfy { $0.isPartChosen && $0.isMonthYearChosen }
+    }
+    
     var body: some View {
         VStack (alignment: .leading) {
             Text("Masukkan data servis terakhirmu disini")
@@ -24,7 +30,22 @@ struct VehicleServiceHistoryView: View {
                 .padding(.horizontal, 16)
             ServiceHistoryList(items: $serviceHistory)
                 .padding(.top, -8)
+            
             Spacer()
+            
+            CustomButton(
+                title: "Lanjutkan",
+                iconName: "lanjutkan",
+                iconPosition: .right,
+                buttonType: isButtonEnabled ? .primary : .disabled,
+                verticalPadding: 0
+            ) {
+                if isButtonEnabled {
+                    currentPage += 1
+                }
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 24)
         }
     }
 }

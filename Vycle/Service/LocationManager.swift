@@ -160,6 +160,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let beaconUUID = UUID(uuidString: "2D7A9F0C-E0E8-4CC9-A71B-A21DB2D034A1")!
     private let beaconMajor: CLBeaconMajorValue = 5
     private let beaconMinor: CLBeaconMinorValue = 88
+    @Published var identifier: String = "ALOHA"
     
     let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
     
@@ -182,14 +183,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.requestAlwaysAuthorization()
         locationManager.startMonitoringSignificantLocationChanges()
         startTrackingBeacons()
-        
     }
     
     // Start tracking the beacon region
     func startTrackingBeacons() {
         if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
             print("monitoring available")
-            let beaconRegion = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: "ALOHA")
+            let beaconRegion = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: identifier)
             if CLLocationManager.isRangingAvailable() {
                 print("isranging available")
                 locationManager.startMonitoring(for: beaconRegion)
@@ -201,7 +201,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private func startMonitoring() {
         if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-            let region = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: "ALOHA")
+            let region = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: identifier)
             self.locationManager.startMonitoring(for: region)
         }
     }
