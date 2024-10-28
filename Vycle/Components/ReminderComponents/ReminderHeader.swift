@@ -15,7 +15,7 @@ struct ReminderHeader: View {
 
         VStack {
             VStack(alignment: .center, spacing: 8) {
-                Image(systemName: "bell.fill")
+                Image("reminder_icon_blue")
                     .font(.system(size: 20, weight: .bold))
                 
                 HStack {

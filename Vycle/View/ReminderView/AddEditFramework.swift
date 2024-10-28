@@ -119,7 +119,7 @@ struct AddEditFramework: View {
 
                 Spacer()
 
-                CustomButton(title: reminderToEdit == nil ? "Tambahkan Pengingat" : "Edit Pengingat", iconName: "", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
+                CustomButton(title: reminderToEdit == nil ? "Tambahkan Pengingat" : "Edit Pengingat", iconName: "add_box", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
                     isNotificationShowed = true
 
                     if let reminderToEdit = reminderToEdit {

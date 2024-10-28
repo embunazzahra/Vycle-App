@@ -182,13 +182,13 @@ struct CustomScrollPicker: View {
 
 
 //#Preview {
-//    @State var dummyReminders = [
-//        Reminder(date: Date(), sparepart: .oliMesin, targetKM: 10000, kmInterval: 1000, dueDate: Date(), timeInterval: 3, vehicle: Vehicle(vehicleType: .car, brand: .honda), isRepeat: true, isDraft: false),
-//        Reminder(date: Date(), sparepart: .filterUdara, targetKM: 15000, kmInterval: 1500, dueDate: Date(), timeInterval: 6, vehicle: Vehicle(vehicleType: .car, brand: .toyota), isRepeat: true, isDraft: false)
+//    let dummyReminders = [
+//        Reminder(date: Date(), sparepart: .busi, reminderOdo: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
 //    ]
 //
-//    AllReminderView(reminders: $dummyReminders) // No need to explicitly 'return' the view
+//    AllReminderView(reminders: dummyReminders)
 //}
+
 
 
 

@@ -38,6 +38,7 @@ struct ReminderContentNear: View {
 struct ReminderContentFar: View {
     var body: some View {
         VStack(alignment: .center) {
+            Image("good_condition")
             Text("Kendaraan siap jalan! 🚗")
                 .font(.headline)
                 .foregroundColor(Color.neutral.shade300)
