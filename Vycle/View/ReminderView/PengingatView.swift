@@ -20,8 +20,10 @@ struct RoundedCornersShape: Shape {
 struct PengingatView: View {
     @Query var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
-    @ObservedObject var locationManager: LocationManager  // Use actual distance from locationManager
+    @ObservedObject var locationManager: LocationManager
     @State private var filteredReminders: [Reminder] = []
+    @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
+    @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
 
     var body: some View {
         VStack {
@@ -44,17 +46,20 @@ struct PengingatView: View {
                 VStack {
                     if !reminders.isEmpty {
                         let hasHighProgress = filteredReminders.contains { reminder in
-                            let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
+                            let currentKilometer = Double(initialOdometer.last?.currentKM ?? 0)
+                            let progress = getProgress(currentKilometer: currentKilometer, reminder: reminder)
                             return progress > 0.7
                         }
                         
                         if hasHighProgress {
+                            DummyView()
                             ReminderContentNear()
                                 .frame(width: 390)
                                 .padding(.vertical, 8)
                             SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                         } else {
                             Spacer()
+                            DummyView()
                             ReminderContentFar()
                             Spacer()
                         }
@@ -73,19 +78,56 @@ struct PengingatView: View {
         .navigationBarBackButtonHidden(true)
         .navigationTitle("Pengingat")
         .onAppear {
-            // Use locationManager data instead of hardcoded values
-            filteredReminders = reminders.filter { reminder in
-                let progress = getProgress(currentKilometer: locationManager.totalDistanceTraveled, targetKilometer: reminder.kmInterval + 5)
-                return progress > 0.7
-            }
+            updateFilteredReminders()
+        }
+        .onChange(of: reminders) { _ in
+            updateFilteredReminders()
+        }
+        .onChange(of: Double(initialOdometer.last?.currentKM ?? 0)) { _ in
+            updateFilteredReminders()
         }
     }
 
-    // Updated to use dynamic currentKilometer from locationManager
-    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+    private func updateFilteredReminders() {
+        let currentKilometer = Double(initialOdometer.last?.currentKM ?? 0)
+        
+        let uniqueReminders = getUniqueReminders(reminders)
+        
+        filteredReminders = uniqueReminders.filter { reminder in
+            let progress = getProgress(currentKilometer: currentKilometer, reminder: reminder)
+            return progress > 0.7
+        }
     }
+
+
+    private func getUniqueReminders(_ reminders: [Reminder]) -> [Reminder] {
+        var uniqueReminders: [String: Reminder] = [:]
+
+        for reminder in reminders {
+            let sparepartKey = reminder.sparepart.rawValue
+            
+            if let existingReminder = uniqueReminders[sparepartKey] {
+                if reminder.dueDate > existingReminder.dueDate {
+                    uniqueReminders[sparepartKey] = reminder
+                }
+            } else {
+                uniqueReminders[sparepartKey] = reminder
+            }
+        }
+
+        return Array(uniqueReminders.values)
+    }
+
+    private func getProgress(currentKilometer: Double, reminder: Reminder) -> Double {
+        let targetKilometer = reminder.kmInterval
+        guard targetKilometer > 0 else { return 0.0 }
+        let progress = (currentKilometer - Double(reminder.reminderOdo)) / Double(targetKilometer)
+        return min(progress, 1.0)
+    }
+
 }
+
+
 
 //#Preview {
 //    PengingatView()

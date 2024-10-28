@@ -18,7 +18,7 @@ struct EditReminderView: View {
             reminders: .constant([reminder]),
             selectedSparepart: reminder.sparepart,
             selectedDate: reminder.dueDate,
-            selectedNumber: Int(reminder.targetKM),
+            selectedNumber: Int(reminder.reminderOdo),
             reminderToEdit: reminder
         ) {
             AnyView(EditSuccessNotification(reminders: .constant([reminder])))

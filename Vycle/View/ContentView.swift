@@ -24,6 +24,8 @@ struct ContentView: View {
     @State private var odometer: Float? = nil
     @State private var reminders: [Reminder] = []
     @Query var services : [Servis]
+    @Query var fetchedReminders: [Reminder]
+    @State private var uniqueSparePartCount: Int = 0
     @State private var vBeaconID: String = UserDefaults.standard.string(forKey: "vBeaconID") ?? "" 
     
     
@@ -100,8 +102,8 @@ struct ContentView: View {
                                         routes.navigate(to: .AddServiceView(service: nil))
                                     }
                                 }
-                                .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? 1 : 0)
-                                .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat) ? false : true)
+                                .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? 1 : 0)
+                                .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? false : true)
                         }
                     }
             }
@@ -110,11 +112,25 @@ struct ContentView: View {
         .tint(.white)
         .onAppear {
             locationManager.setContext(context)
-            locationManager.startTracking()  // Start tracking the location
+            locationManager.startTracking()
+            fetchAndCountUniqueSpareParts()
+        }
+        .onChange(of: fetchedReminders) { _ in
+            fetchAndCountUniqueSpareParts()
         }
         /*.environmentObject(locationManager) */ // Provide LocationManager as EnvironmentObject
     }
     
-    
+    private func fetchAndCountUniqueSpareParts() {
+        var uniqueSpareParts: Set<String> = []
+        for reminder in fetchedReminders {
+            let sparePartName = reminder.sparepart.rawValue
+            uniqueSpareParts.insert(sparePartName)
+        }
+        uniqueSparePartCount = uniqueSpareParts.count
+        
+        print(uniqueSparePartCount)
+    }
+
 }
 

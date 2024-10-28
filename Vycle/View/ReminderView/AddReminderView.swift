@@ -33,7 +33,6 @@ struct AddReminderView: View {
             AnyView(AddSuccessNotification(reminders: $reminders))
         }
         .onAppear {
-            // Make sure that selectedSparepart is set to the first available spare part
             if selectedSparepart == nil {
                 selectedSparepart = availableSpareparts.first
             }

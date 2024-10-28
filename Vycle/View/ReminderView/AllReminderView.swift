@@ -4,7 +4,6 @@
 //
 //  Created by Clarissa Alverina on 08/10/24.
 //
-
 import SwiftUI
 import SwiftData
 
@@ -46,18 +45,16 @@ struct AllReminderView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
 
-                    let filteredReminders = remindersForSelectedMonthAndYear()
+                    let uniqueReminders = latestReminders(from: reminders)
+                    let filteredReminders = remindersForSelectedMonthAndYear(from: uniqueReminders)
 
                     if !filteredReminders.isEmpty {
-                        // Create a Binding to the filtered reminders
                         SparepartReminderListView(reminders: Binding(
                             get: { filteredReminders },
-                            set: { newValue in
-                                
-                            }
+                            set: { newValue in }
                         ), locationManager: locationManager)
                     } else {
-                        Text("No data")
+                        Text("No reminders available.")
                             .font(.headline)
                             .foregroundColor(.gray)
                     }
@@ -76,21 +73,52 @@ struct AllReminderView: View {
         .navigationBarBackButtonHidden(false)
     }
 
-    private func remindersForSelectedMonthAndYear() -> [Reminder] {
+    // Update this function to take reminders as input
+    private func remindersForSelectedMonthAndYear(from uniqueReminders: [Reminder]) -> [Reminder] {
         guard let selectedDate = getDateFrom(option: selectedOption) else {
             return []
         }
         let calendar = Calendar.current
-        return reminders.filter {
+        let filtered = uniqueReminders.filter {
             calendar.isDate($0.dueDate, equalTo: selectedDate, toGranularity: .month)
         }
+//        print("Filtered reminders for \(selectedOption): \(filtered.hashValue)")
+        return filtered
+    }
+
+    // Filter out duplicates first
+    private func latestReminders(from reminders: [Reminder]) -> [Reminder] {
+        var latestReminders: [String: Reminder] = [:]  // Key: sparepart name, Value: Reminder
+
+        for reminder in reminders {
+            let sparepartKey = reminder.sparepart.rawValue  
+            
+            if let existingReminder = latestReminders[sparepartKey] {
+                if reminder.dueDate > existingReminder.dueDate {
+//                    NotificationManager.shared.cancelNotification(for: existingReminder)
+//                    print("Cancelled notification for existing reminder with sparepart: \(existingReminder.sparepart.rawValue), due: \(existingReminder.dueDate)")
+//
+//                    NotificationManager.shared.scheduleNotification(for: reminder)
+//                    print("notif created for \(reminder.sparepart.rawValue), due\(reminder.dueDate)")
+                    
+                    latestReminders[sparepartKey] = reminder
+                    print("Updated dictionary with new latest reminder for \(sparepartKey)")
+                }
+            } else {
+                latestReminders[sparepartKey] = reminder
+//                print("Added new reminder for \(sparepartKey) to dictionary")
+            }
+        }
+
+        return Array(latestReminders.values)  // Return the unique reminders
     }
 
     private func loadAvailableOptionsAndCounts() {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         
-        let sortedReminders = reminders.sorted { $0.dueDate < $1.dueDate }
+        let uniqueReminders = latestReminders(from: reminders)  // Get unique reminders
+        let sortedReminders = uniqueReminders.sorted { $0.dueDate < $1.dueDate }
         
         var optionCountMap: [String: Int] = [:]
         

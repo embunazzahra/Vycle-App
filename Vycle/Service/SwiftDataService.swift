@@ -51,7 +51,7 @@ extension SwiftDataService {
     }
     
     func insertReminder(){
-        let testVehicle = Reminder(date: Date(), sparepart: .busi, targetKM: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
+        let testVehicle = Reminder(date: Date(), sparepart: .busi, reminderOdo: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
         modelContext.insert(testVehicle)
     }
     
@@ -116,12 +116,14 @@ extension SwiftDataService {
                         continue
                     }
 
-                    let targetKM = odometer + Float(interval.kilometer)
+//                    let targetKM = odometer + Float(interval.kilometer)
+                    let reminderOdo = odometer
+                    print("target km : \(reminderOdo)")
                     let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
                     let reminderData = Reminder(
                         date: date,
                         sparepart: sparepart,
-                        targetKM: targetKM,
+                        reminderOdo: reminderOdo,
                         kmInterval: Float(interval.kilometer),
                         dueDate: dueDate,
                         timeInterval: interval.month,
@@ -184,21 +186,57 @@ extension SwiftDataService {
         for vehicle in vehicles {
             print("ID: \(vehicle.vehicleID), Type: \(vehicle.vehicleType), Brand: \(vehicle.brand)")
         }
-
-        print("\nOdometers:")
-        for odometer in odometers {
-            print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
-        }
         
         print("\nServices:")
         for service in services {
             print("Date: \(service.date), Spareparts: \(service.servicedSparepart), Vehicle ID: \(service.vehicle.vehicleID)")
         }
         
-        print("\nReminders:")
-        for reminder in reminders {
-            print("Date: \(reminder.date), Sparepart: \(reminder.sparepart), Target KM: \(reminder.targetKM), KM Interval: \(reminder.kmInterval), Due Date: \(reminder.dueDate), Time Interval: \(reminder.timeInterval) months, Vehicle ID: \(reminder.vehicle.vehicleID), Repeat: \(reminder.isRepeat ? "Yes" : "No"), Draft: \(reminder.isDraft ? "Yes" : "No")")
+        print("\nOdometers:")
+        for odometer in odometers {
+            print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
         }
+    }
+}
+
+extension SwiftDataService {
+    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+        let newReminder = Reminder(
+            date: Date(),
+            sparepart: sparepart,
+            reminderOdo: reminderOdo,
+            kmInterval: kmInterval,
+            dueDate: dueDate,
+            timeInterval: timeInterval,
+            vehicle: vehicle,
+            isRepeat: isRepeat,
+            isDraft: isDraft
+        )
+        modelContext.insert(newReminder)
+        saveModelContext()
+        
+        NotificationManager.shared.scheduleNotification(for: newReminder)
+        
+        print("Reminder inserted and notification scheduled successfully!")
+        
+        print("Added reminder: \(newReminder.sparepart.rawValue)")
+    }
+    
+    func editReminder(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+        reminder.sparepart = sparepart
+        reminder.reminderOdo = reminderOdo
+        reminder.kmInterval = kmInterval
+        reminder.dueDate = dueDate
+        reminder.timeInterval = timeInterval
+        reminder.vehicle = vehicle
+        reminder.isRepeat = isRepeat
+        reminder.isDraft = isDraft
+        saveModelContext()
+        
+        NotificationManager.shared.cancelNotification(for: reminder)
+        NotificationManager.shared.scheduleNotification(for: reminder)
+        
+        print("Reminder edited successfully!")
     }
 }
 
@@ -278,13 +316,14 @@ extension SwiftDataService {
                 continue
             }
             
-            let targetKM = odometer + Float(interval.kilometer)
+//            let targetKM = odometer + Float(interval.kilometer)
+            let reminderOdo = odometer
             let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
             
             //            let newService = service
             let newReminder = Reminder(date: service.date,
                                        sparepart: sparepart,
-                                       targetKM: targetKM,
+                                       reminderOdo: reminderOdo,
                                        kmInterval: Float(interval.kilometer),
                                        dueDate: dueDate,
                                        timeInterval: interval.month,
@@ -292,6 +331,7 @@ extension SwiftDataService {
                                        isRepeat: true,
                                        isDraft: false,
                                        service: service)
+            NotificationManager.shared.scheduleNotification(for: newReminder)
             
             //            modelContext.insert(newReminder)
         }

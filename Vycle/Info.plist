@@ -22,6 +22,7 @@
 		<string>processing</string>
 		<string>location</string>
 		<string>bluetooth-central</string>
+		<string>fetch</string>
 	</array>
 </dict>
 </plist>

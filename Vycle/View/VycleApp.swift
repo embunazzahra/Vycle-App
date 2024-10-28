@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct VycleApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     @StateObject var routes = Routes()
 //    @StateObject var locationManager: LocationManager = .init()
     
