@@ -45,29 +45,7 @@ extension SwiftDataService {
         }
     }
     
-    func insertVehicle(){
-        let testVehicle = Vehicle(vehicleType: .car, brand: .car(.toyota))
-        modelContext.insert(testVehicle)
-    }
-    
-    func insertReminder(){
-        let testVehicle = Reminder(date: Date(), sparepart: .busi, reminderOdo: 1000, kmInterval: 1200, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)), isRepeat: false, isDraft: false)
-        modelContext.insert(testVehicle)
-    }
-    
-    func resetPersistentStore() {
-        let odometers = fetchOdometers()
-        do {
-            try modelContext.delete(model: LocationHistory.self)
-            saveModelContext()
-            print("\nOdometers:")
-            for odometer in odometers {
-                print("Date: \(odometer.date), Current KM: \(odometer.currentKM), Vehicle ID: \(odometer.vehicle.vehicleID)")
-            }
-        } catch {
-            print("Failed to clear all location")
-        }
-    }
+
     
     func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
         let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
@@ -91,6 +69,7 @@ extension SwiftDataService {
         let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
         modelContext.insert(vehicleData)
         saveModelContext()
+        self.setCurrentVehicle(vehicleData)
         // Insert Odometer
         let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
         modelContext.insert(odometerData)
@@ -107,7 +86,7 @@ extension SwiftDataService {
                 let serviceData = Servis(
                     date: date,
                     servicedSparepart: servicedSpareparts,
-                    vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+                    vehicle: self.getCurrentVehicle()!
                 )
                 modelContext.insert(serviceData)
                 
@@ -128,7 +107,7 @@ extension SwiftDataService {
                         kmInterval: Float(interval.kilometer),
                         dueDate: dueDate,
                         timeInterval: interval.month,
-                        vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand),
+                        vehicle: self.getCurrentVehicle()!,
                         isRepeat: true, // Set true if you want reminders to repeat
                         isDraft: true
                     )
@@ -346,6 +325,8 @@ extension SwiftDataService {
     }
 }
 
+
+
 extension ModelContext {
 
     ///
@@ -376,3 +357,45 @@ extension ModelContext {
     }
 
 }
+
+extension SwiftDataService {
+    // Property to keep track of the current vehicle ID in UserDefaults
+    private var currentVehicleID: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "currentVehicleID")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "currentVehicleID")
+        }
+    }
+
+    // MARK: - Set Current Vehicle
+    func setCurrentVehicle(_ vehicle: Vehicle) {
+        currentVehicleID = vehicle.vehicleID.uuidString
+    }
+
+    // MARK: - Get Current Vehicle
+    func getCurrentVehicle() -> Vehicle? {
+        guard let currentVehicleID = currentVehicleID, let uuid = UUID(uuidString: currentVehicleID) else {
+            print("No current vehicle ID set or invalid UUID.")
+            return nil
+        }
+        
+        // Create a predicate to fetch the vehicle by its UUID
+        let predicate = #Predicate<Vehicle> { vehicle in
+            vehicle.vehicleID == uuid // Use the UUID for comparison
+        }
+        var descriptor = FetchDescriptor(predicate: predicate)
+        descriptor.fetchLimit = 1 // Limit to one result
+
+        do {
+            // Fetch the vehicle from the model context
+            let vehicles = try modelContext.fetch(descriptor)
+            return vehicles.first // Return the first (and only) result
+        } catch {
+            print("Failed to fetch current vehicle: \(error.localizedDescription)")
+            return nil
+        }
+    }
+}
+
