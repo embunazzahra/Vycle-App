@@ -26,7 +26,8 @@ struct ContentView: View {
     @Query var services : [Servis]
     @Query var fetchedReminders: [Reminder]
     @State private var uniqueSparePartCount: Int = 0
-    @State private var vBeaconID: String = UserDefaults.standard.string(forKey: "vBeaconID") ?? "" 
+    @State private var vBeaconID: String = ""
+    @AppStorage("onBoardingDataSaved") private var onBoardingDataSaved: Bool = false
     
     
     init() {
@@ -44,8 +45,13 @@ struct ContentView: View {
                             }
                         }
                     }
-            } else if vehicleData.isEmpty {
-                OnBoardingView(locationManager: locationManager, odometer: $odometer, vBeaconID: $vBeaconID)
+            } else if !onBoardingDataSaved {
+                OnBoardingView(
+                    locationManager: locationManager,
+                    odometer: $odometer,
+                    vBeaconID: $vBeaconID,
+                    onBoardingDataSaved: $onBoardingDataSaved
+                )
             } else {
                 TabView(selection: $selectedTab) {
                     DashboardView(locationManager: locationManager).tabItem {

@@ -19,7 +19,7 @@ struct OnBoardingView: View {
     @State private var serviceHistory: [ServiceHistory] = []
     @Binding var vBeaconID: String
     @State private var showGuide: Bool = false
-    @State private var saveData: Bool = false
+    @Binding var onBoardingDataSaved: Bool
     @State private var isRangingVBeacon: Bool = false
     @State private var keyboardHeight: CGFloat = 0.0
     
@@ -105,7 +105,7 @@ struct OnBoardingView: View {
                                     vBeaconID: $vBeaconID,
                                     showGuide: $showGuide,
                                     isRangingVBeacon: $isRangingVBeacon,
-                                    saveData: $saveData,
+                                    onBoardingDataSaved: $onBoardingDataSaved,
                                     keyboardHeight: $keyboardHeight
                                 )
                                 .transition(.move(edge: .trailing))
@@ -113,7 +113,7 @@ struct OnBoardingView: View {
                                 RangingVBeaconView(
                                     locationManager: locationManager,
                                     isRangingVBeacon: $isRangingVBeacon,
-                                    saveData: $saveData
+                                    onBoardingDataSaved: $onBoardingDataSaved
                                 )
                                 .transition(.move(edge: .trailing) )
                             }
@@ -122,9 +122,21 @@ struct OnBoardingView: View {
                         }
                     }
                     .animation(.easeInOut, value: currentPage)
-                    .onChange(of: currentPage) { newPage in
-                        isMovingForward = newPage > previousPage
-                        previousPage = newPage
+                    .onChange(of: currentPage) {
+                        isMovingForward = currentPage > previousPage
+                        previousPage = currentPage
+                    }
+                    .onChange(of: onBoardingDataSaved) {
+                        print("Check save")
+                        if onBoardingDataSaved {
+                            print("Saving")
+                            SwiftDataService.shared.insertOnBoarding(
+                                vehicleType: vehicleType,
+                                vehicleBrand: vehicleBrand ?? .car(.honda),
+                                odometer: odometer ?? 0,
+                                serviceHistory: serviceHistory
+                            )
+                        }
                     }
                 }
             }
@@ -134,19 +146,17 @@ struct OnBoardingView: View {
         }
         .animation(.smooth, value: keyboardHeight)
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .onChange(of: saveData) { isSave in
-//            if isSave {
-//                print(isSave)
-//                SwiftDataService.shared.insertOnBoarding(
-//                    vehicleType: vehicleType,
-//                    vehicleBrand: vehicleBrand ?? .car(.honda),
-//                    odometer: odometer ?? 0,
-//                    serviceHistory: serviceHistory
-//                )
-//                
-//                UserDefaults.standard.set(vBeaconID, forKey: "vBeaconID")
-//                saveData = false
-//            }
+        .onChange(of: onBoardingDataSaved) {
+            print("Check save")
+            if onBoardingDataSaved {
+                print("Saving")
+                SwiftDataService.shared.insertOnBoarding(
+                    vehicleType: vehicleType,
+                    vehicleBrand: vehicleBrand ?? .car(.honda),
+                    odometer: odometer ?? 0,
+                    serviceHistory: serviceHistory
+                )
+            }
         }
     }
 }

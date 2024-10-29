@@ -10,7 +10,7 @@ import SwiftUI
 struct RangingVBeaconView: View {
     @ObservedObject var locationManager: LocationManager
     @Binding var isRangingVBeacon: Bool
-    @Binding var saveData: Bool
+    @Binding var onBoardingDataSaved: Bool
     @State private var configurationFailed = false
     @State private var animateCircle1 = false
     @State private var animateCircle2 = false
@@ -21,8 +21,9 @@ struct RangingVBeaconView: View {
             if locationManager.isInsideBeaconRegion {
                 BeaconConnectedView()
                     .onAppear() {
-                        print(locationManager.identifier)
-//                        saveConfigurationAndOnBoardingData()
+                        print("OnBoarding Value Before Connection: \(onBoardingDataSaved)")
+                        print(locationManager.vBeaconID)
+                        saveConfigurationAndOnBoardingData()
                     }
             }
             else if configurationFailed {
@@ -52,7 +53,8 @@ struct RangingVBeaconView: View {
     
     private func saveConfigurationAndOnBoardingData() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            saveData = true
+            onBoardingDataSaved = true
+            print("OnBoarding Value After Connection: \(onBoardingDataSaved)")
         }
     }
     

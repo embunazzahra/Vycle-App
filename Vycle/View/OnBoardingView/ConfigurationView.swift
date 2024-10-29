@@ -12,7 +12,7 @@ struct ConfigurationView: View {
     @Binding var vBeaconID: String
     @Binding var showGuide: Bool
     @Binding var isRangingVBeacon: Bool
-    @Binding var saveData: Bool
+    @Binding var onBoardingDataSaved: Bool
     @Binding var keyboardHeight: CGFloat
     @FocusState private var fieldFocusState: Bool
     @State var incorrectIDFormat: Bool = false
@@ -55,14 +55,14 @@ struct ConfigurationView: View {
                     .placeholder(when: vBeaconID.isEmpty) {
                         Text("AA000").foregroundColor(Color.neutral.tone100)
                     }
-                    .onChange(of: vBeaconID) { newValue in
-                        if newValue.count > 5 {
-                            vBeaconID = String(newValue.prefix(5))
+                    .onChange(of: vBeaconID) {
+                        if vBeaconID.count > 4 {
+                            vBeaconID = String(vBeaconID.prefix(4))
                         }
-                        isButtonEnabled = vBeaconID.count == 5
+                        isButtonEnabled = vBeaconID.count == 4
                     }
                     .onAppear() {
-                        isButtonEnabled = vBeaconID.count == 5
+                        isButtonEnabled = vBeaconID.count == 4
                     }
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
@@ -123,8 +123,9 @@ struct ConfigurationView: View {
                         incorrectIDFormat = false
                         
                         if !incorrectIDFormat {
-                            locationManager.identifier = vBeaconID
                             isRangingVBeacon = true
+                            locationManager.vBeaconID = vBeaconID
+                            locationManager.startTracking()
                         }
                     }
                 }
@@ -135,7 +136,7 @@ struct ConfigurationView: View {
                     title: "Lewati",
                     buttonType: .tertiary
                 ) {
-                    saveData = true
+                    onBoardingDataSaved = true
                 }
                 .padding(.top, -52)
             }
