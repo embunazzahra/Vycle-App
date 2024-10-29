@@ -149,10 +149,20 @@ struct DashboardView: View {
                                     HaveReminderView().padding(.horizontal, 16)
                                 }
 //                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                                List{
-                                    ForEach(locationHistory){location in
-                                        Text("longitude: \(location.longitude) latitude: \(location.latitude) distance: \(location.distance)")
-                                    }
+//                                List{
+//                                    ForEach(locationHistory){location in
+//                                        Text("longitude: \(location.longitude) latitude: \(location.latitude) distance: \(location.distance)")
+//                                    }
+//                                }
+                                ForEach($filteredReminders, id: \.self) { $reminder in
+                                    SparepartReminderCard(
+                                        reminder: $reminder,
+                                        currentKM: Double(initialOdometer.last?.currentKM ?? 0)
+                                    )
+                                    .contentShape(Rectangle())
+                                    .listRowInsets(EdgeInsets())
+                                    .listRowSeparator(.hidden)
+                                    .listSectionSeparator(.hidden)
                                 }
                             } else {
                                 Spacer()
@@ -160,7 +170,7 @@ struct DashboardView: View {
                                 
                             }
                             
-                        }.padding(.horizontal, 16)
+                        }
                         
                         
                     }
