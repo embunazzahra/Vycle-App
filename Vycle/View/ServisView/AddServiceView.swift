@@ -122,10 +122,10 @@ struct AddServiceView: View {
     
     // Function to save a new service to the database
     private func saveNewService() {
-        let vehicle = SwiftDataService.shared.fetchVehicles()
+        let vehicle = SwiftDataService.shared.getCurrentVehicle()
         
         
-        if let latestVehicle = vehicle.last {
+        if let latestVehicle = vehicle {
             SwiftDataService.shared.saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: Float(odometerValue) ?? 0.0, selectedImage: selectedImage?.jpegData(compressionQuality: 1.0), vehicle: latestVehicle)
             print("vehicle brand saved is:\(latestVehicle.brand)")
         }
