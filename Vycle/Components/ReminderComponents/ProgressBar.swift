@@ -38,7 +38,7 @@ struct ProgressBar: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            if targetKM != nil {
+            if reminder.isDraft == false {
                 if kilometerDifference <= 500 {
 //                    Text("Sudah tiba bulannya nih!")
                     Text("\(Int(kilometerDifference)) Kilometer lagi")
@@ -102,6 +102,13 @@ struct ProgressBar: View {
                     .animation(.linear, value: progress)
             }
         }
+//        .onChange(of: kilometerDifference) { newDifference in
+//               if newDifference <= 500 && !hasScheduledNotification {
+//                   scheduleNotification(for: sparepart)
+//                   hasScheduledNotification = true
+//                   updateReminderDateToNow()
+//               }
+//           }
     }
     
     private func updateReminderDateToNow() {
