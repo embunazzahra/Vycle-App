@@ -19,7 +19,6 @@ struct ProgressBar: View {
     
 //    @Binding var selectedNumber: Int
 
-    @State private var hasScheduledNotification = false
     
     let swiftDataService = SwiftDataService.shared
     
@@ -28,12 +27,12 @@ struct ProgressBar: View {
     }
 
     private var kilometerDifference: Float {
-        return targetKM - (Float(currentKM) - Float(reminder.reminderOdo))
+        return targetKM - (Float(initialOdometer.last?.currentKM ?? 0) - Float(reminder.reminderOdo))
     }
 
     private var progress: Float {
         guard targetKM > 0 else { return 0.0 }
-        return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+        return min((Float(initialOdometer.last?.currentKM ?? 0) - Float(reminder.reminderOdo)) / targetKM, 1.0)
     }
 
     var body: some View {
@@ -44,14 +43,9 @@ struct ProgressBar: View {
                     Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
-                        .onAppear {
-                            if !hasScheduledNotification {
-//                                scheduleNotificationForSparepart()
-                                scheduleNotification(for: sparepart)
-                                hasScheduledNotification = true
-                                updateReminderDateToNow()
-                            }
-                        }
+//                        .onAppear {
+//                            updateReminderDateToNow()
+//                        }
                 } else {
 //                    if progress >= 1.0 {
 //                        Text("Sudah tiba bulannya nih!")
@@ -102,50 +96,23 @@ struct ProgressBar: View {
                     .animation(.linear, value: progress)
             }
         }
-//        .onChange(of: kilometerDifference) { newDifference in
-//               if newDifference <= 500 && !hasScheduledNotification {
-//                   scheduleNotification(for: sparepart)
-//                   hasScheduledNotification = true
-//                   updateReminderDateToNow()
-//               }
-//           }
     }
     
-    private func updateReminderDateToNow() {
-        if kilometerDifference <= 500 {
-            swiftDataService.editReminder(
-                reminder: reminder,
-                sparepart: reminder.sparepart,
-                reminderOdo: reminder.reminderOdo,
-                kmInterval: reminder.kmInterval,
-                dueDate: Date(),
-                timeInterval: reminder.timeInterval,
-                vehicle: reminder.vehicle!,
-                isRepeat: reminder.isRepeat,
-                isDraft: reminder.isDraft
-            )
-        }
-    }
-    
-    func scheduleNotification(for sparepart: Sparepart) {
-        let content = UNMutableNotificationContent()
-        content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
-        content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
-        content.sound = .default
-        
-        // Immediate notification for testing (use timeInterval: 1 to trigger after 1 second)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
-        
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Notification error: \(error.localizedDescription)")
-            } else {
-                print("Notification scheduled for sparepart: \(sparepart.rawValue)")
-            }
-        }
-    }
+//    private func updateReminderDateToNow() {
+//        if kilometerDifference <= 500 {
+//            swiftDataService.editReminder(
+//                reminder: reminder,
+//                sparepart: reminder.sparepart,
+//                reminderOdo: reminder.reminderOdo,
+//                kmInterval: reminder.kmInterval,
+//                dueDate: Date(),
+//                timeInterval: reminder.timeInterval,
+//                vehicle: reminder.vehicle!,
+//                isRepeat: reminder.isRepeat,
+//                isDraft: reminder.isDraft
+//            )
+//        }
+//    }
 }
 
 

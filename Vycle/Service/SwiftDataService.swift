@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import UserNotifications
 
 class SwiftDataService {
     private let modelContainer: ModelContainer
@@ -55,9 +56,66 @@ extension SwiftDataService {
         
             do {
                 try saveModelContext() // Save the context to persist the new trip
+                checkAndNotifyIfNeeded()
             } catch {
                 print("Failed to save trip: \(error.localizedDescription)")
             }
+    }
+    
+    private func checkAndNotifyIfNeeded() {
+           guard let latestOdometer = fetchOdometersForNotif().last,
+                 let reminder = fetchActiveReminder() else { return }
+           
+           let kilometerDifference = Float(reminder.kmInterval) - (Float(latestOdometer.currentKM) - Float(reminder.reminderOdo))
+           
+           if kilometerDifference <= 500 {
+               scheduleNotification(for: reminder.sparepart)
+               updateReminderDateToNow(reminder: reminder)
+           }
+       }
+
+    private func updateReminderDateToNow(reminder: Reminder) {
+        editReminder(reminder: reminder,
+                     sparepart: reminder.sparepart,
+                     reminderOdo: reminder.reminderOdo,
+                     kmInterval: reminder.kmInterval,
+                     dueDate: Date(),
+                     timeInterval: reminder.timeInterval,
+                     vehicle: reminder.vehicle!,
+                     isRepeat: reminder.isRepeat,
+                     isDraft: reminder.isDraft)
+    }
+
+    private func scheduleNotification(for sparepart: Sparepart) {
+       let content = UNMutableNotificationContent()
+       content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
+       content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
+       content.sound = .default
+       
+       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+       let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+       
+       UNUserNotificationCenter.current().add(request) { error in
+           if let error = error {
+               print("Notification error: \(error.localizedDescription)")
+           } else {
+               print("Notification scheduled for sparepart: \(sparepart.rawValue)")
+           }
+       }
+    }
+
+    private func fetchActiveReminder() -> Reminder? {
+       return fetchRemindersForNotif().first { !$0.isDraft }
+    }
+
+    private func fetchRemindersForNotif() -> [Reminder] {
+       let fetchDescriptor = FetchDescriptor<Reminder>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+       return (try? modelContext.fetch(fetchDescriptor)) ?? []
+    }
+
+    private func fetchOdometersForNotif() -> [Odometer] {
+       let fetchDescriptor = FetchDescriptor<Odometer>(sortBy: [SortDescriptor(\.date, order: .forward)])
+       return (try? modelContext.fetch(fetchDescriptor)) ?? []
     }
 }
 
