@@ -5,6 +5,7 @@ import SwiftData
 import UserNotifications
 import UIKit
 import MapKit
+import SwiftUI
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager = CLLocationManager()
@@ -15,9 +16,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var totalDistanceTraveled: Double = 0.0
     @Published var isInsideBeaconRegion: Bool = false
 //    @Published var locationHistory: [LocationHistory] = []
-    private let beaconUUID = UUID(uuidString: "2D7A9F0C-E0E8-4CC9-A71B-A21DB2D034A1")!
+    @AppStorage("vBeaconID") var vBeaconID: String = "" // ID: 4CC9
+    private var beaconUUID: UUID {
+        let vBeaconID = vBeaconID.isEmpty ? "0000" : vBeaconID
+        return UUID(uuidString: "2D7A9F0C-E0E8-\(vBeaconID)-A71B-A21DB2D034A1")!
+    }
     private let beaconMajor: CLBeaconMajorValue = 5
     private let beaconMinor: CLBeaconMinorValue = 88
+    private let identifier: String = "ALOHA"
     
     let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
     
@@ -28,9 +34,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.requestAlwaysAuthorization()
     }
     
-    func setBLEManager(_ manager: BLEManager) {
-        self.bleManager = manager
-    }
+//    func setBLEManager(_ manager: BLEManager) {
+//        self.bleManager = manager
+//    }
     
     func setContext(_ context: ModelContext) {
         self.context = context
@@ -40,14 +46,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.requestAlwaysAuthorization()
         locationManager.startMonitoringSignificantLocationChanges()
         startTrackingBeacons()
-        
     }
     
     // Start tracking the beacon region
     func startTrackingBeacons() {
         if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
             print("monitoring available")
-            let beaconRegion = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: "ALOHA")
+            let beaconRegion = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: identifier)
             if CLLocationManager.isRangingAvailable() {
                 print("isranging available")
                 locationManager.startMonitoring(for: beaconRegion)
@@ -59,7 +64,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private func startMonitoring() {
         if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-            let region = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: "ALOHA")
+            let region = CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: identifier)
             self.locationManager.startMonitoring(for: region)
         }
     }
@@ -177,12 +182,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     self.totalDistanceTraveled += distance / 1000
                     print("Distance traveled along the path: \(distance / 1000) kilometers")
                 }
-                let newLocation = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: Date(), trip: self.testTrip)
+                let newLocation = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
+                print("bug is in calculateroute")
                 self.sendNotification(for: newLocation)
+                print("bug is in aftrer send notif")
                 self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
+                print("bug is after storelocation")
             }
         } else {
-            let newLocation = LocationHistory(distance: nil, latitude: latitude, longitude: longitude, time: Date(), trip: self.testTrip)
+            let newLocation = LocationHistory(distance: nil, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
+            print("bug is in else")
             self.sendNotification(for: newLocation)
             storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
         }
@@ -196,9 +205,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             try context.save()
 
             lastSavedLocation = CLLocation(latitude: latitude, longitude: longitude)
-            let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: testTrip)
+            print("bug in storelocation")
+            let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
             self.sendNotification(for: newLocation)
+            print("bug before insertlocation")
             SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date())
+            print("bug after insertlocation")
 
         } catch {
             print("Failed to save location history: \(error.localizedDescription)")

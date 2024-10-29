@@ -11,7 +11,7 @@ struct StepIndicator: View {
     @Binding var currentStep: Int
     
     let totalSteps = 4
-    let stepLabels = ["Kendaraan", "Merk Kendaraan", "Odometer", "Histori Servis"]
+    let stepLabels = ["Merk", "Odometer", "Histori", "Konfigurasi"]
 
     var body: some View {
         ZStack {

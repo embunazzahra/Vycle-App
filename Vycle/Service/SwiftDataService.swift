@@ -70,7 +70,8 @@ extension SwiftDataService {
     }
     
     func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
-        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
+        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
+        saveModelContext()
         let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time, trip: testTrip)
         modelContext.insert(locationHistory)
         
@@ -117,26 +118,26 @@ extension SwiftDataService {
                     }
 
 //                    let targetKM = odometer + Float(interval.kilometer)
-                    let reminderOdo = odometer
-                    print("target km : \(reminderOdo)")
+//                    let reminderOdo = odometer
+//                    print("target km : \(reminderOdo)")
                     let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
                     let reminderData = Reminder(
                         date: date,
                         sparepart: sparepart,
-                        reminderOdo: reminderOdo,
+                        reminderOdo: 0,
                         kmInterval: Float(interval.kilometer),
                         dueDate: dueDate,
                         timeInterval: interval.month,
                         vehicle: Vehicle(vehicleType: vehicleType, brand: vehicleBrand),
                         isRepeat: true, // Set true if you want reminders to repeat
-                        isDraft: false
+                        isDraft: true
                     )
                     modelContext.insert(reminderData)
                 }
             }
         }
 
-
+        
         saveModelContext()
         printAllData()
     }

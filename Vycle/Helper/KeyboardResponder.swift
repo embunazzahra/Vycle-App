@@ -9,25 +9,26 @@ import SwiftUI
 import Combine
 
 class KeyboardResponder: ObservableObject {
-    @Published var isKeyboardVisible = false
-    @Published var keyboardHeight: CGFloat = 0.0
-    private var cancellable: AnyCancellable?
-    
+    @Published var isKeyboardVisible: Bool = false
+    @Published var keyboardHeight: CGFloat = 0
+
+    private var cancellables = Set<AnyCancellable>()
+
     init() {
-        cancellable = NotificationCenter.default
-            .publisher(for: UIResponder.keyboardWillShowNotification)
-            .merge(with: NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification))
-            .sink { [weak self] notification in
-                if notification.name == UIResponder.keyboardWillShowNotification {
-                    self?.isKeyboardVisible = true
-                    if let userInfo = notification.userInfo,
-                       let frame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-                        self?.keyboardHeight = frame.cgRectValue.height
-                    }
-                } else {
-                    self?.isKeyboardVisible = false
-                    self?.keyboardHeight = 0
-                }
-            }
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .compactMap { $0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue }
+            .map { $0.cgRectValue.height }
+            .assign(to: \.keyboardHeight, on: self)
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .map { _ in true }
+            .assign(to: \.isKeyboardVisible, on: self)
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+            .map { _ in false }
+            .assign(to: \.isKeyboardVisible, on: self)
+            .store(in: &cancellables)
     }
 }

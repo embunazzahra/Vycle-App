@@ -43,7 +43,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     
     // Discovered a peripheral
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if peripheral.name == "ALOHA" {
+        if peripheral.name == "AA000" {
             espPeripheral = peripheral
             centralManager.stopScan()
             message = "ESP32 Found! Connecting..."
@@ -54,7 +54,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func centralManager(_ central: CBCentralManager, willRestoreState dict: [String: Any]) {
         if let peripherals = dict[CBCentralManagerRestoredStatePeripheralsKey] as? [CBPeripheral] {
             for peripheral in peripherals {
-                if peripheral.name == "ALOHA" {
+                if peripheral.name == "AA000" {
                     espPeripheral = peripheral
                     espPeripheral?.delegate = self
                     isConnected = true

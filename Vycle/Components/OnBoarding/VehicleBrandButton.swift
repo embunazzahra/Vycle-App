@@ -19,7 +19,7 @@ struct VehicleBrandButton: View {
                 .frame(width: 361, height: 64)
                 .foregroundStyle(isSelected ? Color.primary.shade200 : Color.neutral.tint200)
                 .padding(.horizontal, 12)
-                .animation(.easeInOut(duration: 0.3), value: isSelected)
+                .animation(.easeInOut(duration: 0.2), value: isSelected)
 
             HStack {
                 Image(brand.isCustomBrand ? "merk_kendaraan" : "placeholder")
@@ -31,7 +31,7 @@ struct VehicleBrandButton: View {
                     .headline()
                     .foregroundStyle(isSelected ? Color.neutral.tint300 : Color.neutral.shade300)
                     .padding(.leading, 4)
-                    .animation(.easeInOut(duration: 0.3), value: isSelected)
+                    .animation(.easeInOut(duration: 0.2), value: isSelected)
             }
         }
         .padding(.bottom, 2)

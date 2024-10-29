@@ -8,28 +8,31 @@
 import SwiftUI
 
 struct VehicleBrandView: View {
-    @Binding var vehicleType: VehicleType?
+    @Binding var vehicleType: VehicleType
     @Binding var vehicleBrand: VehicleBrand?
     @Binding var otherBrandsList: [String]
+    @Binding var currentPage: Int
     @State private var showAddBrandSheet: Bool = false
+    
+    var isButtonEnabled: Bool {
+        vehicleBrand != nil
+    }
 
     var brandsList: [VehicleBrand] {
-        let predefinedBrands: [VehicleBrand]
+        let predefinedBrands: [VehicleBrand] = Car.allCases.map { VehicleBrand.car($0) }
         
-        switch vehicleType {
-        case .car:
-            predefinedBrands = Car.allCases.map { VehicleBrand.car($0) }
-        case .motorcycle:
-            predefinedBrands = Motorcycle.allCases.map { VehicleBrand.motorcycle($0) }
-        case .none:
-            predefinedBrands = []
-        }
+//        switch vehicleType {
+//        case .car:
+//            predefinedBrands = Car.allCases.map { VehicleBrand.car($0) }
+//        case .motorcycle:
+//            predefinedBrands = Motorcycle.allCases.map { VehicleBrand.motorcycle($0) }
+//        case .none:
+//            predefinedBrands = []
+//        }
 
         let customBrandObjects = otherBrandsList.map { VehicleBrand.custom($0) }
             return predefinedBrands + customBrandObjects
     }
-    
-    var action: () -> Void
     
     @ViewBuilder
     func vehicleBrandButtons(from brands: [VehicleBrand]) -> some View {
@@ -54,7 +57,6 @@ struct VehicleBrandView: View {
             
             ScrollView {
                 vehicleBrandButtons(from: brandsList)
-                
                 
                 ZStack(alignment: .leading) {
                     Rectangle()
@@ -82,12 +84,26 @@ struct VehicleBrandView: View {
                         vehicleBrand: $vehicleBrand,
                         otherBrandsList: $otherBrandsList,
                         brandsList: brandsList,
-                        action: action
+                        currentPage: $currentPage
                     )
                 }
             }
             
             Spacer()
+            
+            CustomButton(
+                title: "Lanjutkan",
+                iconName: "lanjutkan",
+                iconPosition: .right,
+                buttonType: isButtonEnabled ? .primary : .disabled,
+                verticalPadding: 0
+            ) {
+                if isButtonEnabled {
+                    currentPage += 1
+                }
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 24)
         }
     }
 }
@@ -100,7 +116,7 @@ struct AddBrandSheet: View {
     @State var otherBrand: String = ""
     @State var showError: Bool = false
     var brandsList: [VehicleBrand]
-    var action: () -> Void
+    @Binding var currentPage: Int
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -154,7 +170,7 @@ struct AddBrandSheet: View {
                         otherBrandsList.append(otherBrand)
                         vehicleBrand = .custom(otherBrand)
                         presentationMode.wrappedValue.dismiss()
-                        action()
+                        currentPage += 1
                     } else {
                         showError = true
                     }
