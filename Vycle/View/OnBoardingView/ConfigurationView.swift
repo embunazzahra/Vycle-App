@@ -53,7 +53,7 @@ struct ConfigurationView: View {
                     .foregroundColor(Color.neutral.shade300)
                     .focused($fieldFocusState)
                     .placeholder(when: vBeaconID.isEmpty) {
-                        Text("AA000").foregroundColor(Color.neutral.tone100)
+                        Text("XXXX").foregroundColor(Color.neutral.tone100)
                     }
                     .onChange(of: vBeaconID) {
                         if vBeaconID.count > 4 {
@@ -84,7 +84,7 @@ struct ConfigurationView: View {
             if incorrectIDFormat {
                 HStack {
                     Image("warning")
-                    Text("ID perangkat harus dua huruf di depan dan tiga huruf di belakang. Contoh: AA000")
+                    Text("ID perangkat tidak tersedia")
                         .footnote(.regular)
                         .foregroundColor(Color.persianRed.red500)
                         .padding(.top, 2)
@@ -118,9 +118,8 @@ struct ConfigurationView: View {
                     verticalPadding: 0
                 ) {
                     if isButtonEnabled {
-//                        let pattern = "^[A-Za-z]{2}\\d{3}$"
-//                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
-                        incorrectIDFormat = false
+                        let pattern = "^[A-Fa-f0-9]{4}$"
+                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
                         
                         if !incorrectIDFormat {
                             isRangingVBeacon = true

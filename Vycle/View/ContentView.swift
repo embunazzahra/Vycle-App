@@ -39,7 +39,7 @@ struct ContentView: View {
             if isShowSplash {
                 SplashView()
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             withAnimation {
                                 isShowSplash = false
                             }
@@ -96,7 +96,6 @@ struct ContentView: View {
                             PhotoReviewView(imageData: imageData)
                         }
                     }
-                
                     .toolbar {
                         ToolbarItem {
                             Image(systemName: "plus.square.fill")
@@ -114,14 +113,15 @@ struct ContentView: View {
                     }
             }
         }
-        
+        .transition(.backslide)
+        .animation(.easeInOut, value: onBoardingDataSaved)
         .tint(.white)
         .onAppear {
             locationManager.setContext(context)
             locationManager.startTracking()
             fetchAndCountUniqueSpareParts()
         }
-        .onChange(of: fetchedReminders) { _ in
+        .onChange(of: fetchedReminders) {
             fetchAndCountUniqueSpareParts()
         }
         /*.environmentObject(locationManager) */ // Provide LocationManager as EnvironmentObject

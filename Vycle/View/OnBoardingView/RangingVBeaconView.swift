@@ -12,56 +12,46 @@ struct RangingVBeaconView: View {
     @Binding var isRangingVBeacon: Bool
     @Binding var onBoardingDataSaved: Bool
     @State private var configurationFailed = false
-    @State private var animateCircle1 = false
-    @State private var animateCircle2 = false
-    @State private var animateCircle3 = false
+    @State private var showConnectingView = true
 
     var body: some View {
-        VStack(alignment: .center) {
-            if locationManager.isInsideBeaconRegion {
-                BeaconConnectedView()
-                    .onAppear() {
-                        print("OnBoarding Value Before Connection: \(onBoardingDataSaved)")
-                        print(locationManager.vBeaconID)
-                        saveConfigurationAndOnBoardingData()
-                    }
+        ZStack {
+            VStack(alignment: .center) {
+                if locationManager.isInsideBeaconRegion && !configurationFailed {
+                    ConfigurationStatusView(isSuccess: true)
+                        .onAppear() {
+                            saveConfigurationAndOnBoardingData()
+                            showConnectingView = false
+                        }
+                }
+                else if configurationFailed {
+                    ConfigurationStatusView(isSuccess: false)
+                        .onAppear() {
+                            resetConfiguration()
+                            showConnectingView = false
+                        }
+                }
             }
-            else if configurationFailed {
-                ConfigurationFailedView()
-                    .onAppear() {
-                        resetConfiguration()
-                    }
-            } else {
-                ConnectingToBeaconView(
-                    animateCircle1: $animateCircle1,
-                    animateCircle2: $animateCircle2,
-                    animateCircle3: $animateCircle3
-                )
-                    .onAppear {
-                        startAnimations()
-                        startConfigurationTimer()
-                    }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .fullScreenCover(isPresented: $showConnectingView) {
+            ConnectingToBeaconView()
+            .onAppear {
+                startConfigurationTimer()
             }
         }
     }
     
     private func resetConfiguration() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             isRangingVBeacon = false
         }
     }
     
     private func saveConfigurationAndOnBoardingData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             onBoardingDataSaved = true
-            print("OnBoarding Value After Connection: \(onBoardingDataSaved)")
         }
-    }
-    
-    private func startAnimations() {
-        animateCircle1 = true
-        animateCircle2 = true
-        animateCircle3 = true
     }
     
     private func startConfigurationTimer() {
@@ -71,84 +61,132 @@ struct RangingVBeaconView: View {
     }
 }
 
-struct ConfigurationFailedView: View {
-    var body: some View {
-        Text("Failed Configuration")
-            .font(.title)
-            .foregroundColor(.red)
-    }
-}
-
-struct BeaconConnectedView: View {
-    var body: some View {
-        Text("Beacon Connected!")
-            .font(.title)
-            .foregroundColor(.green)
-    }
-}
-
-struct ConnectingToBeaconView: View {
-    @Binding var animateCircle1: Bool
-    @Binding var animateCircle2: Bool
-    @Binding var animateCircle3: Bool
+struct ConfigurationStatusView: View {
+    let isSuccess: Bool
+    @State var animateCircle1: Bool = false
+    @State var animateCircle2: Bool = false
+    @State var animateIcon: Bool = false
     
     var body: some View {
-        VStack(alignment: .center) {
-            ZStack(alignment: .center) {
+        VStack (alignment: .center, spacing: 12) {
+            ZStack (alignment: .center) {
                 Circle()
-                    .stroke(Color.primary.tint300, lineWidth: 4)
-                    .frame(width: 160, height: 160)
-                    .opacity(animateCircle1 ? 1 : 0)
+                    .fill(isSuccess ? Color.lima.lima500 : Color.persianRed.red500)
+                    .opacity(0.1)
+                    .frame(width: 132, height: 132)
+                    .scaleEffect(animateCircle1 ? 1 : 0)
                     .animation(
-                        .easeOut(duration: 1)
-                        .repeatForever(autoreverses: true),
+                        .bouncy(duration: 1.2)
+                        .delay(0.5),
                         value: animateCircle1
                     )
                 
                 Circle()
-                    .stroke(Color.primary.tint200, lineWidth: 3)
-                    .frame(width: 240, height: 240)
-                    .opacity(animateCircle2 ? 1 : 0)
+                    .fill(isSuccess ? Color.lima.lima500 : Color.persianRed.red500)
+                    .opacity(0.1)
+                    .frame(width: 116, height: 116)
+                    .scaleEffect(animateCircle2 ? 1 : 0)
                     .animation(
-                        .easeOut(duration: 1)
-                        .repeatForever(autoreverses: true)
+                        .bouncy(duration: 1)
                         .delay(0.5),
                         value: animateCircle2
                     )
                 
-                Circle()
-                    .stroke(Color.primary.tint100, lineWidth: 3)
-                    .frame(width: 320, height: 320)
-                    .opacity(animateCircle3 ? 1 : 0)
+                Image(isSuccess ? "berhasil" : "gagal")
+                    .frame(width: 90, height: 90)
+                    .scaleEffect(animateCircle2 ? 1 : 0)
                     .animation(
-                        .easeOut(duration: 1)
-                        .repeatForever(autoreverses: true)
-                        .delay(1),
-                        value: animateCircle3
+                        .bouncy(duration: 0.8)
+                        .delay(0.5),
+                        value: animateIcon
                     )
-                
-                Circle()
-                    .fill(Color.primary.tint200)
-                    .frame(width: 80, height: 80)
-                
-                Circle()
-                    .fill(Color.background)
-                    .frame(width: 32, height: 32)
-                
-                Circle()
-                    .fill(Color.primary.base)
-                    .frame(width: 20, height: 20)
             }
             
-            Text("Connecting to Beacon...")
-                .font(.headline)
-                .padding(.top, 8)
+            Text(isSuccess ? "Berhasil!" : "Gagal!")
+                .title2(.emphasized)
+                .foregroundStyle(isSuccess ? Color.lima.lima500 : Color.persianRed.red500)
             
-            Text("Please make sure the device is within range.")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .padding(.top, 8)
+            Text(isSuccess ? "VBeacon berhasil terhubung!" : "VBeacon gagal terhubung!")
+                .body(.regular)
+                .foregroundStyle(Color.neutral.tone100)
+            
+            Text(isSuccess ? "" : "Pastikan VBeacon sudah menyala.")
+                .body(.regular)
+                .foregroundStyle(Color.neutral.tone100)
+                .padding(.top, -12)
         }
-        .padding()
+        .onAppear() {
+            animateCircle1 = true
+            animateCircle2 = true
+            animateIcon = true
+        }
+    }
+}
+
+
+struct ConnectingToBeaconView: View {
+    @State private var animateCircle1: Bool = false
+    @State private var animateCircle2: Bool = false
+    @State private var animateCircle3: Bool = false
+
+    var body: some View {
+        ZStack {
+            Color.primary.base.ignoresSafeArea()
+            
+            VStack(alignment: .center, spacing: 180) {
+                ZStack(alignment: .center) {
+                    Circle()
+                        .fill(Color.neutral.tint300)
+                        .frame(width: 80, height: 80)
+                        .scaleEffect(animateCircle1 ? 4.5 : 1)
+                        .opacity(animateCircle1 ? 0 : 0.5)
+                    
+                    Circle()
+                        .fill(Color.neutral.tint300)
+                        .frame(width: 80, height: 80)
+                        .scaleEffect(animateCircle2 ? 4.5 : 1)
+                        .opacity(animateCircle2 ? 0 : 0.5)
+                    
+                    Circle()
+                        .fill(Color.neutral.tint300)
+                        .frame(width: 80, height: 80)
+                        .scaleEffect(animateCircle3 ? 4.5 : 1)
+                        .opacity(animateCircle3 ? 0 : 0.5)
+                    
+                    Image("bluetooth_searching_blue")
+                }
+                
+                Text("Mencari perangkat di sekitar...")
+                    .body(.regular)
+                    .foregroundStyle(Color.neutral.tint300)
+            }
+            .padding()
+            .onAppear {
+                startAnimationLoop()
+            }
+        }
+    }
+    
+    private func startAnimationLoop() {
+        animateCircle(1, after: 0)
+        animateCircle(2, after: 0.5)
+        animateCircle(3, after: 1)
+    }
+    
+    private func animateCircle(_ circleNumber: Int, after delay: Double) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            withAnimation(Animation.easeOut(duration: 2 ).repeatForever(autoreverses: false)) {
+                switch circleNumber {
+                case 1:
+                    animateCircle1.toggle()
+                case 2:
+                    animateCircle2.toggle()
+                case 3:
+                    animateCircle3.toggle()
+                default:
+                    break
+                }
+            }
+        }
     }
 }

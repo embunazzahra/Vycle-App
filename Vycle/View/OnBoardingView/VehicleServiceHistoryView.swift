@@ -9,8 +9,8 @@ import SwiftUI
 
 struct VehicleServiceHistoryView: View {
     @Binding var serviceHistory: [ServiceHistory]
-    
     @Binding var currentPage: Int
+    @Binding var isMovingForward: Bool
     
     var isButtonEnabled: Bool {
         serviceHistory.allSatisfy { $0.isPartChosen && $0.isMonthYearChosen }
@@ -24,7 +24,7 @@ struct VehicleServiceHistoryView: View {
                 .padding(.horizontal,16)
                 .padding(.top, 24)
                 .padding(.bottom, 4)
-            Text("Jika tidak ada, maka pilih selesai")
+            Text("Jika tidak ada, maka silahkan lanjut")
                 .subhead(.regular)
                 .foregroundStyle(Color.neutral.tone100)
                 .padding(.horizontal, 16)
@@ -41,6 +41,7 @@ struct VehicleServiceHistoryView: View {
                 verticalPadding: 0
             ) {
                 if isButtonEnabled {
+                    isMovingForward = true
                     currentPage += 1
                 }
             }
