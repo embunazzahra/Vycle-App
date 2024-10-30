@@ -35,7 +35,7 @@ struct AddServiceView: View {
     
     // Computed property to determine if the button should be disabled
     private var isButtonDisabled: Bool {
-        selectedParts.isEmpty || odometerValue.isEmpty // Disable if parts are empty or TextField is empty
+        selectedParts.isEmpty || odometerValue.isEmpty || Int(odometerValue) ?? 0 > userOdometer
     }
     
     
