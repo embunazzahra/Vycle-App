@@ -19,10 +19,10 @@ struct OdometerInputView: View {
             Text("Kilometer kendaraan")
                 .font(.headline)
             
-            OdometerServisTextField(text: $odometerValue, placeholder: enable ? odometerValue : userOdometer.formattedWithSeparator(), enable: enable, isOverLimit: $isOverLimit)
+            OdometerServisTextField(text: $odometerValue, placeholder: userOdometer.formattedWithSeparator(), enable: enable, isOverLimit: $isOverLimit)
                 .onChange(of: odometerValue) { // Use the new `onChange` syntax
-                                isOverLimit = (Int(odometerValue) ?? 0 > userOdometer)
-                            }
+                    isOverLimit = (Int(odometerValue) ?? 0 > userOdometer)
+                }
             if isOverLimit {
                 HStack(spacing: 0) {
                     Image("warning")

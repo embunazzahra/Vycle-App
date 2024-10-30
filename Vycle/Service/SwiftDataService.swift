@@ -156,6 +156,12 @@ extension SwiftDataService {
         return reminders
     }
     
+    func fetchLocationHistory() -> [LocationHistory] {
+        let fetchRequest = FetchDescriptor<LocationHistory>()
+        let locationHistory = (try? modelContext.fetch(fetchRequest)) ?? []
+        return locationHistory
+    }
+    
     func printAllData() {
         let vehicles = fetchVehicles()
         let odometers = fetchOdometers()

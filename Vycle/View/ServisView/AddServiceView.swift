@@ -89,7 +89,13 @@ struct AddServiceView: View {
                 
                 if let latestOdometer = odometers.last {
                     userOdometer = Int(latestOdometer.currentKM)
-                    odometerValue = "\(Int(latestOdometer.currentKM))"
+                    
+                    let locationHistory = SwiftDataService.shared.fetchLocationHistory()
+                    
+                    // if location is exist, the users is using IOT, so odometer value is not empty
+                    if let latestLocation = locationHistory.last {
+                        odometerValue = "\(Int(latestOdometer.currentKM))"
+                    }
                 }
             }
         }
