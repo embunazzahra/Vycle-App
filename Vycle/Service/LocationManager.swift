@@ -100,11 +100,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self.saveLocationHistory(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
                 print("Location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
             } else {
-//                print("Significant location change occurred, but outside of beacon region. No data saved.")
+                //                print("Significant location change occurred, but outside of beacon region. No data saved.")
             }
-//        }
-       
-    }
+            //        }
+            
+        }}
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         // Check if the ranged beacons match the new vBeaconID
