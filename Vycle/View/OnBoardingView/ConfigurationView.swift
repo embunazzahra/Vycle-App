@@ -18,27 +18,39 @@ struct ConfigurationView: View {
     @State var incorrectIDFormat: Bool = false
     @State var deviceNotFound: Bool = false
     @State private var isButtonEnabled: Bool = false
-    
+    @State var hideHeader: Bool = false
     var body: some View {
         VStack (alignment: .leading) {
-            HStack {
-                Text("Hubungkan VBeacon")
-                    .title1(.emphasized)
-                    .foregroundStyle(Color.neutral.shade300)
+            if !hideHeader{
+                HStack {
+                    Text("Hubungkan VBeacon")
+                        .title1(.emphasized)
+                        .foregroundStyle(Color.neutral.shade300)
+                        .padding(.horizontal,16)
+                        .padding(.vertical, 24)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        withAnimation {
+                            showGuide = true
+                        }
+                    }) {
+                        Image("help")
+                    }
                     .padding(.horizontal,16)
                     .padding(.vertical, 24)
-                
-                Spacer()
-                
-                Button(action: {
-                    withAnimation {
-                        showGuide = true
-                    }
-                }) {
-                    Image("help")
                 }
-                .padding(.horizontal,16)
-                .padding(.vertical, 24)
+            } else {
+                HStack {
+                    Text("")
+                        .title1(.emphasized)
+                        .foregroundStyle(Color.neutral.shade300)
+                        .padding(.horizontal,16)
+                        .padding(.vertical, 24)
+                    
+                    Spacer()
+                }.padding(.vertical, 16)
             }
             
             Text("ID Perangkat")
@@ -109,38 +121,40 @@ struct ConfigurationView: View {
             
             Spacer()
             
-            VStack {
-                CustomButton(
-                    title: "Cek Perangkat",
-                    iconName: "bluetooth_searching",
-                    iconPosition: .right,
-                    buttonType: isButtonEnabled ? .primary : .disabled,
-                    verticalPadding: 0
-                ) {
-                    if isButtonEnabled {
-//                        let pattern = "^[A-Za-z]{2}\\d{3}$"
-//                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
-                        incorrectIDFormat = false
-                        
-                        if !incorrectIDFormat {
-                            isRangingVBeacon = true
-                            locationManager.vBeaconID = vBeaconID
-                            locationManager.startTracking()
+            if !hideHeader{
+                VStack {
+                    CustomButton(
+                        title: "Cek Perangkat",
+                        iconName: "bluetooth_searching",
+                        iconPosition: .right,
+                        buttonType: isButtonEnabled ? .primary : .disabled,
+                        verticalPadding: 0
+                    ) {
+                        if isButtonEnabled {
+    //                        let pattern = "^[A-Za-z]{2}\\d{3}$"
+    //                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
+                            incorrectIDFormat = false
+                            
+                            if !incorrectIDFormat {
+                                isRangingVBeacon = true
+                                locationManager.vBeaconID = vBeaconID
+                                locationManager.startTracking()
+                            }
                         }
                     }
+                    .padding(.top, 8)
+                    .padding(.bottom, 24)
+                    
+                    CustomButton(
+                        title: "Lewati",
+                        buttonType: .tertiary
+                    ) {
+                        onBoardingDataSaved = true
+                    }
+                    .padding(.top, -52)
                 }
-                .padding(.top, 8)
-                .padding(.bottom, 24)
-                
-                CustomButton(
-                    title: "Lewati",
-                    buttonType: .tertiary
-                ) {
-                    onBoardingDataSaved = true
-                }
-                .padding(.top, -52)
+                .offset (y: -self.keyboardHeight)
             }
-            .offset (y: -self.keyboardHeight)
         }
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
