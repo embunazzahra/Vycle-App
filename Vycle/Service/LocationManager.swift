@@ -102,7 +102,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             } else {
 //                print("Significant location change occurred, but outside of beacon region. No data saved.")
             }
-        }
+//        }
+       
     }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
@@ -214,7 +215,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             calculateRoute(from: lastLocation.coordinate, to: currentLocation.coordinate) { distance in
                 if let distance = distance {
                     self.totalDistanceTraveled += distance / 1000
-                    print("Distance traveled along the path: \(distance / 1000) kilometers")
+//                    print("Distance traveled along the path: \(distance / 1000) kilometers")
                 }
                 let newLocation = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
                 self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
@@ -246,7 +247,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     // Handle beacon connection and disconnection
     func handleBeaconConnection(isConnected: Bool) {
         // Perform async task to get the current location and save it
-        print("Beacon connection changed: \(isConnected ? "Connected" : "Disconnected")")
+//        print("Beacon connection changed: \(isConnected ? "Connected" : "Disconnected")")
         if isConnected {
             isInsideBeaconRegion = true
         } else {

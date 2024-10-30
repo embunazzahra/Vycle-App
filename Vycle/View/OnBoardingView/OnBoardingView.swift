@@ -11,6 +11,7 @@ struct OnBoardingView: View {
     @ObservedObject var locationManager: LocationManager
     @State private var currentPage: Int = 1
     @State private var previousPage: Int = 1
+    @State private var previousPreviousPage: Int = 1
     @State private var isMovingForward: Bool = true
     @State private var vehicleType: VehicleType = .car
     @State private var vehicleBrand: VehicleBrand? = nil
@@ -54,6 +55,7 @@ struct OnBoardingView: View {
                         .padding(.horizontal)
                         .onTapGesture {
                             if currentPage > 1 {
+                                isMovingForward = false
                                 currentPage -= 1
                                 isRangingVBeacon = false
                             }
@@ -82,22 +84,25 @@ struct OnBoardingView: View {
                                     vehicleType: $vehicleType,
                                     vehicleBrand: $vehicleBrand,
                                     otherBrandsList: $otherBrandsList,
-                                    currentPage: $currentPage
+                                    currentPage: $currentPage,
+                                    isMovingForward: $isMovingForward
                                 )
-                                .transition(.move(edge: .leading))
+                                .transition(.backslide)
                             case 2:
                                 VehicleOdometerView(
                                     odometer: $odometer,
                                     currentPage: $currentPage,
+                                    isMovingForward: $isMovingForward,
                                     keyboardHeight: $keyboardHeight
                                 )
-                                .transition((previousPage == 1 && isMovingForward == false) || (previousPage == 2 && isMovingForward == true) || (previousPage == 3 && isMovingForward == false) ? .move(edge: .trailing) : .move(edge: .leading))
+                                .transition(.backslide)
                             case 3:
                                 VehicleServiceHistoryView(
                                     serviceHistory: $serviceHistory,
-                                    currentPage: $currentPage
+                                    currentPage: $currentPage,
+                                    isMovingForward: $isMovingForward
                                 )
-                                .transition( (previousPage == 2 && isMovingForward == true) || (previousPage == 3 && isMovingForward == false) || (previousPage == 4 && isMovingForward == true) ? .move(edge: .leading) : .move(edge: .trailing))
+                                .transition(.backslide)
                             case 4:
                             if !isRangingVBeacon {
                                 ConfigurationView(
@@ -109,28 +114,22 @@ struct OnBoardingView: View {
                                     keyboardHeight: $keyboardHeight,
                                     hideHeader: false
                                 )
-                                .transition(.move(edge: .trailing))
+                                .transition(.backslide)
                             } else {
                                 RangingVBeaconView(
                                     locationManager: locationManager,
                                     isRangingVBeacon: $isRangingVBeacon,
                                     onBoardingDataSaved: $onBoardingDataSaved
                                 )
-                                .transition(.move(edge: .trailing) )
+                                .transition(.backslide)
                             }
                             default:
                                 EmptyView()
                         }
                     }
                     .animation(.easeInOut, value: currentPage)
-                    .onChange(of: currentPage) {
-                        isMovingForward = currentPage > previousPage
-                        previousPage = currentPage
-                    }
                     .onChange(of: onBoardingDataSaved) {
-                        print("Check save")
                         if onBoardingDataSaved {
-                            print("Saving")
                             SwiftDataService.shared.insertOnBoarding(
                                 vehicleType: vehicleType,
                                 vehicleBrand: vehicleBrand ?? .car(.honda),
@@ -147,17 +146,5 @@ struct OnBoardingView: View {
         }
         .animation(.smooth, value: keyboardHeight)
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .onChange(of: onBoardingDataSaved) {
-            print("Check save")
-            if onBoardingDataSaved {
-                print("Saving")
-                SwiftDataService.shared.insertOnBoarding(
-                    vehicleType: vehicleType,
-                    vehicleBrand: vehicleBrand ?? .car(.honda),
-                    odometer: odometer ?? 0,
-                    serviceHistory: serviceHistory
-                )
-            }
-        }
     }
 }

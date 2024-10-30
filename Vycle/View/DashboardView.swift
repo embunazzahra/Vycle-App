@@ -63,8 +63,9 @@ struct DashboardView: View {
                                 VStack(alignment: .leading, spacing: 4){
                                     Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                                     let latestOdo = initialOdometer.last?.currentKM ?? 0
-                                    Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
-                                    if let lastLocation = locationHistory.last?.distance {
+                                    Text("\(locationHistory.last?.distance ?? 2) Kilometer Odo")
+                                    
+                                    if let lastLocation = locationHistory.last {
                                         let totalDistance = calculateTotalDistance() ?? 0
                                         Text("\(Int(odometer ?? Float(totalDistance))) Kilometer")
                                             .headline()
@@ -121,7 +122,9 @@ struct DashboardView: View {
                                 MapView(locations: locationHistory).frame(height: 300)
                             } else {
                                 Spacer()
-                                NoReminderView()
+                                Text("last location: \(locationHistory.first?.distance)")
+                                Text("last location: \(locationHistory.first?.time)")
+//                                NoReminderView()
                                 
                             }
                             
