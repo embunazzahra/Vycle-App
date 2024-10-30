@@ -13,7 +13,7 @@ struct ReminderContentNoData: View {
     var body: some View {
         VStack (alignment: .center) {
             Spacer()
-            Image(systemName: "folder.badge.plus")
+            Image("empty_state_reminder")
                 .font(.system(size: 100))
                 .padding(8)
                 .foregroundColor(Color.blue)

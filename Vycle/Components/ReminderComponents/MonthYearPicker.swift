@@ -99,7 +99,7 @@ struct DatePickerSheet: View {
                 }
             }
             
-            CustomButton(title: "Pilih", iconPosition: .left, buttonType: .primary) {
+            CustomButton(title: "Pilih", buttonType: .primary) {
                 updateSelectedDate()
                 isMonthYearChosen = true
                 dismiss()

@@ -17,7 +17,7 @@ struct DashboardView: View {
     @Query var reminders : [Reminder]
     
     @State private var showSheet = false
-    //    @Query var locationHistory : [LocationHistory]
+        @Query var locationHistorytest : [LocationHistory]
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
@@ -61,8 +61,9 @@ struct DashboardView: View {
                                 VStack(alignment: .leading, spacing: 4){
                                     Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                                     let latestOdo = initialOdometer.last?.currentKM ?? 0
-                                    Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
-                                    if let lastLocation = locationHistory.last?.distance {
+                                    Text("\(locationHistory.last?.distance ?? 2) Kilometer Odo")
+                                    
+                                    if let lastLocation = locationHistory.last {
                                         let totalDistance = calculateTotalDistance() ?? 0
                                         Text("\(Int(odometer ?? Float(totalDistance))) Kilometer")
                                             .headline()
@@ -145,18 +146,17 @@ struct DashboardView: View {
                         }.padding(.horizontal, 16).offset(y: -45)
                         VStack {
                             if !reminders.isEmpty {
-                                HStack{
-                                    HaveReminderView().padding(.horizontal, 16)
-                                }
+//                                HStack{
+//                                    HaveReminderView().padding(.horizontal, 16)
+//                                }
 //                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                                List{
-                                    ForEach(locationHistory){location in
-                                        Text("longitude: \(location.longitude) latitude: \(location.latitude) distance: \(location.distance)")
-                                    }
-                                }
+                                Text("last location: \(locationHistory.first?.distance)")
+                                Text("last location: \(locationHistory.first?.time)")
                             } else {
                                 Spacer()
-                                NoReminderView()
+                                Text("last location: \(locationHistory.first?.distance)")
+                                Text("last location: \(locationHistory.first?.time)")
+//                                NoReminderView()
                                 
                             }
                             
