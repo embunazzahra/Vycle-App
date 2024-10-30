@@ -22,7 +22,7 @@ struct VehicleBrandButton: View {
                 .animation(.easeInOut(duration: 0.2), value: isSelected)
 
             HStack {
-                Image(brand.isCustomBrand ? "merk_kendaraan" : "placeholder")
+                Image(brand.isCustomBrand ? "Custom" : brand.stringValue)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
