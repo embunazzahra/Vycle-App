@@ -62,17 +62,33 @@ extension SwiftDataService {
             }
     }
     
+//    private func checkAndNotifyIfNeeded() {
+//           guard let latestOdometer = fetchOdometersForNotif().last,
+//                 let reminder = fetchActiveReminder() else { return }
+//           
+//           let kilometerDifference = Float(reminder.kmInterval) - (Float(latestOdometer.currentKM) - Float(reminder.reminderOdo))
+//           
+//           if kilometerDifference <= 500 {
+//               scheduleNotification(for: reminder.sparepart)
+//               updateReminderDateToNow(reminder: reminder)
+//           }
+//    }
+    
     private func checkAndNotifyIfNeeded() {
-           guard let latestOdometer = fetchOdometersForNotif().last,
-                 let reminder = fetchActiveReminder() else { return }
-           
-           let kilometerDifference = Float(reminder.kmInterval) - (Float(latestOdometer.currentKM) - Float(reminder.reminderOdo))
-           
-           if kilometerDifference <= 500 {
-               scheduleNotification(for: reminder.sparepart)
-               updateReminderDateToNow(reminder: reminder)
-           }
-       }
+        guard let latestOdometer = fetchOdometersForNotif().last else { return }
+        
+        // Fetch all active reminders
+        let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
+        
+        for reminder in activeReminders {
+            let kilometerDifference = Float(reminder.kmInterval) - (Float(latestOdometer.currentKM) - Float(reminder.reminderOdo))
+            
+            if kilometerDifference <= 500 {
+                scheduleNotification(for: reminder.sparepart)
+                updateReminderDateToNow(reminder: reminder)
+            }
+        }
+    }
 
     private func updateReminderDateToNow(reminder: Reminder) {
         editReminder(reminder: reminder,
