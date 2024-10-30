@@ -17,32 +17,34 @@ struct DashboardView: View {
     @Query var reminders : [Reminder]
     
     @State private var showSheet = false
+    @State private var showOdoSheet = false
+    @State private var showBluetoothSheet = false
     //    @Query var locationHistory : [LocationHistory]
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
     var body: some View {
-        //        let limitedLocationHistory = locationHistory.prefix(10)
         
         NavigationView {
             ScrollView{
-                
-                //                ForEach(limitedLocationHistory){ history in
-                //                    Text("Lati: \(history.latitude), Long: \(history.longitude) Dis: \(history.distance) Date: \(history.time)")
-                //                }
                 ZStack{
                     VStack{
                         ZStack {
                             Color.pink
-                            Image("dashboard_normal")
+                            Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
                                 .resizable() // Makes the image resizable
                                 .scaledToFill() // Scales the image to fill the available space
                                 .frame(maxWidth: .infinity, maxHeight: .infinity) // Ensures it stretches to fill the frame
                                 .clipped() // Clips any overflowing parts of the image
                             VStack{
                                 HStack{
-                                    BTIndicator(locationManager: locationManager)  // Pass locationManager to BTIndicator
+                                    BTIndicator(locationManager: locationManager).onTapGesture {
+                                        showBluetoothSheet.toggle()
+                                    }.sheet(isPresented: $showBluetoothSheet) {
+                                        BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
+                                        
+                                    }
                                     Spacer()
                                 }.padding(.leading, 16).padding(.top, 16)
                                 Spacer()
@@ -61,8 +63,9 @@ struct DashboardView: View {
                                 VStack(alignment: .leading, spacing: 4){
                                     Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                                     let latestOdo = initialOdometer.last?.currentKM ?? 0
-                                    Text("\(Int(initialOdometer.last?.currentKM ?? 0)) Kilometer Odo")
-                                    if let lastLocation = locationHistory.last?.distance {
+                                    Text("\(locationHistory.last?.distance ?? 2) Kilometer Odo")
+                                    
+                                    if let lastLocation = locationHistory.last {
                                         let totalDistance = calculateTotalDistance() ?? 0
                                         Text("\(Int(odometer ?? Float(totalDistance))) Kilometer")
                                             .headline()
@@ -81,61 +84,19 @@ struct DashboardView: View {
                                 Button(action: {
                                     // Action for editing
                                     _ = calculateTotalDistance()
-                                    showSheet.toggle()
+                                    showOdoSheet.toggle()
                                     
                                 }) {
                                     Image(systemName: "pencil").foregroundStyle(Color.white)
-                                }.frame(width: 28, height: 28).background(Color.blue).cornerRadius(8).sheet(isPresented : $showSheet){
-                                    ZStack{
-                                        VStack{
-                                            HStack{
-                                                Button(action: {
-                                                    showSheet.toggle()
-                                                }) {
-                                                    Image(systemName: "xmark").foregroundColor(Color.neutral.tint300)
-                                                }
-                                                
-                                                Spacer()
-                                            }.padding(.horizontal, 24).padding(.vertical, 24).background(Color.primary.tone100)
-                                            
-                                            Spacer()
-                                        }
-                                        VStack{
-                                            HStack{
-                                                Spacer()
-                                                Text("Ubah Odometer").title3(.emphasized).foregroundColor(Color.neutral.tint300)
-                                                
-                                                Spacer()
-                                            }.padding(.horizontal, 24).padding(.top, 20)
-                                            Spacer()
-                                        }
-                                        VStack(alignment: .center){
-                                            ZStack (alignment: .center){
-                                                
-                                                
-                                                Image("odometer")
-                                                VStack {
-                                                    Text("KM")
-                                                        .font(.custom("Technology-Bold", size: 24))
-                                                    OdometerInput(odometer: $odometer)
-                                                }.padding(.bottom, 36)
-                                            }.frame(maxWidth: .infinity, alignment: .center)
-                                        }
-                                        VStack{
-                                            Spacer()
-                                            CustomButton(title: "Simpan Perubahan"){
-                                                SwiftDataService.shared.insertOnBoarding(
-                                                    vehicleType: .car,
-                                                    vehicleBrand: .car(.honda),
-                                                    odometer: odometer ?? 0,
-                                                    serviceHistory: []
-                                                )
-                                                SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
-                                                showSheet.toggle()
-                                                _ = calculateTotalDistance()
-                                            }
-                                        }
-                                    }
+                                }.frame(width: 28, height: 28).background(Color.blue).cornerRadius(8).sheet(isPresented: $showOdoSheet) {
+                                    
+                                        OdometerSheet(
+                                            showSheet: $showOdoSheet,
+                                            odometer: $odometer,
+                                            showOdoSheet: $showOdoSheet,
+                                            calculateTotalDistance: calculateTotalDistance // Pass the function here
+                                        )
+                                    
                                 }
                             }
                             .padding()
@@ -145,22 +106,29 @@ struct DashboardView: View {
                         }.padding(.horizontal, 16).offset(y: -45)
                         VStack {
                             if !reminders.isEmpty {
-                                HStack{
-                                    HaveReminderView().padding(.horizontal, 16)
-                                }
-//                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                                List{
-                                    ForEach(locationHistory){location in
-                                        Text("longitude: \(location.longitude) latitude: \(location.latitude) distance: \(location.distance)")
-                                    }
-                                }
+//                                HStack{
+//                                    HaveReminderView().padding(.horizontal, 16)
+//                                }
+//                                ForEach($filteredReminders, id: \.self) { $reminder in
+//                                    SparepartReminderCard(
+//                                        reminder: $reminder,
+//                                        currentKM: Double(initialOdometer.last?.currentKM ?? 0)
+//                                    )
+//                                    .contentShape(Rectangle())
+//                                    .listRowInsets(EdgeInsets())
+//                                    .listRowSeparator(.hidden)
+//                                    .listSectionSeparator(.hidden)
+//                                }
+                                MapView(locations: locationHistory).frame(height: 300)
                             } else {
                                 Spacer()
-                                NoReminderView()
+                                Text("last location: \(locationHistory.first?.distance)")
+                                Text("last location: \(locationHistory.first?.time)")
+//                                NoReminderView()
                                 
                             }
                             
-                        }.padding(.horizontal, 16)
+                        }
                         
                         
                     }
@@ -206,6 +174,127 @@ struct NoReminderView : View {
     }
 }
 
+
+struct BluetoothSheet: View {
+    @Binding var showBluetoothSheet: Bool
+    @AppStorage("vBeaconID") private var vBeaconID: String = ""
+    @ObservedObject var locationManager: LocationManager
+    @State private var isRangingVBeacon: Bool = false
+    @State private var keyboardHeight: CGFloat = 0.0
+    @State private var onBoardingDataSaved: Bool = false
+    @State private var showGuide: Bool = false
+    var body: some View {
+        ZStack{
+            VStack{
+                HStack{
+                    Button(action: {
+                        showBluetoothSheet.toggle()
+                    }) {
+                        Image(systemName: "xmark").foregroundColor(Color.neutral.tint300)
+                    }
+                    
+                    Spacer()
+                }.padding(.horizontal, 24).padding(.vertical, 24).background(Color.primary.tone100)
+                
+                Spacer()
+            }
+            VStack{
+                HStack{
+                    Spacer()
+                    Text("Ubah VBeacon").title3(.emphasized).foregroundColor(Color.neutral.tint300)
+                    
+                    Spacer()
+                }.padding(.horizontal, 24).padding(.top, 20)
+                Spacer()
+            }
+            VStack(alignment: .center){
+                ConfigurationView(
+                    locationManager: locationManager,
+                    vBeaconID: $vBeaconID,
+                    showGuide: $showGuide,
+                    isRangingVBeacon: $isRangingVBeacon,
+                    onBoardingDataSaved: $onBoardingDataSaved,
+                    keyboardHeight: $keyboardHeight,
+                    hideHeader: true
+                )
+                .transition(.move(edge: .trailing))
+            }
+            VStack{
+                Spacer()
+                CustomButton(title: "Simpan Perubahan"){
+//                    SwiftDataService.shared.insertOnBoarding(
+//                        vehicleType: .car,
+//                        vehicleBrand: .car(.honda),
+//                        odometer: odometer ?? 0,
+//                        serviceHistory: []
+//                    )
+//                    SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
+                    showBluetoothSheet.toggle()
+                    locationManager.startTracking()
+                }
+            }
+        }
+    }
+}
+struct OdometerSheet: View {
+    @Binding var showSheet: Bool
+    @Binding var odometer: Float?
+    @Binding var showOdoSheet: Bool
+    var calculateTotalDistance: () -> Double?
+    var body: some View {
+            ZStack{
+                VStack{
+                    HStack{
+                        Button(action: {
+                            showOdoSheet.toggle()
+                        }) {
+                            Image(systemName: "xmark").foregroundColor(Color.neutral.tint300)
+                        }
+                        
+                        Spacer()
+                    }.padding(.horizontal, 24).padding(.vertical, 24).background(Color.primary.tone100)
+                    
+                    Spacer()
+                }
+                VStack{
+                    HStack{
+                        Spacer()
+                        Text("Ubah Odometer").title3(.emphasized).foregroundColor(Color.neutral.tint300)
+                        
+                        Spacer()
+                    }.padding(.horizontal, 24).padding(.top, 20)
+                    Spacer()
+                }
+                VStack(alignment: .center){
+                    ZStack (alignment: .center){
+                        
+                        
+                        Image("odometer")
+                        VStack {
+                            Text("KM")
+                                .font(.custom("Technology-Bold", size: 24))
+                            OdometerInput(odometer: $odometer)
+                        }.padding(.bottom, 36)
+                    }.frame(maxWidth: .infinity, alignment: .center)
+                }
+                VStack{
+                    Spacer()
+                    CustomButton(title: "Simpan Perubahan"){
+                        SwiftDataService.shared.insertOnBoarding(
+                            vehicleType: .car,
+                            vehicleBrand: .car(.honda),
+                            odometer: odometer ?? 0,
+                            serviceHistory: []
+                        )
+                        SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
+                        showOdoSheet.toggle()
+                        _ = calculateTotalDistance()
+                    }
+                }
+            }
+        
+    }
+}
 struct HaveReminderView : View {
     @EnvironmentObject var routes: Routes
     var body: some View {

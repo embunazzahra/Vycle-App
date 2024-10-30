@@ -16,10 +16,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var totalDistanceTraveled: Double = 0.0
     @Published var isInsideBeaconRegion: Bool = false
 //    @Published var locationHistory: [LocationHistory] = []
-    @AppStorage("vBeaconID") var vBeaconID: String = "" // ID: 4CC9
+    @AppStorage("vBeaconID") var vBeaconID: String = ""{
+        didSet {
+                    // Call the method to update the beacon region when vBeaconID changes
+                    updateBeaconRegion()
+                }
+    }
+    
+    // ID: 4CC9
     private var beaconUUID: UUID {
         let vBeaconID = vBeaconID.isEmpty ? "0000" : vBeaconID
-        return UUID(uuidString: "2D7A9F0C-E0E8-\(vBeaconID)-A71B-A21DB2D034A1")!
+        return UUID(uuidString: "2D7A9F0C-E0E8-\(vBeaconID)-A71B-A21DB2D034A1") ?? UUID()
     }
     private let beaconMajor: CLBeaconMajorValue = 5
     private let beaconMinor: CLBeaconMinorValue = 88
@@ -47,6 +54,20 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.startMonitoringSignificantLocationChanges()
         startTrackingBeacons()
     }
+    private func createBeaconRegion() -> CLBeaconRegion {
+           return CLBeaconRegion(uuid: beaconUUID, major: beaconMajor, minor: beaconMinor, identifier: identifier)
+       }
+       
+       // Update the beacon region when vBeaconID changes
+       private func updateBeaconRegion() {
+           // Stop tracking the previous region
+           let previousRegion = createBeaconRegion() // Create the previous region
+           locationManager.stopMonitoring(for: previousRegion)
+           locationManager.stopRangingBeacons(in: previousRegion)
+
+           // Start tracking the new beacon region
+           startTrackingBeacons()
+       }
     
     // Start tracking the beacon region
     func startTrackingBeacons() {
@@ -72,6 +93,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     // Location updates from significant changes
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
+        
         DispatchQueue.main.async {
             self.currentLocation = location.coordinate
             if self.isInsideBeaconRegion {
@@ -80,35 +102,47 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             } else {
 //                print("Significant location change occurred, but outside of beacon region. No data saved.")
             }
-        }
+//        }
+       
     }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        // Check if the ranged beacons match the new vBeaconID
         if beacons.count > 0 {
-            var distance = beacons[0].proximity
-            print("Distance: \(distance.rawValue)")
-            switch distance {
-            case .unknown:
-                print("unknown")
-                handleBeaconConnection(isConnected: false)
-            case .far:
-                print("far")
-                handleBeaconConnection(isConnected: true)
-            case .near:
-                print("near")
-                handleBeaconConnection(isConnected: true)
-                isInsideBeaconRegion = true
-              
-            case .immediate:
-                print("immediate")
-                handleBeaconConnection(isConnected: true)
-                isInsideBeaconRegion = true
-
-              
-
+            let foundBeacon = beacons[0]
+            let expectedBeaconUUID = beaconUUID
+            
+            if foundBeacon.uuid == expectedBeaconUUID {
+                var distance = foundBeacon.proximity
+                print("Distance: \(distance.rawValue)")
+                
+                // Update connection status based on proximity
+                switch distance {
+                case .unknown:
+                    print("unknown")
+                    handleBeaconConnection(isConnected: false)
+                case .far:
+                    print("far")
+                    handleBeaconConnection(isConnected: true)
+                case .near:
+                    print("near")
+                    handleBeaconConnection(isConnected: true)
+                    isInsideBeaconRegion = true
+                case .immediate:
+                    print("immediate")
+                    handleBeaconConnection(isConnected: true)
+                    isInsideBeaconRegion = true
+                }
+            } else {
+                // The detected beacon is not the expected one
+                print("Detected a beacon that does not match the expected UUID.")
+                handleBeaconConnection(isConnected: false) // Disconnect if the UUIDs don't match
+                isInsideBeaconRegion = false
             }
         } else {
-
+            // No beacons in range
+            handleBeaconConnection(isConnected: false)
+            isInsideBeaconRegion = false
         }
     }
     
@@ -118,6 +152,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         if region is CLBeaconRegion {
             isInsideBeaconRegion = true
             print("Entered beacon region")
+            self.sendNotification()
             handleBeaconConnection(isConnected: true)
             if let currentLocation = currentLocation {
                 self.saveLocationHistory(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
@@ -137,7 +172,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("Exited beacon region")
             isInsideBeaconRegion = false
             handleBeaconConnection(isConnected: false)
-            
+            self.sendExitNotification()
             if let currentLocation = currentLocation {
                 self.saveLocationHistory(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
             }
@@ -180,19 +215,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             calculateRoute(from: lastLocation.coordinate, to: currentLocation.coordinate) { distance in
                 if let distance = distance {
                     self.totalDistanceTraveled += distance / 1000
-                    print("Distance traveled along the path: \(distance / 1000) kilometers")
+//                    print("Distance traveled along the path: \(distance / 1000) kilometers")
                 }
                 let newLocation = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-                print("bug is in calculateroute")
-                self.sendNotification(for: newLocation)
-                print("bug is in aftrer send notif")
                 self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
-                print("bug is after storelocation")
+                
             }
         } else {
             let newLocation = LocationHistory(distance: nil, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-            print("bug is in else")
-            self.sendNotification(for: newLocation)
             storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
         }
         
@@ -207,10 +237,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             lastSavedLocation = CLLocation(latitude: latitude, longitude: longitude)
             print("bug in storelocation")
             let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-            self.sendNotification(for: newLocation)
-            print("bug before insertlocation")
             SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date())
-            print("bug after insertlocation")
 
         } catch {
             print("Failed to save location history: \(error.localizedDescription)")
@@ -220,7 +247,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     // Handle beacon connection and disconnection
     func handleBeaconConnection(isConnected: Bool) {
         // Perform async task to get the current location and save it
-        print("Beacon connection changed: \(isConnected ? "Connected" : "Disconnected")")
+//        print("Beacon connection changed: \(isConnected ? "Connected" : "Disconnected")")
         if isConnected {
             isInsideBeaconRegion = true
         } else {
@@ -241,11 +268,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     // Send notification when beacon status changes
-    private func sendNotification(for location: LocationHistory) {
+    private func sendNotification() {
         let content = UNMutableNotificationContent()
-        content.title = "Beacon Status Changed"
+        content.title = "Beacon Entered"
         content.body = """
-                    Location \(location.latitude), \(location.longitude) has been saved.
+                    beacon has been saved.
+                """
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Notification error: \(error.localizedDescription)")
+            }
+        }
+    }
+    private func sendExitNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Beacon Exited"
+        content.body = """
+                    exit has been saved.
                 """
         content.sound = .default
         
