@@ -35,7 +35,7 @@ struct AddServiceView: View {
     
     // Computed property to determine if the button should be disabled
     private var isButtonDisabled: Bool {
-        selectedParts.isEmpty || odometerValue.isEmpty // Disable if parts are empty or TextField is empty
+        selectedParts.isEmpty || odometerValue.isEmpty || Int(odometerValue) ?? 0 > userOdometer
     }
     
     
@@ -89,7 +89,13 @@ struct AddServiceView: View {
                 
                 if let latestOdometer = odometers.last {
                     userOdometer = Int(latestOdometer.currentKM)
-                    odometerValue = "\(Int(latestOdometer.currentKM))"
+                    
+                    let locationHistory = SwiftDataService.shared.fetchLocationHistory()
+                    
+                    // if location is exist, the users is using IOT, so odometer value is not empty
+                    if let latestLocation = locationHistory.last {
+                        odometerValue = "\(Int(latestOdometer.currentKM))"
+                    }
                 }
             }
         }

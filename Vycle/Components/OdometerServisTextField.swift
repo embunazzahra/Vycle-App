@@ -12,15 +12,17 @@ struct OdometerServisTextField: View {
     var placeholder: String
     var enable: Bool = true
     @FocusState var isInputActive: Bool
+    @Binding var isOverLimit: Bool
     
     
     var body: some View {
         HStack(spacing: 0){
-            Image("odometer_logo_textfield")
+            Image("speed_icon")
                 .resizable() // Makes the image resizable
                 .scaledToFit() // Maintains the aspect ratio
-                .frame(width: 18, height: 15) // Set your desired frame
-                .padding(12)
+                .frame(width: 22, height: 22) // Set your desired frame
+                .padding(.leading,12)
+                .padding(.trailing,9)
             TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
                 .keyboardType(.numberPad)
                 .tint(.grayShade300)
@@ -57,7 +59,7 @@ struct OdometerServisTextField: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(enable ? Color.neutral.tone100 : Color.neutral.tint200, lineWidth: 1) // Adds a border around the view
+                .stroke(isOverLimit ? Color.persianRed500 : (enable ? Color.neutral.tone100 : Color.neutral.tint200), lineWidth: 1)
         )
         
     }
