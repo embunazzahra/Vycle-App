@@ -72,7 +72,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     // Location updates from significant changes
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        if location.distance(from: lastSavedLocation ?? location) > 10{
+//        if location.distance(from: lastSavedLocation ?? location) > 10{
             DispatchQueue.main.async {
                 self.currentLocation = location.coordinate
                 if self.isInsideBeaconRegion {
@@ -82,7 +82,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     //                print("Significant location change occurred, but outside of beacon region. No data saved.")
                 }
             }
-        }
+//        }
        
     }
     
