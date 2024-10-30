@@ -111,7 +111,8 @@ struct OnBoardingView: View {
                                     showGuide: $showGuide,
                                     isRangingVBeacon: $isRangingVBeacon,
                                     onBoardingDataSaved: $onBoardingDataSaved,
-                                    keyboardHeight: $keyboardHeight
+                                    keyboardHeight: $keyboardHeight,
+                                    hideHeader: false
                                 )
                                 .transition(.backslide)
                             } else {
