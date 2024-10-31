@@ -38,19 +38,35 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         super.init()
         locationManager.delegate = self
         requestNotificationAuthorization()
-        locationManager.requestAlwaysAuthorization()
+        locationManager.requestWhenInUseAuthorization()
+//        checkAuthorizationStatus()
     }
     
-    //    func setBLEManager(_ manager: BLEManager) {
-    //        self.bleManager = manager
-    //    }
+    func checkAuthorizationStatus() -> CLAuthorizationStatus{
+//        switch locationManager.authorizationStatus {
+//        case .authorizedAlways:
+//            // Authorized for always access
+//            return("always bro")
+//        case .authorizedWhenInUse, .denied, .restricted, .notDetermined:
+//            // Not authorized for always access
+//            return("not always bro")
+//        @unknown default:
+//            return("not always bro")
+//           
+//        }
+        return locationManager.authorizationStatus
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        checkAuthorizationStatus()
+    }
     
     func setContext(_ context: ModelContext) {
         self.context = context
     }
     
     func startTracking() {
-        locationManager.requestAlwaysAuthorization()
+        locationManager.requestWhenInUseAuthorization()
         locationManager.startMonitoringSignificantLocationChanges()
         startTrackingBeacons()
     }

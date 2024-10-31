@@ -45,72 +45,75 @@ struct ContentView: View {
                             }
                         }
                     }
-            } else if !onBoardingDataSaved {
-                OnBoardingView(
-                    locationManager: locationManager,
-                    odometer: $odometer,
-                    vBeaconID: $vBeaconID,
-                    onBoardingDataSaved: $onBoardingDataSaved
-                )
-            } else {
-                TabView(selection: $selectedTab) {
-                    DashboardView(locationManager: locationManager).tabItem {
-                        Image(selectedTab == .dashboard ? "dashboard_icon_blue" : "dashboard_icon")
-                        Text("Dashboard")
-                    }.tag(Tab.dashboard)
-                    ServiceView().tabItem {
-                        Image(selectedTab == .servis ? "service_icon_blue" : "service_icon")
-                        Text("Servis")
-                    }.tag(Tab.servis)
-                    PengingatView(locationManager: locationManager).tabItem {
-                        Image(selectedTab == .pengingat ? "reminder_icon_blue" : "reminder_icon")
-                        Text("Pengingat")
-                    }.tag(Tab.pengingat)
-                    
-                    
-                }.tint(Color.primary.shade200)
-                    .navigationTitle(selectedTab.rawValue)
-                    .navigationDestination(for: Routes.Destination.self) { destination in
-                        switch destination {
-                        case .PengingatView:
-                            PengingatView(locationManager: locationManager)
-                        case .ServisView:
-                            ServiceView()
-                        case .DashboardView:
-                            DashboardView(locationManager: locationManager)
-                        case .AddServiceView(let service):
-                            AddServiceView(service: service)
-                        case .NoServiceView:
-                            NoServiceView()
-                        case .AllServiceHistoryView:
-                            AllServiceHistoryView()
-                        case .ServiceDetailView(let service):
-                            ServiceDetailView(service: service)
-                        case .AddReminderView:
-                            AddReminderView(reminders: $reminders)
-                        case .AllReminderView:
-                            AllReminderView()
-                        case .EditReminderView(let reminder):
-                            EditReminderView(reminder: .constant(reminder))
-                        case .PhotoReviewView(let imageData):
-                            PhotoReviewView(imageData: imageData)
+            } else{
+                if !onBoardingDataSaved {
+                    OnBoardingView(
+                        locationManager: locationManager,
+                        odometer: $odometer,
+                        vBeaconID: $vBeaconID,
+                        onBoardingDataSaved: $onBoardingDataSaved
+                    )
+                } else {
+                    TabView(selection: $selectedTab) {
+                        DashboardView(locationManager: locationManager).tabItem {
+                            Image(selectedTab == .dashboard ? "dashboard_icon_blue" : "dashboard_icon")
+                            Text("Dashboard")
+                        }.tag(Tab.dashboard)
+                        ServiceView().tabItem {
+                            Image(selectedTab == .servis ? "service_icon_blue" : "service_icon")
+                            Text("Servis")
+                        }.tag(Tab.servis)
+                        PengingatView(locationManager: locationManager).tabItem {
+                            Image(selectedTab == .pengingat ? "reminder_icon_blue" : "reminder_icon")
+                            Text("Pengingat")
+                        }.tag(Tab.pengingat)
+                        
+                        
+                    }.tint(Color.primary.shade200)
+                        .navigationTitle(selectedTab.rawValue)
+                        .navigationDestination(for: Routes.Destination.self) { destination in
+                            switch destination {
+                            case .PengingatView:
+                                PengingatView(locationManager: locationManager)
+                            case .ServisView:
+                                ServiceView()
+                            case .DashboardView:
+                                DashboardView(locationManager: locationManager)
+                            case .AddServiceView(let service):
+                                AddServiceView(service: service)
+                            case .NoServiceView:
+                                NoServiceView()
+                            case .AllServiceHistoryView:
+                                AllServiceHistoryView()
+                            case .ServiceDetailView(let service):
+                                ServiceDetailView(service: service)
+                            case .AddReminderView:
+                                AddReminderView(reminders: $reminders)
+                            case .AllReminderView:
+                                AllReminderView()
+                            case .EditReminderView(let reminder):
+                                EditReminderView(reminder: .constant(reminder))
+                            case .PhotoReviewView(let imageData):
+                                PhotoReviewView(imageData: imageData)
+                            }
                         }
-                    }
-                    .toolbar {
-                        ToolbarItem {
-                            Image(systemName: "plus.square.fill")
-                                .foregroundColor(.white)
-                                .onTapGesture {
-                                    if selectedTab == .pengingat {
-                                        routes.navigate(to: .AddReminderView)
-                                    } else if selectedTab == .servis {
-                                        routes.navigate(to: .AddServiceView(service: nil))
+                        .toolbar {
+                            ToolbarItem {
+                                Image(systemName: "plus.square.fill")
+                                    .foregroundColor(.white)
+                                    .onTapGesture {
+                                        if selectedTab == .pengingat {
+                                            routes.navigate(to: .AddReminderView)
+                                        } else if selectedTab == .servis {
+                                            routes.navigate(to: .AddServiceView(service: nil))
+                                        }
                                     }
-                                }
-                                .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? 1 : 0)
-                                .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? false : true)
+                                    .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? 1 : 0)
+                                    .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? false : true)
+                            }
                         }
-                    }
+                }
+
             }
         }
         .transition(.backslide)
@@ -120,10 +123,12 @@ struct ContentView: View {
             locationManager.setContext(context)
             locationManager.startTracking()
             fetchAndCountUniqueSpareParts()
+            
         }
         .onChange(of: fetchedReminders) {
             fetchAndCountUniqueSpareParts()
         }
+        
         /*.environmentObject(locationManager) */ // Provide LocationManager as EnvironmentObject
     }
     
@@ -138,5 +143,8 @@ struct ContentView: View {
         print(uniqueSparePartCount)
     }
 
+    
+    
+    
 }
 
