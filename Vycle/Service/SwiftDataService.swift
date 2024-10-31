@@ -146,6 +146,7 @@ extension SwiftDataService {
         self.setCurrentVehicle(vehicleData)
         // Insert Odometer
         let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
+        print(" odometer number: \(odometer)")
         modelContext.insert(odometerData)
         
         
