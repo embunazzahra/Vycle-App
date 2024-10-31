@@ -63,7 +63,7 @@ struct DashboardView: View {
                                 VStack(alignment: .leading, spacing: 4){
                                     Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                                     let latestOdo = initialOdometer.last?.currentKM ?? 0
-                                    Text("\(locationHistory.last?.distance ?? 2) Kilometer Odo")
+//                                    Text("\(Int(locationHistory.last?.distance ?? 0)) Kilometer")
                                     
                                     if let lastLocation = locationHistory.last {
                                         let totalDistance = calculateTotalDistance() ?? 0
@@ -72,7 +72,7 @@ struct DashboardView: View {
                                             .foregroundStyle(.grayShade300)
                                         
                                     } else {
-                                        Text("\(Int(latestOdo)) odo Kilometer")
+                                        Text("\(Int(latestOdo)) Kilometer")
                                             .headline()
                                             .foregroundStyle(.grayShade300)
                                     }
@@ -105,26 +105,30 @@ struct DashboardView: View {
                             .shadow(radius: 4, y: 2)
                         }.padding(.horizontal, 16).offset(y: -45)
                         VStack {
-                            if !reminders.isEmpty {
-//                                HStack{
-//                                    HaveReminderView().padding(.horizontal, 16)
-//                                }
-//                                ForEach($filteredReminders, id: \.self) { $reminder in
-//                                    SparepartReminderCard(
-//                                        reminder: $reminder,
-//                                        currentKM: Double(initialOdometer.last?.currentKM ?? 0)
-//                                    )
-//                                    .contentShape(Rectangle())
-//                                    .listRowInsets(EdgeInsets())
-//                                    .listRowSeparator(.hidden)
-//                                    .listSectionSeparator(.hidden)
-//                                }
-                                MapView(locations: locationHistory).frame(height: 300)
+                            if !filteredReminders.isEmpty {
+                                HStack{
+                                    HaveReminderView().padding(.horizontal, 16)
+                                }
+                                ForEach($filteredReminders, id: \.self) { $reminder in
+                                    SparepartReminderCard(
+                                        reminder: $reminder,
+                                        currentKM: Double(initialOdometer.last?.currentKM ?? 0)
+                                    )
+                                    .contentShape(Rectangle())
+                                    .listRowInsets(EdgeInsets())
+                                    .listRowSeparator(.hidden)
+                                    .listSectionSeparator(.hidden)
+                                }
+//                                MapView(locations: locationHistory).frame(height: 300)
                             } else {
-                                Spacer()
-                                Text("last location: \(locationHistory.first?.distance)")
-                                Text("last location: \(locationHistory.first?.time)")
-//                                NoReminderView()
+//                                Spacer()
+//                                Text("last location: \(locationHistory.first?.distance)")
+//                                Text("last location: \(locationHistory.first?.time)")
+//                                ForEach(locationHistory){location in
+//                                    Text("Time: \(location.time) Longitude: \(location.longitude) Latitude: \(location.latitude) Distance: \(location.distance)")
+//                                    
+//                                }
+                                NoReminderView()
                                 
                             }
                             
