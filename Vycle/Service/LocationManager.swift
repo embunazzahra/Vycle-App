@@ -104,7 +104,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
             //        }
             
-        }}
+        }
+    }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         // Check if the ranged beacons match the new vBeaconID
@@ -159,13 +160,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
         }
     }
-    func startBackgroundTask() {
-        var backgroundTask: UIBackgroundTaskIdentifier = .invalid
-        backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "MyTask") {
-            UIApplication.shared.endBackgroundTask(backgroundTask)
-            backgroundTask = .invalid
-        }
-    }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         if region is CLBeaconRegion {
@@ -180,212 +174,148 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             startBackgroundTask()
         }
     }
-        
-        func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-            // Check if the ranged beacons match the new vBeaconID
-            if beacons.count > 0 {
-                let foundBeacon = beacons[0]
-                let expectedBeaconUUID = beaconUUID
-                
-                if foundBeacon.uuid == expectedBeaconUUID {
-                    var distance = foundBeacon.proximity
-                    print("Distance: \(distance.rawValue)")
-                    
-                    // Update connection status based on proximity
-                    switch distance {
-                    case .unknown:
-                        print("unknown")
-                        handleBeaconConnection(isConnected: false)
-                    case .far:
-                        print("far")
-                        handleBeaconConnection(isConnected: true)
-                    case .near:
-                        print("near")
-                        handleBeaconConnection(isConnected: true)
-                        isInsideBeaconRegion = true
-                    case .immediate:
-                        print("immediate")
-                        handleBeaconConnection(isConnected: true)
-                        isInsideBeaconRegion = true
-                    }
-                } else {
-                    // The detected beacon is not the expected one
-                    print("Detected a beacon that does not match the expected UUID.")
-                    handleBeaconConnection(isConnected: false) // Disconnect if the UUIDs don't match
-                    isInsideBeaconRegion = false
-                }
-            } else {
-                // No beacons in range
-                handleBeaconConnection(isConnected: false)
-                isInsideBeaconRegion = false
-            }
+    
+    
+    // Detect when entering a be
+    
+    func startBackgroundTask() {
+        var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+        backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "MyTask") {
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
         }
+    }
+    
+    //it works for SLC
+    
+    func calculateRoute(from start: CLLocationCoordinate2D, to end: CLLocationCoordinate2D, completion: @escaping (Double?) -> Void) {
+        let request = MKDirections.Request()
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: start))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: end))
+        request.transportType = .automobile
         
-        
-        // Detect when entering a beacon region
-        func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-            if region is CLBeaconRegion {
-                isInsideBeaconRegion = true
-                print("Entered beacon region")
-                self.sendNotification()
-                handleBeaconConnection(isConnected: true)
-                if let currentLocation = currentLocation {
-                    self.saveLocationHistory(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
-                }
-            }
-        }
-        func startBackgroundTask() {
-            var backgroundTask: UIBackgroundTaskIdentifier = .invalid
-            backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "MyTask") {
-                UIApplication.shared.endBackgroundTask(backgroundTask)
-                backgroundTask = .invalid
-            }
-        }
-        
-        func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-            if region is CLBeaconRegion {
-                print("Exited beacon region")
-                isInsideBeaconRegion = false
-                handleBeaconConnection(isConnected: false)
-                self.sendExitNotification()
-                if let currentLocation = currentLocation {
-                    self.saveLocationHistory(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
-                }
-                
-                startBackgroundTask()
-            }
-        }
-        
-        //it works for SLC
-        
-        func calculateRoute(from start: CLLocationCoordinate2D, to end: CLLocationCoordinate2D, completion: @escaping (Double?) -> Void) {
-            let request = MKDirections.Request()
-            request.source = MKMapItem(placemark: MKPlacemark(coordinate: start))
-            request.destination = MKMapItem(placemark: MKPlacemark(coordinate: end))
-            request.transportType = .automobile
-            
-            let directions = MKDirections(request: request)
-            directions.calculate { response, error in
-                guard let route = response?.routes.first else {
-                    print("Error calculating route: \(error?.localizedDescription ?? "Unknown error")")
-                    completion(nil)
-                    return
-                }
-                
-                let distance = route.distance
-                completion(distance)
-            }
-        }
-        
-        func saveLocationHistory(latitude: Double, longitude: Double) {
-            guard let context = context else {
-                print("Context not set")
+        let directions = MKDirections(request: request)
+        directions.calculate { response, error in
+            guard let route = response?.routes.first else {
+                print("Error calculating route: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
                 return
             }
             
-            let currentLocation = CLLocation(latitude: latitude, longitude: longitude)
-            
-            if let lastLocation = lastSavedLocation {
-                // MKDirection buat liat jalan antara titik sekarang dan terakhir
-                calculateRoute(from: lastLocation.coordinate, to: currentLocation.coordinate) { distance in
-                    if let distance = distance {
-                        self.totalDistanceTraveled += distance / 1000
-                        //                    print("Distance traveled along the path: \(distance / 1000) kilometers")
-                    }
-                    let newLocation = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-                    self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
-                    
+            let distance = route.distance
+            completion(distance)
+        }
+    }
+    
+    func saveLocationHistory(latitude: Double, longitude: Double) {
+        guard let context = context else {
+            print("Context not set")
+            return
+        }
+        
+        let currentLocation = CLLocation(latitude: latitude, longitude: longitude)
+        
+        if let lastLocation = lastSavedLocation {
+            // MKDirection buat liat jalan antara titik sekarang dan terakhir
+            calculateRoute(from: lastLocation.coordinate, to: currentLocation.coordinate) { distance in
+                if let distance = distance {
+                    self.totalDistanceTraveled += distance / 1000
+                    //                    print("Distance traveled along the path: \(distance / 1000) kilometers")
                 }
-            } else {
-                let newLocation = LocationHistory(distance: nil, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-                storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
-            }
-            
-        }
-        
-        func storeLocation(latitude: Double, longitude: Double, distanceFromLastLocation: Double?) {
-            guard let context = context else { return }
-            
-            do {
-                try context.save()
+                let newLocation = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
+                self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
                 
-                lastSavedLocation = CLLocation(latitude: latitude, longitude: longitude)
-                print("bug in storelocation")
-                let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-                SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date())
-                
-            } catch {
-                print("Failed to save location history: \(error.localizedDescription)")
             }
+        } else {
+            let newLocation = LocationHistory(distance: nil, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
+            storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
         }
         
-        // Handle beacon connection and disconnection
-        func handleBeaconConnection(isConnected: Bool) {
-            // Perform async task to get the current location and save it
-            //        print("Beacon connection changed: \(isConnected ? "Connected" : "Disconnected")")
-            if isConnected {
-                isInsideBeaconRegion = true
-            } else {
-                isInsideBeaconRegion = false
-            }
-            requestCurrentLocationAndSave()
+    }
+    
+    func storeLocation(latitude: Double, longitude: Double, distanceFromLastLocation: Double?) {
+        guard let context = context else { return }
+        
+        do {
+            try context.save()
+            
+            lastSavedLocation = CLLocation(latitude: latitude, longitude: longitude)
+            print("bug in storelocation")
+            let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
+            SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date())
+            
+        } catch {
+            print("Failed to save location history: \(error.localizedDescription)")
         }
-        
-        // Request the current location and save it
-        func requestCurrentLocationAndSave() {
-            locationManager.requestLocation()  // Request the current location
+    }
+    
+    // Handle beacon connection and disconnection
+    func handleBeaconConnection(isConnected: Bool) {
+        // Perform async task to get the current location and save it
+        //        print("Beacon connection changed: \(isConnected ? "Connected" : "Disconnected")")
+        if isConnected {
+            isInsideBeaconRegion = true
+        } else {
+            isInsideBeaconRegion = false
         }
-        
-        
-        // Handle location errors
-        func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-            print("Failed to get location: \(error.localizedDescription)")
-        }
-        
-        // Send notification when beacon status changes
-        private func sendNotification() {
-            let content = UNMutableNotificationContent()
-            content.title = "Beacon Entered"
-            content.body = """
+        requestCurrentLocationAndSave()
+    }
+    
+    // Request the current location and save it
+    func requestCurrentLocationAndSave() {
+        locationManager.requestLocation()  // Request the current location
+    }
+    
+    
+    // Handle location errors
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to get location: \(error.localizedDescription)")
+    }
+    
+    // Send notification when beacon status changes
+    private func sendNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Beacon Entered"
+        content.body = """
                     beacon has been saved.
                 """
-            content.sound = .default
-            
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-            
-            UNUserNotificationCenter.current().add(request) { error in
-                if let error = error {
-                    print("Notification error: \(error.localizedDescription)")
-                }
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Notification error: \(error.localizedDescription)")
             }
         }
-        private func sendExitNotification() {
-            let content = UNMutableNotificationContent()
-            content.title = "Beacon Exited"
-            content.body = """
+    }
+    private func sendExitNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Beacon Exited"
+        content.body = """
                     exit has been saved.
                 """
-            content.sound = .default
-            
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-            
-            UNUserNotificationCenter.current().add(request) { error in
-                if let error = error {
-                    print("Notification error: \(error.localizedDescription)")
-                }
-            }
-        }
+        content.sound = .default
         
-        private func requestNotificationAuthorization() {
-            let center = UNUserNotificationCenter.current()
-            center.requestAuthorization(options: [.alert, .sound]) { granted, error in
-                if let error = error {
-                    print("Notification permission error: \(error.localizedDescription)")
-                }
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Notification error: \(error.localizedDescription)")
             }
         }
     }
     
+    private func requestNotificationAuthorization() {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound]) { granted, error in
+            if let error = error {
+                print("Notification permission error: \(error.localizedDescription)")
+            }
+        }
+    }
+}
+
 
