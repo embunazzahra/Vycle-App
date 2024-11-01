@@ -9,14 +9,16 @@ import SwiftUI
 struct ReminderHeader: View {
     var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
+    @State var hasNewNotification: Bool = true
 
     var body: some View {
         let uniqueReminders = getUniqueRemindersBySparepart(reminders)
 
         VStack {
             VStack(alignment: .center, spacing: 8) {
-                Image("reminder_icon_blue")
-                    .font(.system(size: 20, weight: .bold))
+//                Image("reminder_icon_blue")
+//                    .font(.system(size: 20, weight: .bold))
+                NotificationIconView(hasNewNotification: $hasNewNotification, iconName: "reminder_icon_white")
                 
                 HStack {
                     Text("\(uniqueReminders.count)") 
