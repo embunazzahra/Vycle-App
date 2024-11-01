@@ -27,7 +27,7 @@ struct ContentView: View {
     @Query var fetchedReminders: [Reminder]
     @State private var uniqueSparePartCount: Int = 0
     @State private var vBeaconID: String = ""
-    @State private var hasNewNotification = true
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     @AppStorage("onBoardingDataSaved") private var onBoardingDataSaved: Bool = false
     
     
