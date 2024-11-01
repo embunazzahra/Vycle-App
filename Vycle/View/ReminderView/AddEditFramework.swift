@@ -24,7 +24,7 @@ struct AddEditFramework: View {
     @State private var selectedDate: Date
     @State private var selectedNumber: Int
     @State private var selectedSparepart: Sparepart
-    @State private var isToggleOn = false
+//    @State private var isToggleOn = true
     @State private var showSheet = false
 //    @State private var serviceOdometer: Float = 0 // Assuming you'll fetch this value
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
@@ -32,6 +32,7 @@ struct AddEditFramework: View {
 
 
     @Binding var reminders: [Reminder]
+    
     var reminderToEdit: Reminder?
 
     var isButtonEnabled: Bool {
@@ -78,7 +79,7 @@ struct AddEditFramework: View {
             self.isPartChosen = true
             self.isMonthYearChosen = true
             self.isKilometerChosen = true
-            self.isToggleOn = reminder.isRepeat
+//            self.isToggleOn = reminder.isRepeat
         } else {
             self.selectedSparepart = selectedSparepart
             self.selectedDate = selectedDate
@@ -94,28 +95,39 @@ struct AddEditFramework: View {
                 SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
 
                 NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
-
-                VStack(alignment: .leading) {
-                    Toggle(isOn: $isToggleOn) {
-                        Text("Pengingat berulang")
-                            .font(.headline)
-                            .foregroundColor(Color.neutral.shade300)
-                    }
-                    .toggleStyle(SwitchToggleStyle(tint: Color.blue))
-                    .padding(.horizontal)
-
-                    if isToggleOn {
-                        HStack {
-                            Image(systemName: "info.circle.fill")
-                            Text(isKilometerChosen && isMonthYearChosen ? "Pengingat akan dijadwalkan setiap \(monthInterval) bulan atau \(selectedNumber) kilometer sekali" : "Pengingat akan dijadwalkan setiap 0 bulan atau 0 kilometer sekali")
-                                .footnote(.regular)
-                                .foregroundColor(Color.neutral.shade300)
-                            
-                            Spacer()
-                        }
-                        .padding(.leading, 16)
-                    }
+                
+                if reminders.contains(where: { $0.isHelperOn }) {
+                    HStack {
+                        Spacer()
+                        Text("Kilometer di atas berdasarkan buku manual merk kendaraan")
+                            .footnote(.regular)
+                            .foregroundColor(Color.neutral.tone100)
+                        Spacer()
+                    } .padding(.trailing, 20)
                 }
+                
+
+//                VStack(alignment: .leading) {
+//                    Toggle(isOn: $isToggleOn) {
+//                        Text("Pengingat berulang")
+//                            .font(.headline)
+//                            .foregroundColor(Color.neutral.shade300)
+//                    }
+//                    .toggleStyle(SwitchToggleStyle(tint: Color.blue))
+//                    .padding(.horizontal)
+//
+//                    if isToggleOn {
+//                        HStack {
+//                            Image(systemName: "info.circle.fill")
+//                            Text(isKilometerChosen && isMonthYearChosen ? "Pengingat akan dijadwalkan setiap \(monthInterval) bulan atau \(selectedNumber) kilometer sekali" : "Pengingat akan dijadwalkan setiap 0 bulan atau 0 kilometer sekali")
+//                                .footnote(.regular)
+//                                .foregroundColor(Color.neutral.shade300)
+//                            
+//                            Spacer()
+//                        }
+//                        .padding(.leading, 16)
+//                    }
+//                }
 
                 Spacer()
 
@@ -131,7 +143,7 @@ struct AddEditFramework: View {
                             dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
 //                            vehicle: SwiftDataService.shared.getCurrentVehicle()!,
-                            isRepeat: isToggleOn,
+                            isRepeat: true,
                             isDraft: false
                         )
                     } else {
@@ -142,8 +154,9 @@ struct AddEditFramework: View {
                             dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
                             vehicle: SwiftDataService.shared.getCurrentVehicle()!,
-                            isRepeat: isToggleOn,
-                            isDraft: false
+                            isRepeat: true,
+                            isDraft: false,
+                            isHelperOn: false
                         )
                     }
                 }

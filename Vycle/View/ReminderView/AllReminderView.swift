@@ -117,14 +117,14 @@ struct AllReminderView: View {
             }
         }
 
-        return Array(latestReminders.values)  // Return the unique reminders
+        return Array(latestReminders.values)
     }
 
     private func loadAvailableOptionsAndCounts() {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         
-        let uniqueReminders = latestReminders(from: reminders)  // Get unique reminders
+        let uniqueReminders = latestReminders(from: reminders) 
         let sortedReminders = uniqueReminders.sorted { $0.dueDate < $1.dueDate }
         
         var optionCountMap: [String: Int] = [:]

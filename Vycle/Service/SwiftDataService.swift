@@ -75,7 +75,6 @@ extension SwiftDataService {
     private func checkAndNotifyIfNeeded() {
             guard let latestOdometer = fetchOdometersForNotif().last else { return }
             
-            // Fetch all active reminders
             let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
             
             for reminder in activeReminders {
@@ -110,10 +109,9 @@ extension SwiftDataService {
         return UserDefaults.standard.bool(forKey: reminderKey) == false
     }
 
-    // Store the first notification status for each reminder in UserDefaults
     private func setLastNotifiedDate(reminderID: PersistentIdentifier) {
         let reminderKey = "initialNotified_\(reminderID)"
-        UserDefaults.standard.set(true, forKey: reminderKey) // Set as notified
+        UserDefaults.standard.set(true, forKey: reminderKey)
         UserDefaults.standard.set(Date(), forKey: "lastNotified_\(reminderID)")
     }
 
@@ -121,14 +119,13 @@ extension SwiftDataService {
         return UserDefaults.standard.object(forKey: reminderKey) as? Date
     }
 
-    // Immediate notification function
     private func sendImmediateNotification(for sparepart: Sparepart) {
        let content = UNMutableNotificationContent()
        content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
        content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
        content.sound = .default
        
-       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false) // Immediate trigger
+       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
        
        UNUserNotificationCenter.current().add(request) { error in
@@ -140,7 +137,6 @@ extension SwiftDataService {
        }
     }
 
-    // Repeating notification function (every 7 days)
     private func scheduleRepeatingNotification(for sparepart: Sparepart) {
        let content = UNMutableNotificationContent()
        content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
@@ -224,7 +220,8 @@ extension SwiftDataService {
                         timeInterval: interval.month,
                         vehicle: self.getCurrentVehicle()!,
                         isRepeat: true, // Set true if you want reminders to repeat
-                        isDraft: true
+                        isDraft: true,
+                        isHelperOn: true
                     )
                     modelContext.insert(reminderData)
                 }
@@ -301,7 +298,7 @@ extension SwiftDataService {
 }
 
 extension SwiftDataService {
-    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool) {
         let newReminder = Reminder(
             date: Date(),
             sparepart: sparepart,
@@ -311,7 +308,8 @@ extension SwiftDataService {
             timeInterval: timeInterval,
             vehicle: vehicle,
             isRepeat: isRepeat,
-            isDraft: isDraft
+            isDraft: isDraft,
+            isHelperOn: false
         )
         modelContext.insert(newReminder)
         saveModelContext()
@@ -431,15 +429,15 @@ extension SwiftDataService {
                                        vehicle: service.vehicle,
                                        isRepeat: true,
                                        isDraft: false,
-                                       service: service)
+                                       service: service,
+                                       isHelperOn: true)
             NotificationManager.shared.scheduleNotification(for: newReminder)
             
-            //            modelContext.insert(newReminder)
+            modelContext.insert(newReminder)
         }
-        
         // Save the model context after adding the reminders
         do {
-            //            try modelContext.save()
+            try modelContext.save()
         } catch {
             print("Failed to save reminder: \(error)")
         }

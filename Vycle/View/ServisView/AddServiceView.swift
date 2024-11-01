@@ -139,7 +139,6 @@ struct AddServiceView: View {
             print("vehicle brand saved is:\(latestVehicle.brand)")
         }
         
-        
     }
     
     // Function to update an existing service
