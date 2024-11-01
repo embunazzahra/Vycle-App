@@ -41,7 +41,7 @@ struct VehicleOdometerView: View {
             }
             
             CustomButton(
-                title: "Lanjutkan",
+                title: "Lanjutkan \(odometer)",
                 iconName: "lanjutkan",
                 iconPosition: .right,
                 buttonType: isButtonEnabled ? .primary : .disabled,

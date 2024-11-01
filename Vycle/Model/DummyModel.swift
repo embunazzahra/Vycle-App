@@ -11,9 +11,9 @@ import Foundation
 struct DummyView: View {
     var body: some View {
         VStack {
-            Button("Schedule Test Notification") {
-                scheduleTestNotification()
-            }
+//            Button("Schedule Test Notification") {
+//                scheduleTestNotification()
+//            }
         }
     }
 

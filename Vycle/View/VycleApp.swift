@@ -38,6 +38,7 @@ struct VycleApp: App {
 //                .environmentObject(locationManager)
                 .environmentObject(routes)
                 .modelContainer(sharedModelContainer)
+                .preferredColorScheme(.light)
         }
     }
 }

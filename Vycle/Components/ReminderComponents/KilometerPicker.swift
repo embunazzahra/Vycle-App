@@ -74,7 +74,7 @@ struct KilometerPickerSheet: View {
                 }
             }
             
-            CustomButton(title: "Pilih", iconPosition: .left, buttonType: .primary) {
+            CustomButton(title: "Pilih", buttonType: .primary) {
                 isKilometerChosen = true
                 dismiss()
             }

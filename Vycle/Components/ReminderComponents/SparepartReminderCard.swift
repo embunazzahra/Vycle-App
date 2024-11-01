@@ -12,6 +12,40 @@ struct SparepartReminderCard: View {
     @Binding var reminder: Reminder
     var currentKM: Double
     @Environment(\.modelContext) var modelContext
+    
+    private var imageName: String {
+        switch reminder.sparepart.rawValue {
+        case "Oli mesin":
+            return "Oli Mesin"
+            
+        case "Busi":
+            return "Busi"
+
+        case "Filter oli":
+            return "Filter Oli"
+
+        case "Minyak kopling":
+            return "Minyak Kopling"
+
+        case "Minyak rem":
+            return "Minyak Rem"
+            
+        case "Oli transmisi":
+            return "Oli Transmisi"
+            
+        case "Air coolant":
+            return "Air Coolant"
+            
+        case "Filter udara":
+            return "Filter Udara"
+            
+        case "Oli gardan":
+            return "Oli Gardan"
+
+        default:
+            return ""
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -23,12 +57,12 @@ struct SparepartReminderCard: View {
                 .padding(.horizontal, 16)
 
             HStack {
-                Rectangle()
-                    .frame(width: 80, height: 80)
+                Image(imageName)
+                    .resizable()
+                    .frame(width: 80, height: 82)
                     .clipShape(RoundedCornersShape(corners: [.topLeft, .bottomLeft], radius: 8))
-                    .foregroundColor(Color.gray)
                     .padding(.leading, 16)
-
+                
                 VStack(alignment: .leading) {
                     Text(reminder.sparepart.rawValue)
                         .subhead(.emphasized)
