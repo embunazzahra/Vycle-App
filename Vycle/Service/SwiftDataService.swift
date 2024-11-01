@@ -46,8 +46,6 @@ extension SwiftDataService {
         }
     }
     
-
-    
     func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
         let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
         saveModelContext()
@@ -75,19 +73,24 @@ extension SwiftDataService {
 //    }
     
     private func checkAndNotifyIfNeeded() {
-        guard let latestOdometer = fetchOdometersForNotif().last else { return }
-        
-        // Fetch all active reminders
-        let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
-        
-        for reminder in activeReminders {
-            let kilometerDifference = Float(reminder.kmInterval) - (Float(latestOdometer.currentKM) - Float(reminder.reminderOdo))
+            guard let latestOdometer = fetchOdometersForNotif().last else { return }
             
-            if kilometerDifference <= 500 {
-                scheduleNotification(for: reminder.sparepart)
-                updateReminderDateToNow(reminder: reminder)
+            // Fetch all active reminders
+            let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
+            
+            for reminder in activeReminders {
+                let kilometerDifference = Float(reminder.kmInterval) - (Float(latestOdometer.currentKM) - Float(reminder.reminderOdo))
+                
+                if kilometerDifference <= 0 {
+                    if shouldNotifyOnce(reminderID: reminder.id) {
+                        sendImmediateNotification(for: reminder.sparepart)
+                        setLastNotifiedDate(reminderID: reminder.id)
+                        scheduleRepeatingNotification(for: reminder.sparepart)
+                    }
+                } else if kilometerDifference <= 500 {
+                    updateReminderDateToNow(reminder: reminder)
+                }
             }
-        }
     }
 
     private func updateReminderDateToNow(reminder: Reminder) {
@@ -97,25 +100,62 @@ extension SwiftDataService {
                      kmInterval: reminder.kmInterval,
                      dueDate: Date(),
                      timeInterval: reminder.timeInterval,
-                     vehicle: reminder.vehicle!,
+    //                     vehicle: reminder.vehicle!,
                      isRepeat: reminder.isRepeat,
                      isDraft: reminder.isDraft)
     }
 
-    private func scheduleNotification(for sparepart: Sparepart) {
+    private func shouldNotifyOnce(reminderID: PersistentIdentifier) -> Bool {
+        let reminderKey = "initialNotified_\(reminderID)"
+        return UserDefaults.standard.bool(forKey: reminderKey) == false
+    }
+
+    // Store the first notification status for each reminder in UserDefaults
+    private func setLastNotifiedDate(reminderID: PersistentIdentifier) {
+        let reminderKey = "initialNotified_\(reminderID)"
+        UserDefaults.standard.set(true, forKey: reminderKey) // Set as notified
+        UserDefaults.standard.set(Date(), forKey: "lastNotified_\(reminderID)")
+    }
+
+    private func getLastNotifiedDate(forKey reminderKey: String) -> Date? {
+        return UserDefaults.standard.object(forKey: reminderKey) as? Date
+    }
+
+    // Immediate notification function
+    private func sendImmediateNotification(for sparepart: Sparepart) {
        let content = UNMutableNotificationContent()
        content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
        content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
        content.sound = .default
        
-       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false) // Immediate trigger
        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
        
        UNUserNotificationCenter.current().add(request) { error in
            if let error = error {
                print("Notification error: \(error.localizedDescription)")
            } else {
-               print("Notification scheduled for sparepart: \(sparepart.rawValue)")
+               print("Immediate notification sent for sparepart: \(sparepart.rawValue)")
+           }
+       }
+    }
+
+    // Repeating notification function (every 7 days)
+    private func scheduleRepeatingNotification(for sparepart: Sparepart) {
+       let content = UNMutableNotificationContent()
+       content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
+       content.body = "Waktunya untuk cek dan ganti \(sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
+       content.sound = .default
+       
+       let sevenDaysInSeconds: TimeInterval = 7 * 24 * 60 * 60
+       let trigger = UNTimeIntervalNotificationTrigger(timeInterval: sevenDaysInSeconds, repeats: true)
+       let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+       
+       UNUserNotificationCenter.current().add(request) { error in
+           if let error = error {
+               print("Notification error: \(error.localizedDescription)")
+           } else {
+               print("Repeating notification scheduled for sparepart: \(sparepart.rawValue)")
            }
        }
     }
@@ -283,13 +323,13 @@ extension SwiftDataService {
         print("Added reminder: \(newReminder.sparepart.rawValue)")
     }
     
-    func editReminder(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool) {
+    func editReminder(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool) {
         reminder.sparepart = sparepart
         reminder.reminderOdo = reminderOdo
         reminder.kmInterval = kmInterval
         reminder.dueDate = dueDate
         reminder.timeInterval = timeInterval
-        reminder.vehicle = vehicle
+//        reminder.vehicle = vehicle
         reminder.isRepeat = isRepeat
         reminder.isDraft = isDraft
         saveModelContext()

@@ -130,7 +130,7 @@ struct AddEditFramework: View {
                             kmInterval: Float(selectedNumber),
                             dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
-                            vehicle: SwiftDataService.shared.getCurrentVehicle()!,
+//                            vehicle: SwiftDataService.shared.getCurrentVehicle()!,
                             isRepeat: isToggleOn,
                             isDraft: false
                         )
