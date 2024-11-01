@@ -87,7 +87,7 @@ struct OnBoardingView: View {
                                     currentPage: $currentPage,
                                     isMovingForward: $isMovingForward
                                 )
-                                .transition(.backslide)
+                                .transition(.opacity)
                             case 2:
                                 VehicleOdometerView(
                                     odometer: $odometer,
@@ -95,14 +95,14 @@ struct OnBoardingView: View {
                                     isMovingForward: $isMovingForward,
                                     keyboardHeight: $keyboardHeight
                                 )
-                                .transition(.backslide)
+                                .transition(.opacity)
                             case 3:
                                 VehicleServiceHistoryView(
                                     serviceHistory: $serviceHistory,
                                     currentPage: $currentPage,
                                     isMovingForward: $isMovingForward
                                 )
-                                .transition(.backslide)
+                                .transition(.opacity)
                             case 4:
                             if !isRangingVBeacon {
                                 ConfigurationView(
@@ -113,14 +113,14 @@ struct OnBoardingView: View {
                                     onBoardingDataSaved: $onBoardingDataSaved,
                                     keyboardHeight: $keyboardHeight
                                 )
-                                .transition(.backslide)
+                                .transition(.opacity)
                             } else {
                                 RangingVBeaconView(
                                     locationManager: locationManager,
                                     isRangingVBeacon: $isRangingVBeacon,
                                     onBoardingDataSaved: $onBoardingDataSaved
                                 )
-                                .transition(.backslide)
+                                .transition(.opacity)
                             }
                             default:
                                 EmptyView()

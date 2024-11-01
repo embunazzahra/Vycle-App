@@ -32,6 +32,7 @@ struct ConfigurationView: View {
                 
                 Button(action: {
                     withAnimation {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         showGuide = true
                     }
                 }) {
@@ -84,7 +85,7 @@ struct ConfigurationView: View {
             if incorrectIDFormat {
                 HStack {
                     Image("warning")
-                    Text("ID perangkat tidak tersedia")
+                    Text("ID perangkat tidak ditemukan")
                         .footnote(.regular)
                         .foregroundColor(Color.persianRed.red500)
                         .padding(.top, 2)
@@ -135,6 +136,7 @@ struct ConfigurationView: View {
                     title: "Lewati",
                     buttonType: .tertiary
                 ) {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     onBoardingDataSaved = true
                 }
                 .padding(.top, -52)
