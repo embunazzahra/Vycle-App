@@ -18,7 +18,7 @@ struct ProgressBar: View {
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     
     //    @Binding var selectedNumber: Int
-    
+
     
     let swiftDataService = SwiftDataService.shared
     
@@ -39,8 +39,8 @@ struct ProgressBar: View {
         VStack(alignment: .leading) {
             if reminder.isDraft == false {
                 if kilometerDifference <= 500 {
-                    //                    Text("Sudah tiba bulannya nih!")
-                    Text("\(Int(kilometerDifference)) Kilometer lagi")
+                    Text("Sudah tiba bulannya nih!")
+//                    Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
                     //                        .onAppear {

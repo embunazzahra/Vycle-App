@@ -40,7 +40,7 @@ struct KilometerPickerSheet: View {
     @Environment(\.dismiss) var dismiss
     @Binding var isKilometerChosen: Bool
     
-    private let numbers = Array(stride(from: 1, through: 1000, by: 5))
+    private let numbers = Array(stride(from: 1000, through: 100000, by: 1000))
 
     var body: some View {
         VStack {
