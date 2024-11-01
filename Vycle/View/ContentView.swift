@@ -27,6 +27,11 @@ struct ContentView: View {
     @Query var fetchedReminders: [Reminder]
     @State private var uniqueSparePartCount: Int = 0
     @State private var vBeaconID: String = ""
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false{
+        didSet {
+            print("notif in contentview\(hasNewNotification)")
+        }
+    }
     @AppStorage("onBoardingDataSaved") private var onBoardingDataSaved: Bool = false
     
     
@@ -64,7 +69,11 @@ struct ContentView: View {
                             Text("Servis")
                         }.tag(Tab.servis)
                         PengingatView(locationManager: locationManager).tabItem {
-                            Image(selectedTab == .pengingat ? "reminder_icon_blue" : "reminder_icon")
+                            Image(
+                                selectedTab == .pengingat
+                                ? (hasNewNotification ? "reminder_icon_blue_notif" : "reminder_icon_blue")
+                                : (hasNewNotification ? "reminder_icon_notif" : "reminder_icon")
+                            )
                             Text("Pengingat")
                         }.tag(Tab.pengingat)
                         
@@ -113,7 +122,7 @@ struct ContentView: View {
                             }
                         }
                 }
-
+                
             }
         }
         .transition(.backslide)
@@ -142,7 +151,7 @@ struct ContentView: View {
         
         print(uniqueSparePartCount)
     }
-
+    
     
     
     
