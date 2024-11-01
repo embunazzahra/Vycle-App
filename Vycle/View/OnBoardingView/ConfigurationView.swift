@@ -40,16 +40,17 @@ struct ConfigurationView: View {
                     }
                     .padding(.horizontal,16)
                     .padding(.vertical, 24)
-                
-                Spacer()
-                
-                Button(action: {
-                    withAnimation {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        showGuide = true
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        withAnimation {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            showGuide = true
+                        }
+                    }) {
+                        Image("help")
                     }
-                }) {
-                    Image("help")
                 }
             } else {
                 HStack {
@@ -141,8 +142,8 @@ struct ConfigurationView: View {
                         verticalPadding: 0
                     ) {
                         if isButtonEnabled {
-    //                        let pattern = "^[A-Za-z]{2}\\d{3}$"
-    //                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
+                            //                        let pattern = "^[A-Za-z]{2}\\d{3}$"
+                            //                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
                             incorrectIDFormat = false
                             
                             if !incorrectIDFormat {
