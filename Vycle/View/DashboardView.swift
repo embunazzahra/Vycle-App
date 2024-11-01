@@ -134,6 +134,7 @@ struct DashboardView: View {
                 Spacer()
             }.onAppear {
                 // Use locationManager data instead of hardcoded values
+                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
                 filteredReminders = Array(reminders.filter { reminder in
                     let progress = getProgress(currentKilometer: Double(initialOdometer.last?.currentKM ?? 0), targetKilometer: reminder.kmInterval)
                     return progress > 0.7
@@ -301,12 +302,13 @@ struct OdometerSheet: View {
             VStack{
                 Spacer()
                 CustomButton(title: "Simpan Perubahan \(odometer)"){
-                    SwiftDataService.shared.insertOnBoarding(
-                        vehicleType: .car,
-                        vehicleBrand: .car(.honda),
-                        odometer: odometer ?? 0,
-                        serviceHistory: []
-                    )
+//                    SwiftDataService.shared.insertOnBoarding(
+//                        vehicleType: .car,
+//                        vehicleBrand: .car(.honda),
+//                        odometer: odometer ?? 0,
+//                        serviceHistory: []
+//                    )
+                    SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
                     SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
                     showOdoSheet.toggle()
                     _ = calculateTotalDistance()
