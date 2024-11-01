@@ -15,7 +15,11 @@ struct AllReminderView: View {
 
     @ObservedObject private var locationManager = LocationManager()
     
-    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false{
+        didSet {
+            print("notif in allreminderview\(hasNewNotification)")
+        }
+    }
     
     var body: some View {
         VStack {

@@ -12,6 +12,12 @@ struct AllServiceHistoryView: View {
     @EnvironmentObject var routes: Routes
     @Query var serviceHistories : [Servis]
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
+    {
+        didSet {
+            print("notif in all service:\(hasNewNotification)")
+        }
+    }
     
     
     var body: some View {
@@ -53,6 +59,19 @@ struct AllServiceHistoryView: View {
     // Update deleteHistory to remove from the model context
     func deleteHistory(_ history: Servis) {
         modelContext.delete(history) // Deletes the history from the context
+        do {
+            try modelContext.save()
+        } catch {
+            fatalError(error.localizedDescription)
+        }
+        
+        if !serviceHistories.isEmpty {
+            hasNewNotification = true
+            print("service count: \(serviceHistories.count)")
+        } else {
+            hasNewNotification = false
+            print("service hostory is empty")
+        }
     }
 }
 

@@ -12,6 +12,7 @@ struct ServiceHistoryView: View {
     @EnvironmentObject var routes: Routes
     @Query var serviceHistories : [Servis]
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     
     
     var body: some View {
@@ -64,6 +65,17 @@ struct ServiceHistoryView: View {
 //        SwiftDataService.shared.deleteHistory(for: history)
 //        print("reminders count is \(reminders.count)")
         modelContext.delete(history)
+//        do {
+//            try modelContext.save()
+//        } catch {
+//            fatalError(error.localizedDescription)
+//        }
+        
+        if !serviceHistories.isEmpty {
+            hasNewNotification = true
+        } else {
+            hasNewNotification = false
+        }
     }
     
 }

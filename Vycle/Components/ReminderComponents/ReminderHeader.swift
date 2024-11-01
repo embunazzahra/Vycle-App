@@ -9,7 +9,12 @@ import SwiftUI
 struct ReminderHeader: View {
     var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
-    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false{
+        didSet {
+            print("notif in reminderheader\(hasNewNotification)")
+        }
+    }
+    
 
     var body: some View {
         let uniqueReminders = getUniqueRemindersBySparepart(reminders)
