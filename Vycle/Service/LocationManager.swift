@@ -38,6 +38,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         super.init()
         locationManager.delegate = self
         requestNotificationAuthorization()
+        
         locationManager.requestAlwaysAuthorization()
     }
     

@@ -89,6 +89,7 @@ struct OdometerInput: View {
     
     // Function to handle digit entry and deletion
     private func handleInputChange(_ newValue: String) {
+        print(newValue)
         guard !newValue.isEmpty else {
             // Shift all digits to the right when the last digit is deleted
             updateOdometer()
@@ -101,9 +102,10 @@ struct OdometerInput: View {
         
         if newValue.count > 1 {
             if !areAllFieldsFilled() {
+                
+                shiftLeftAndInsertLastDigit(String(newValue.last!)) // Use only the last entered digit
                 // Move all digits left when a new digit is added
                 updateOdometer()
-                shiftLeftAndInsertLastDigit(String(newValue.last!)) // Use only the last entered digit
             } else {
                 // If all fields are filled, don't allow overwriting the sixth field
                 fieldSix = String(newValue.first!)
@@ -138,8 +140,10 @@ struct OdometerInput: View {
     // Function to update the odometer from field values
     private func updateOdometer() {
         let odometerString = allFields.prefix(5).map { $0.wrappedValue }.joined() + fieldSix
+        print("odometer string: \(odometerString)")
         if !odometerString.isEmpty {
             odometer = Float(odometerString)
+            print("odometer float: \(odometer)")
         }
     }
     
