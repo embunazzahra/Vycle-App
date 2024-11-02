@@ -281,7 +281,7 @@ struct OdometerSheet: View {
             }
             VStack{
                 Spacer()
-                CustomButton(title: "Simpan Perubahan \(odometer)"){
+                CustomButton(title: "Simpan Perubahan"){
 //                    SwiftDataService.shared.insertOnBoarding(
 //                        vehicleType: .car,
 //                        vehicleBrand: .car(.honda),
