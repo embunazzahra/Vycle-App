@@ -58,19 +58,14 @@ struct DashboardView: View {
                             .frame(height: 40)
                         VStack(alignment: .leading, spacing: 4){
                             Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
-                            let latestOdo = initialOdometer.last?.currentKM ?? 0
-                            //                                    Text("\(Int(locationHistory.last?.distance ?? 0)) Kilometer")
-                            
-                            
-                            
-                            if let lastLocation = locationHistory.last {
+                            if !locationHistory.isEmpty {
                                 let totalDistance = calculateTotalDistance() ?? 0
-                                Text("\(Int(odometer ?? Float(totalDistance))) Kilometer")
+                                Text("\(Float(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
                                 
                             } else {
-                                Text("\(Int(latestOdo)) Kilometer")
+                                Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
                             }
@@ -240,20 +235,6 @@ struct BluetoothSheet: View {
                     hideHeader: true
                 )
                 .transition(.move(edge: .trailing))
-            }
-            VStack{
-                Spacer()
-                CustomButton(title: "Simpan Perubahan"){
-                    //                    SwiftDataService.shared.insertOnBoarding(
-                    //                        vehicleType: .car,
-                    //                        vehicleBrand: .car(.honda),
-                    //                        odometer: odometer ?? 0,
-                    //                        serviceHistory: []
-                    //                    )
-                    //                    SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
-                    showBluetoothSheet.toggle()
-                    locationManager.startTracking()
-                }
             }
         }
     }
