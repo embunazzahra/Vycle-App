@@ -82,28 +82,30 @@ struct ContentView: View {
                         .navigationTitle(selectedTab.rawValue)
                         .navigationDestination(for: Routes.Destination.self) { destination in
                             switch destination {
-                            case .PengingatView:
-                                PengingatView(locationManager: locationManager)
-                            case .ServisView:
-                                ServiceView()
-                            case .DashboardView:
-                                DashboardView(locationManager: locationManager)
-                            case .AddServiceView(let service):
-                                AddServiceView(service: service)
-                            case .NoServiceView:
-                                NoServiceView()
-                            case .AllServiceHistoryView:
-                                AllServiceHistoryView()
-                            case .ServiceDetailView(let service):
-                                ServiceDetailView(service: service)
-                            case .AddReminderView:
-                                AddReminderView(reminders: $reminders)
-                            case .AllReminderView:
-                                AllReminderView()
-                            case .EditReminderView(let reminder):
-                                EditReminderView(reminder: .constant(reminder))
-                            case .PhotoReviewView(let imageData):
-                                PhotoReviewView(imageData: imageData)
+                                case .PengingatView:
+                                    PengingatView(locationManager: locationManager)
+                                case .ServisView:
+                                    ServiceView()
+                                case .DashboardView:
+                                    DashboardView(locationManager: locationManager)
+                                case .AddServiceView(let service):
+                                    AddServiceView(service: service)
+                                case .NoServiceView:
+                                    NoServiceView()
+                                case .AllServiceHistoryView:
+                                    AllServiceHistoryView()
+                                case .ServiceDetailView(let service):
+                                    ServiceDetailView(service: service)
+                                case .AddReminderView:
+                                    AddReminderView(reminders: $reminders)
+                                case .AllReminderView:
+                                    AllReminderView()
+                                case .EditReminderView(let reminder):
+                                    EditReminderView(reminder: .constant(reminder))
+                                case .PhotoReviewView(let imageData):
+                                    PhotoReviewView(imageData: imageData)
+                                case .BeaconConfigView:
+                                    BeaconConfigView(locationManager: locationManager)
                             }
                         }
                         .toolbar {
