@@ -62,11 +62,7 @@ struct DashboardView: View {
                                 Text("\(Int(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
-                                ForEach(initialOdometer){odometer in
-                                    Text("\(Int(odometer.currentKM)) oDO Kilometer")
-                                        .headline()
-                                        .foregroundStyle(.grayShade300)
-                                }
+//                        
                                 
                             } else {
                                 Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
