@@ -59,9 +59,14 @@ struct DashboardView: View {
                             Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                             if !locationHistory.isEmpty {
                                 let totalDistance = calculateTotalDistance() ?? 0
-                                Text("\(Float(totalDistance)) Kilometer")
+                                Text("\(Int(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
+                                ForEach(initialOdometer){odometer in
+                                    Text("\(Int(odometer.currentKM)) oDO Kilometer")
+                                        .headline()
+                                        .foregroundStyle(.grayShade300)
+                                }
                                 
                             } else {
                                 Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
@@ -128,7 +133,7 @@ struct DashboardView: View {
                 Spacer()
             }.onAppear {
                 // Use locationManager data instead of hardcoded values
-                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
+//                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
                 filteredReminders = Array(reminders.filter { reminder in
                     let progress = getProgress(currentKilometer: Double(initialOdometer.last?.currentKM ?? 0), targetKilometer: reminder.kmInterval)
                     return progress > 0.7
