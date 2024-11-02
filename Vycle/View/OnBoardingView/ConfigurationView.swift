@@ -41,22 +41,13 @@ struct ConfigurationView: View {
                     .padding(.horizontal,16)
                     .padding(.vertical, 24)
                 }
-            } else {
-                HStack {
-                    Text("")
-                        .title1(.emphasized)
-                        .foregroundStyle(Color.neutral.shade300)
-                        .padding(.horizontal,16)
-                        .padding(.vertical, 24)
-                    
-                    Spacer()
-                }.padding(.vertical, 16)
             }
             
             Text("ID Perangkat")
                 .headline()
                 .foregroundColor(Color.neutral.shade300)
-                .padding(.horizontal, 16)
+                .padding(.horizontal,16)
+                .padding(.top, 16)
             
             HStack {
                 Image("device")
@@ -121,7 +112,6 @@ struct ConfigurationView: View {
             
             Spacer()
             
-            if !hideHeader{
                 VStack {
                     CustomButton(
                         title: "Cek Perangkat",
@@ -131,9 +121,8 @@ struct ConfigurationView: View {
                         verticalPadding: 0
                     ) {
                         if isButtonEnabled {
-    //                        let pattern = "^[A-Za-z]{2}\\d{3}$"
-    //                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
-                            incorrectIDFormat = false
+                            let pattern = "^[A-Fa-f0-9]{4}$"
+                            incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
                             
                             if !incorrectIDFormat {
                                 isRangingVBeacon = true
@@ -145,16 +134,18 @@ struct ConfigurationView: View {
                     .padding(.top, 8)
                     .padding(.bottom, 24)
                     
-                    CustomButton(
-                        title: "Lewati",
-                        buttonType: .tertiary
-                    ) {
-                        onBoardingDataSaved = true
+                    if !hideHeader{
+                        CustomButton(
+                            title: "Lewati",
+                            buttonType: .tertiary
+                        ) {
+                            onBoardingDataSaved = true
+                        }
+                        .padding(.top, -52)
                     }
-                    .padding(.top, -52)
                 }
-                .offset (y: -self.keyboardHeight)
-            }
+                .offset (y: hideHeader ? 0 : -self.keyboardHeight)
+            
         }
         .animation(.smooth, value: keyboardHeight)
         .onAppear {

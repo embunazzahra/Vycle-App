@@ -37,10 +37,9 @@ struct DashboardView: View {
                     VStack{
                         HStack{
                             BTIndicator(locationManager: locationManager).onTapGesture {
-                                showBluetoothSheet.toggle()
-                            }.sheet(isPresented: $showBluetoothSheet) {
-                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
-                                
+//                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
+//                                showBluetoothSheet.toggle()
+                                routes.navigate(to: .BeaconConfigView)
                             }
                             Spacer()
                         }.padding(.leading, 16).padding(.top, 16)
