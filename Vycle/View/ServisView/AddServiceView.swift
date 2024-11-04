@@ -76,10 +76,15 @@ struct AddServiceView: View {
         .navigationTitle(service == nil ? "Tambahkan servis" : "Edit catatan servis")
         .navigationBarBackButtonHidden(false)
         .onAppear {
+            let odometers = SwiftDataService.shared.fetchOdometers()
+            
+            if let latestOdometer = odometers.last {
+                self.userOdometer = Int(latestOdometer.currentKM)
+            }
+            
             // initiate edit service view
             if let service = service {
                 self.odometerValue = "\(Int(service.odometer ?? 0))"
-                self.userOdometer = Int(service.odometer ?? 0)
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
                 
@@ -87,18 +92,15 @@ struct AddServiceView: View {
                     self.selectedImage = UIImage(data: photoData)
                 }
             } else {
-                let odometers = SwiftDataService.shared.fetchOdometers()
+                let locationHistory = SwiftDataService.shared.fetchLocationHistory()
                 
-                if let latestOdometer = odometers.last {
-                    userOdometer = Int(latestOdometer.currentKM)
-                    
-                    let locationHistory = SwiftDataService.shared.fetchLocationHistory()
-                    
-                    // if location is exist, the users is using IOT, so odometer value is not empty
-                    if let latestLocation = locationHistory.last {
+                // if location is exist, the users is using IOT, so odometer value is not empty
+                if let latestLocation = locationHistory.last {
+                    if let latestOdometer = odometers.last {
                         odometerValue = "\(Int(latestOdometer.currentKM))"
                     }
                 }
+                
             }
         }
     }
