@@ -15,7 +15,7 @@ struct RangingConfigView: View {
     @State private var configurationFailed = false
     @State private var showConnectingView = true
     @State private var beaconDetected = false
-
+    @AppStorage("vBeaconID") private var vBeaconID: String = ""
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
@@ -29,8 +29,10 @@ struct RangingConfigView: View {
                     
                 }
                 else if configurationFailed{
+                    
                     ConfigurationStatusView(isSuccess: false)
                         .onAppear() {
+                            vBeaconID = ""
                             resetConfiguration()
                             showConnectingView = false
                         }

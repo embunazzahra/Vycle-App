@@ -19,6 +19,7 @@ struct ConfigurationView: View {
     @State var deviceNotFound: Bool = false
     @State private var isButtonEnabled: Bool = false
     @State var hideHeader: Bool = false
+    @State private var tempVBeaconID: String = ""
     var body: some View {
         VStack (alignment: .leading) {
             if !hideHeader{
@@ -51,20 +52,20 @@ struct ConfigurationView: View {
             HStack {
                 Image("device")
                     .foregroundColor(Color.neutral.tone200)
-                TextField("", text: $vBeaconID)
+                TextField("", text: $tempVBeaconID)
                     .foregroundColor(Color.neutral.shade300)
                     .focused($fieldFocusState)
-                    .placeholder(when: vBeaconID.isEmpty) {
+                    .placeholder(when: tempVBeaconID.isEmpty) {
                         Text("XXXX").foregroundColor(Color.neutral.tone100)
                     }
-                    .onChange(of: vBeaconID) {
-                        if vBeaconID.count > 4 {
-                            vBeaconID = String(vBeaconID.prefix(4))
+                    .onChange(of: tempVBeaconID) {
+                        if tempVBeaconID.count > 4 {
+                            tempVBeaconID = String(tempVBeaconID.prefix(4))
                         }
-                        isButtonEnabled = vBeaconID.count == 4
+                        isButtonEnabled = tempVBeaconID.count == 4
                     }
                     .onAppear() {
-                        isButtonEnabled = vBeaconID.count == 4
+                        isButtonEnabled = tempVBeaconID.count == 4
                     }
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
@@ -121,11 +122,12 @@ struct ConfigurationView: View {
                     ) {
                         if isButtonEnabled {
                             let pattern = "^[A-Fa-f0-9]{4}$"
-                            incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: vBeaconID)
+                            incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: tempVBeaconID)
                             
                             if !incorrectIDFormat {
+                                vBeaconID = tempVBeaconID
                                 isRangingVBeacon = true
-                                locationManager.vBeaconID = vBeaconID
+                                locationManager.vBeaconID = tempVBeaconID
                                 locationManager.startTracking()
                             }
                         }

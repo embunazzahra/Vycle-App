@@ -160,7 +160,7 @@ struct OdometerInput: View {
 
         // Ensure we don't exceed 6 digits
         guard count <= 6 else {
-            print("Odometer value exceeds field limit.")
+//            print("Odometer value exceeds field limit.")
             return
         }
 
