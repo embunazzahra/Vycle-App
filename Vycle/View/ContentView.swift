@@ -37,6 +37,7 @@ struct ContentView: View {
     
     init() {
         setupNavigationBarWithoutScroll()
+        setupTabBarBorderLine()
     }
     
     var body: some View {
@@ -154,7 +155,24 @@ struct ContentView: View {
         print(uniqueSparePartCount)
     }
     
-    
+    private func setupTabBarBorderLine() {
+        let image = UIImage.gradientImageWithBounds(
+            bounds: CGRect( x: 0, y: 0, width: UIScreen.main.scale, height:3),
+            colors: [
+                UIColor.clear.cgColor,
+                UIColor.black.withAlphaComponent(0.2).cgColor
+            ]
+        )
+
+        let appearance = UITabBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.systemGray6
+                
+        appearance.backgroundImage = UIImage()
+        appearance.shadowImage = image
+
+        UITabBar.appearance().standardAppearance = appearance
+    }
     
     
 }
