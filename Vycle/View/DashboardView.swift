@@ -63,10 +63,10 @@ struct DashboardView: View {
                                 Text("\(Int(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
-                                
-                                    List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
-                                        Text("Time: \(location.time), Distance: \(location.distance)")
-                                    }
+//                                
+//                                    List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
+//                                        Text("Time: \(location.time), Distance: \(location.distance)")
+//                                    }
                                
                                 
 //
