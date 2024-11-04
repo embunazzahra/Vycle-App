@@ -29,7 +29,8 @@ struct DummyView: View {
             timeInterval: 7,
             vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)),
             isRepeat: true,
-            isDraft: false
+            isDraft: false,
+            isHelperOn: false
         )
 
         NotificationManager.shared.testScheduleNotification(for: testReminder)

@@ -24,26 +24,34 @@ struct AddEditFramework: View {
     @State private var selectedDate: Date
     @State private var selectedNumber: Int
     @State private var selectedSparepart: Sparepart
-    @State private var isToggleOn = false
     @State private var showSheet = false
-//    @State private var serviceOdometer: Float = 0 // Assuming you'll fetch this value
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
 
-
     @Binding var reminders: [Reminder]
+    
     var reminderToEdit: Reminder?
 
     var isButtonEnabled: Bool {
         isPartChosen && isMonthYearChosen && isKilometerChosen
     }
 
+    // Calculate total distance based on initial odometer and location history
+    var totalDistance: Double {
+        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+        if let firstLocation = locationHistory.first {
+            return Double(initialOdoValue) + (firstLocation.distance ?? 0)
+        } else {
+            return Double(initialOdoValue)
+        }
+    }
+
     var reminderOdo: Float {
-        return Float(initialOdometer.last?.currentKM ?? 0)
+        return Float(totalDistance)
     }
     
     var targetKM: Float {
-        return Float(selectedNumber) + Float(initialOdometer.last?.currentKM ?? 0)
+        return Float(selectedNumber) + Float(totalDistance)
     }
 
     var monthInterval: Int {
@@ -78,7 +86,6 @@ struct AddEditFramework: View {
             self.isPartChosen = true
             self.isMonthYearChosen = true
             self.isKilometerChosen = true
-            self.isToggleOn = reminder.isRepeat
         } else {
             self.selectedSparepart = selectedSparepart
             self.selectedDate = selectedDate
@@ -94,27 +101,16 @@ struct AddEditFramework: View {
                 SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
 
                 NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
-
-                VStack(alignment: .leading) {
-                    Toggle(isOn: $isToggleOn) {
-                        Text("Pengingat berulang")
-                            .font(.headline)
-                            .foregroundColor(Color.neutral.shade300)
+                
+                if reminders.contains(where: { $0.isHelperOn }) {
+                    HStack {
+                        Spacer()
+                        Text("Kilometer di atas berdasarkan buku manual merk kendaraan")
+                            .footnote(.regular)
+                            .foregroundColor(Color.neutral.tone100)
+                        Spacer()
                     }
-                    .toggleStyle(SwitchToggleStyle(tint: Color.blue))
-                    .padding(.horizontal)
-
-                    if isToggleOn {
-                        HStack {
-                            Image(systemName: "info.circle.fill")
-                            Text(isKilometerChosen && isMonthYearChosen ? "Pengingat akan dijadwalkan setiap \(monthInterval) bulan atau \(selectedNumber) kilometer sekali" : "Pengingat akan dijadwalkan setiap 0 bulan atau 0 kilometer sekali")
-                                .footnote(.regular)
-                                .foregroundColor(Color.neutral.shade300)
-                            
-                            Spacer()
-                        }
-                        .padding(.leading, 16)
-                    }
+                    .padding(.trailing, 20)
                 }
 
                 Spacer()
@@ -130,8 +126,7 @@ struct AddEditFramework: View {
                             kmInterval: Float(selectedNumber),
                             dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
-                            vehicle: SwiftDataService.shared.getCurrentVehicle()!,
-                            isRepeat: isToggleOn,
+                            isRepeat: true,
                             isDraft: false
                         )
                     } else {
@@ -142,8 +137,9 @@ struct AddEditFramework: View {
                             dueDate: selectedDate.startOfMonth(),
                             timeInterval: monthInterval,
                             vehicle: SwiftDataService.shared.getCurrentVehicle()!,
-                            isRepeat: isToggleOn,
-                            isDraft: false
+                            isRepeat: true,
+                            isDraft: false,
+                            isHelperOn: false
                         )
                     }
                 }
@@ -163,5 +159,6 @@ struct AddEditFramework: View {
         .animation(.easeInOut, value: isNotificationShowed)
     }
 }
+
 
 

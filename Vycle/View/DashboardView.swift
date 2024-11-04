@@ -21,6 +21,7 @@ struct DashboardView: View {
     @State private var showBluetoothSheet = false
     //    @Query var locationHistory : [LocationHistory]
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
+    
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
@@ -62,7 +63,13 @@ struct DashboardView: View {
                                 Text("\(Int(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
-//                        
+                                
+                                    List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
+                                        Text("Time: \(location.time), Distance: \(location.distance)")
+                                    }
+                               
+                                
+//
                                 
                             } else {
                                 Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
@@ -97,6 +104,7 @@ struct DashboardView: View {
                     .cornerRadius(12)
                     .shadow(radius: 4, y: 2)
                 }.padding(.horizontal, 16).offset(y: -45)
+
                 VStack {
                     if !filteredReminders.isEmpty {
                         HStack{
@@ -114,15 +122,16 @@ struct DashboardView: View {
                         }
                         //                                MapView(locations: locationHistory).frame(height: 300)
                     } else {
-                        //                                Spacer()
-                        //                                Text("last location: \(locationHistory.first?.distance)")
-                        //                                Text("last location: \(locationHistory.first?.time)")
-                        //                                ForEach(locationHistory){location in
-                        //                                    Text("Time: \(location.time) Longitude: \(location.longitude) Latitude: \(location.latitude) Distance: \(location.distance)")
-                        //
-                        //                                }
-                        NoReminderView()
                         
+//                                                        Spacer()
+//                                                        Text("last location: \(locationHistory.first?.distance)")
+//                                                        Text("last location: \(locationHistory.first?.time)")
+//                                                        ForEach(locationHistory){location in
+//                                                            Text("Time: \(location.time) Longitude: \(location.longitude) Latitude: \(location.latitude) Distance: \(location.distance)")
+//                        
+//                                                        }
+                        NoReminderView()
+        
                     }
                     
                 }
@@ -130,10 +139,12 @@ struct DashboardView: View {
             }.onAppear {
                 // Use locationManager data instead of hardcoded values
 //                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
+//                calculateTotalDistance()
                 filteredReminders = Array(reminders.filter { reminder in
                     let progress = getProgress(currentKilometer: Double(initialOdometer.last?.currentKM ?? 0), targetKilometer: reminder.kmInterval)
                     return progress > 0.7
                 }.prefix(2))
+//                SwiftDataService.shared.insertOdometerData(odometer: Float(calculateTotalDistance() ?? 0))
                 if locationManager.checkAuthorizationStatus() != .authorizedAlways {
                     showSettingsAlert = true
                 }
@@ -175,8 +186,6 @@ struct DashboardView: View {
         }
         
     }
-    
-    
     
     
 }

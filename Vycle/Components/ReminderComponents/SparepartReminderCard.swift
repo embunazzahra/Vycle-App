@@ -94,6 +94,9 @@ struct SparepartReminderListView: View {
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     
+    var totalDistance: Double {
+        calculateTotalDistance() ?? 0
+    }
 
     var body: some View {
         VStack {
@@ -105,8 +108,8 @@ struct SparepartReminderListView: View {
                 List {
                     ForEach($reminders, id: \.self) { $reminder in
                         SparepartReminderCard(
-                            reminder: $reminder, 
-                            currentKM: Double(initialOdometer.last?.currentKM ?? 0)
+                            reminder: $reminder,
+                            currentKM: totalDistance
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -123,13 +126,12 @@ struct SparepartReminderListView: View {
                 .listSectionSeparator(.hidden)
             }
         }
-        .onChange(of: initialOdometer.last?.currentKM ?? 0) { newValue in
-               print("Total distance traveled changed AAA: \(newValue)")
-           }
+        .onChange(of: totalDistance) { newValue in
+            print("Total distance traveled changed: \(newValue)")
+        }
     }
 
     private func deleteReminder(at offsets: IndexSet) {
-        
         guard let index = offsets.first, reminders.indices.contains(index) else {
             print("Invalid index")
             return
@@ -148,10 +150,7 @@ struct SparepartReminderListView: View {
             }
             
             remindersToDelete.forEach { reminder in
-//                print("Deleting reminder with sparepart: \(reminder.sparepart.rawValue), dueDate: \(reminder.dueDate)")
-                
                 NotificationManager.shared.cancelNotification(for: reminder)
-                            
                 context.delete(reminder)
             }
 
@@ -167,7 +166,16 @@ struct SparepartReminderListView: View {
         }
     }
 
+    private func calculateTotalDistance() -> Double? {
+        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+        if let firstLocation = locationHistory.first {
+            return Double(initialOdoValue) + (firstLocation.distance ?? 0)
+        } else {
+            return Double(initialOdoValue)
+        }
+    }
 }
+
 
 
 
