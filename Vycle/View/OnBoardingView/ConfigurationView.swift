@@ -26,21 +26,20 @@ struct ConfigurationView: View {
                     Text("Hubungkan VBeacon")
                         .title1(.emphasized)
                         .foregroundStyle(Color.neutral.shade300)
-                        .padding(.horizontal,16)
-                        .padding(.vertical, 24)
                     
                     Spacer()
                     
                     Button(action: {
                         withAnimation {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                             showGuide = true
                         }
                     }) {
                         Image("help")
                     }
-                    .padding(.horizontal,16)
-                    .padding(.vertical, 24)
                 }
+                .padding(.horizontal,16)
+                .padding(.vertical, 24)
             }
             
             Text("ID Perangkat")
@@ -87,7 +86,7 @@ struct ConfigurationView: View {
             if incorrectIDFormat {
                 HStack {
                     Image("warning")
-                    Text("ID perangkat tidak tersedia")
+                    Text("ID perangkat tidak ditemukan")
                         .footnote(.regular)
                         .foregroundColor(Color.persianRed.red500)
                         .padding(.top, 2)
@@ -131,22 +130,19 @@ struct ConfigurationView: View {
                             }
                         }
                     }
-                    .padding(.top, 8)
-                    .padding(.bottom, 24)
-                    
-                    if !hideHeader{
-                        CustomButton(
-                            title: "Lewati",
-                            buttonType: .tertiary
-                        ) {
-                            onBoardingDataSaved = true
-                        }
-                        .padding(.top, -52)
-                    }
                 }
-                .offset (y: hideHeader ? 0 : -self.keyboardHeight)
-            
-        }
+                .padding(.top, 8)
+                .padding(.bottom, 24)
+                
+                CustomButton(
+                    title: "Lewati",
+                    buttonType: .tertiary
+                ) {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    onBoardingDataSaved = true
+                }
+                .padding(.top, -52)
+            }
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
             NotificationCenter.default.addObserver(
