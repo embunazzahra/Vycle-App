@@ -27,6 +27,11 @@ struct ContentView: View {
     @Query var fetchedReminders: [Reminder]
     @State private var uniqueSparePartCount: Int = 0
     @State private var vBeaconID: String = ""
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false{
+        didSet {
+            print("notif in contentview\(hasNewNotification)")
+        }
+    }
     @AppStorage("onBoardingDataSaved") private var onBoardingDataSaved: Bool = false
     
     
@@ -64,7 +69,11 @@ struct ContentView: View {
                             Text("Servis")
                         }.tag(Tab.servis)
                         PengingatView(locationManager: locationManager).tabItem {
-                            Image(selectedTab == .pengingat ? "reminder_icon_blue" : "reminder_icon")
+                            Image(
+                                selectedTab == .pengingat
+                                ? (hasNewNotification ? "reminder_icon_blue_notif" : "reminder_icon_blue")
+                                : (hasNewNotification ? "reminder_icon_notif" : "reminder_icon")
+                            )
                             Text("Pengingat")
                         }.tag(Tab.pengingat)
                         
@@ -73,28 +82,30 @@ struct ContentView: View {
                         .navigationTitle(selectedTab.rawValue)
                         .navigationDestination(for: Routes.Destination.self) { destination in
                             switch destination {
-                            case .PengingatView:
-                                PengingatView(locationManager: locationManager)
-                            case .ServisView:
-                                ServiceView()
-                            case .DashboardView:
-                                DashboardView(locationManager: locationManager)
-                            case .AddServiceView(let service):
-                                AddServiceView(service: service)
-                            case .NoServiceView:
-                                NoServiceView()
-                            case .AllServiceHistoryView:
-                                AllServiceHistoryView()
-                            case .ServiceDetailView(let service):
-                                ServiceDetailView(service: service)
-                            case .AddReminderView:
-                                AddReminderView(reminders: $reminders)
-                            case .AllReminderView:
-                                AllReminderView()
-                            case .EditReminderView(let reminder):
-                                EditReminderView(reminder: .constant(reminder))
-                            case .PhotoReviewView(let imageData):
-                                PhotoReviewView(imageData: imageData)
+                                case .PengingatView:
+                                    PengingatView(locationManager: locationManager)
+                                case .ServisView:
+                                    ServiceView()
+                                case .DashboardView:
+                                    DashboardView(locationManager: locationManager)
+                                case .AddServiceView(let service):
+                                    AddServiceView(service: service)
+                                case .NoServiceView:
+                                    NoServiceView()
+                                case .AllServiceHistoryView:
+                                    AllServiceHistoryView()
+                                case .ServiceDetailView(let service):
+                                    ServiceDetailView(service: service)
+                                case .AddReminderView:
+                                    AddReminderView(reminders: $reminders)
+                                case .AllReminderView:
+                                    AllReminderView()
+                                case .EditReminderView(let reminder):
+                                    EditReminderView(reminder: .constant(reminder))
+                                case .PhotoReviewView(let imageData):
+                                    PhotoReviewView(imageData: imageData)
+                                case .BeaconConfigView:
+                                    BeaconConfigView(locationManager: locationManager)
                             }
                         }
                         .toolbar {
@@ -113,7 +124,7 @@ struct ContentView: View {
                             }
                         }
                 }
-
+                
             }
         }
         .transition(.backslide)
@@ -142,7 +153,7 @@ struct ContentView: View {
         
         print(uniqueSparePartCount)
     }
-
+    
     
     
     

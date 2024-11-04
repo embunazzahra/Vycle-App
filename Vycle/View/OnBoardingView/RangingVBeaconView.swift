@@ -26,6 +26,7 @@ struct RangingVBeaconView: View {
                 }
                 else if configurationFailed {
                     ConfigurationStatusView(isSuccess: false)
+                    
                         .onAppear() {
                             resetConfiguration()
                             showConnectingView = false
@@ -39,7 +40,14 @@ struct RangingVBeaconView: View {
             .onAppear {
                 startConfigurationTimer()
             }
+        }.fullScreenCover(isPresented: $configurationFailed) {
+            ConfigurationStatusView(isSuccess: false)
+                .onAppear() {
+                    resetConfiguration()
+                    showConnectingView = false
+                }
         }
+        
     }
     
     private func resetConfiguration() {
@@ -55,7 +63,7 @@ struct RangingVBeaconView: View {
     }
     
     private func startConfigurationTimer() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             configurationFailed = true
         }
     }
@@ -66,6 +74,7 @@ struct ConfigurationStatusView: View {
     @State var animateCircle1: Bool = false
     @State var animateCircle2: Bool = false
     @State var animateIcon: Bool = false
+    @State private var showFull : Bool = false
     
     var body: some View {
         VStack (alignment: .center, spacing: 12) {
@@ -128,7 +137,8 @@ struct ConnectingToBeaconView: View {
     @State private var animateCircle1: Bool = false
     @State private var animateCircle2: Bool = false
     @State private var animateCircle3: Bool = false
-
+    @State private var showFull : Bool = false
+    
     var body: some View {
         ZStack {
             Color.primary.base.ignoresSafeArea()

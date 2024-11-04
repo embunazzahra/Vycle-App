@@ -31,6 +31,8 @@ struct AddServiceView: View {
     @State private var showGallery = false
     @State private var isShowingDialog: Bool = false
     
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
+    
     var service: Servis?
     
     // Computed property to determine if the button should be disabled
@@ -108,6 +110,7 @@ struct AddServiceView: View {
             } else {
                 updateService()
             }
+            hasNewNotification = true
             routes.navigateToRoot()
         }
         .frame(maxWidth: .infinity)

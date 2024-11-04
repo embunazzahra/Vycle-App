@@ -196,11 +196,11 @@ extension SwiftDataService {
         printAllData()
     }
     
-//    func insertOdometerData(vehicleData: Vehicle, odometer: Float){
-//        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-//        modelContext.insert(odometerData)
-//        saveModelContext()
-//    }
+    func insertOdometerData(odometer: Float){
+        let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: self.getCurrentVehicle()!)
+        modelContext.insert(odometerData)
+        saveModelContext()
+    }
 }
 
 

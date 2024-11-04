@@ -40,22 +40,13 @@ struct ConfigurationView: View {
                         Image("help")
                     }
                 }
-            } else {
-                HStack {
-                    Text("")
-                        .title1(.emphasized)
-                        .foregroundStyle(Color.neutral.shade300)
-                        .padding(.horizontal,16)
-                        .padding(.vertical, 24)
-                    
-                    Spacer()
-                }.padding(.vertical, 16)
             }
             
             Text("ID Perangkat")
                 .headline()
                 .foregroundColor(Color.neutral.shade300)
-                .padding(.horizontal, 16)
+                .padding(.horizontal,16)
+                .padding(.top, 16)
             
             HStack {
                 Image("device")
@@ -120,7 +111,6 @@ struct ConfigurationView: View {
             
             Spacer()
             
-            if !hideHeader{
                 VStack {
                     CustomButton(
                         title: "Cek Perangkat",

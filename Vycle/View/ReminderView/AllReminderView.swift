@@ -15,6 +15,12 @@ struct AllReminderView: View {
 
     @ObservedObject private var locationManager = LocationManager()
     
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false{
+        didSet {
+            print("notif in allreminderview\(hasNewNotification)")
+        }
+    }
+    
     var body: some View {
         VStack {
             if !availableOptions.isEmpty {
@@ -66,6 +72,7 @@ struct AllReminderView: View {
         .onAppear {
             loadAvailableOptionsAndCounts()
             selectedOption = availableOptions.first ?? ""
+            hasNewNotification = false
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.primary.tone100)
