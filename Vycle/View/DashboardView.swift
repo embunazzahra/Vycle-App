@@ -97,6 +97,7 @@ struct DashboardView: View {
                     .cornerRadius(12)
                     .shadow(radius: 4, y: 2)
                 }.padding(.horizontal, 16).offset(y: -45)
+
                 VStack {
                     if !filteredReminders.isEmpty {
                         HStack{
@@ -114,15 +115,16 @@ struct DashboardView: View {
                         }
                         //                                MapView(locations: locationHistory).frame(height: 300)
                     } else {
-                        //                                Spacer()
-                        //                                Text("last location: \(locationHistory.first?.distance)")
-                        //                                Text("last location: \(locationHistory.first?.time)")
-                        //                                ForEach(locationHistory){location in
-                        //                                    Text("Time: \(location.time) Longitude: \(location.longitude) Latitude: \(location.latitude) Distance: \(location.distance)")
-                        //
-                        //                                }
-                        NoReminderView()
                         
+//                                                        Spacer()
+//                                                        Text("last location: \(locationHistory.first?.distance)")
+//                                                        Text("last location: \(locationHistory.first?.time)")
+//                                                        ForEach(locationHistory){location in
+//                                                            Text("Time: \(location.time) Longitude: \(location.longitude) Latitude: \(location.latitude) Distance: \(location.distance)")
+//                        
+//                                                        }
+                        NoReminderView()
+        
                     }
                     
                 }
@@ -130,6 +132,7 @@ struct DashboardView: View {
             }.onAppear {
                 // Use locationManager data instead of hardcoded values
 //                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
+//                calculateTotalDistance()
                 filteredReminders = Array(reminders.filter { reminder in
                     let progress = getProgress(currentKilometer: Double(initialOdometer.last?.currentKM ?? 0), targetKilometer: reminder.kmInterval)
                     return progress > 0.7
@@ -175,8 +178,6 @@ struct DashboardView: View {
         }
         
     }
-    
-    
     
     
 }

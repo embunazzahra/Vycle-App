@@ -11,14 +11,10 @@ import SwiftData
 
 struct ProgressBar: View {
     var currentKM: Double
-    //    var maxKilometer: Double?
     var sparepart: Sparepart
     @Binding var reminder: Reminder
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
-    
-    //    @Binding var selectedNumber: Int
-
     
     let swiftDataService = SwiftDataService.shared
     
@@ -27,12 +23,16 @@ struct ProgressBar: View {
     }
     
     private var kilometerDifference: Float {
-        return targetKM - (Float(initialOdometer.last?.currentKM ?? 0) - Float(reminder.reminderOdo))
+        return targetKM - (Float(currentKM) - Float(reminder.reminderOdo))
     }
     
     private var progress: Float {
+        if reminder.isDraft {
+            return 0.0
+        }
+        
         guard targetKM > 0 else { return 0.0 }
-        return min((Float(initialOdometer.last?.currentKM ?? 0) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+        return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
     }
     
     var body: some View {
@@ -40,30 +40,10 @@ struct ProgressBar: View {
             if reminder.isDraft == false {
                 if kilometerDifference <= 500 {
                     Text("Sudah tiba bulannya nih!")
-//                    Text("\(Int(kilometerDifference)) Kilometer lagi")
+                    Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
-                    //                        .onAppear {
-                    //                            updateReminderDateToNow()
-                    //                        }
                 } else {
-                    //                    if progress >= 1.0 {
-                    //                        Text("Sudah tiba bulannya nih!")
-                    //                            .footnote(.emphasized)
-                    //                            .foregroundColor(Color.persianRed600)
-                    //                            .onAppear {
-                    //                                if !hasScheduledNotification {
-                    //    //                                scheduleNotificationForSparepart()
-                    //                                    scheduleNotification(for: sparepart)
-                    //                                    hasScheduledNotification = true
-                    //                                    updateReminderDateToNow()
-                    //                                }
-                    //                            }
-                    //                    } else if progress > 0.7 {
-                    //                        Text("\(Int(kilometerDifference)) Kilometer lagi")
-                    //                            .footnote(.emphasized)
-                    //                            .foregroundColor(Color.persianRed600)
-                    //                    } else
                     if progress > 0.3 {
                         Text("\(Int(kilometerDifference)) Kilometer lagi")
                             .footnote(.emphasized)
@@ -75,6 +55,7 @@ struct ProgressBar: View {
                     }
                 }
             } else {
+                // Display message when the reminder is a draft
                 Text("Belum ada data kilometer")
                     .footnote(.emphasized)
                     .foregroundColor(Color.neutral.tone200)
@@ -98,6 +79,8 @@ struct ProgressBar: View {
         }
     }
 }
+
+
     
 //    private func updateReminderDateToNow() {
 //        if kilometerDifference <= 500 {

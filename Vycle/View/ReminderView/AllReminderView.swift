@@ -15,12 +15,17 @@ struct AllReminderView: View {
 
     @ObservedObject private var locationManager = LocationManager()
     
-    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false{
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false {
         didSet {
             print("notif in allreminderview\(hasNewNotification)")
         }
     }
     
+    var sortedReminders: [Reminder] {
+        let filteredReminders = remindersForSelectedMonthAndYear(from: latestReminders(from: reminders))
+        return filteredReminders.sorted { $0.date < $1.date }
+    }
+
     var body: some View {
         VStack {
             if !availableOptions.isEmpty {
@@ -51,13 +56,10 @@ struct AllReminderView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
 
-                    let uniqueReminders = latestReminders(from: reminders)
-                    let filteredReminders = remindersForSelectedMonthAndYear(from: uniqueReminders)
-
-                    if !filteredReminders.isEmpty {
+                    if !sortedReminders.isEmpty {
                         SparepartReminderListView(reminders: Binding(
-                            get: { filteredReminders },
-                            set: { newValue in }
+                            get: { sortedReminders },
+                            set: { _ in }
                         ), locationManager: locationManager)
                     } else {
                         Text("No reminders available.")
@@ -80,40 +82,25 @@ struct AllReminderView: View {
         .navigationBarBackButtonHidden(false)
     }
 
-    // Update this function to take reminders as input
     private func remindersForSelectedMonthAndYear(from uniqueReminders: [Reminder]) -> [Reminder] {
         guard let selectedDate = getDateFrom(option: selectedOption) else {
             return []
         }
         let calendar = Calendar.current
-        let filtered = uniqueReminders.filter {
+        return uniqueReminders.filter {
             calendar.isDate($0.dueDate, equalTo: selectedDate, toGranularity: .month)
         }
-//        print("Filtered reminders for \(selectedOption): \(filtered.hashValue)")
-        return filtered
     }
 
-    // Filter out duplicates first
     private func latestReminders(from reminders: [Reminder]) -> [Reminder] {
-        var latestReminders: [String: Reminder] = [:]  // Key: sparepart name, Value: Reminder
+        var latestReminders: [String: Reminder] = [:]
 
         for reminder in reminders {
-            let sparepartKey = reminder.sparepart.rawValue  
-            
-            if let existingReminder = latestReminders[sparepartKey] {
-                if reminder.dueDate > existingReminder.dueDate {
-//                    NotificationManager.shared.cancelNotification(for: existingReminder)
-//                    print("Cancelled notification for existing reminder with sparepart: \(existingReminder.sparepart.rawValue), due: \(existingReminder.dueDate)")
-//
-//                    NotificationManager.shared.scheduleNotification(for: reminder)
-//                    print("notif created for \(reminder.sparepart.rawValue), due\(reminder.dueDate)")
-                    
-                    latestReminders[sparepartKey] = reminder
-                    print("Updated dictionary with new latest reminder for \(sparepartKey)")
-                }
-            } else {
+            let sparepartKey = reminder.sparepart.rawValue
+            if let existingReminder = latestReminders[sparepartKey], reminder.dueDate > existingReminder.dueDate {
                 latestReminders[sparepartKey] = reminder
-//                print("Added new reminder for \(sparepartKey) to dictionary")
+            } else if latestReminders[sparepartKey] == nil {
+                latestReminders[sparepartKey] = reminder
             }
         }
 
@@ -124,7 +111,7 @@ struct AllReminderView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         
-        let uniqueReminders = latestReminders(from: reminders) 
+        let uniqueReminders = latestReminders(from: reminders)
         let sortedReminders = uniqueReminders.sorted { $0.dueDate < $1.dueDate }
         
         var optionCountMap: [String: Int] = [:]
@@ -146,6 +133,7 @@ struct AllReminderView: View {
         return formatter.date(from: option)
     }
 }
+
 
 struct CustomScrollPicker: View {
     @Binding var selectedOption: String

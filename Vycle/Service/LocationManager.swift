@@ -112,12 +112,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         DispatchQueue.main.async {
             self.currentLocation = location.coordinate
-            if self.isInsideBeaconRegion {
+//            if self.isInsideBeaconRegion {
                 self.saveLocationHistory(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
                 print("Location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
-            } else {
-                //                print("Significant location change occurred, but outside of beacon region. No data saved.")
-            }
+//            } else {
+//                //                print("Significant location change occurred, but outside of beacon region. No data saved.")
+//            }
             //        }
             
         }
