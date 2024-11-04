@@ -21,6 +21,7 @@ struct DashboardView: View {
     @State private var showBluetoothSheet = false
     //    @Query var locationHistory : [LocationHistory]
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
+    
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
@@ -62,7 +63,13 @@ struct DashboardView: View {
                                 Text("\(Int(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
-//                        
+                                
+                                    List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
+                                        Text("Time: \(location.time), Distance: \(location.distance)")
+                                    }
+                               
+                                
+//
                                 
                             } else {
                                 Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
@@ -137,6 +144,7 @@ struct DashboardView: View {
                     let progress = getProgress(currentKilometer: Double(initialOdometer.last?.currentKM ?? 0), targetKilometer: reminder.kmInterval)
                     return progress > 0.7
                 }.prefix(2))
+//                SwiftDataService.shared.insertOdometerData(odometer: Float(calculateTotalDistance() ?? 0))
                 if locationManager.checkAuthorizationStatus() != .authorizedAlways {
                     showSettingsAlert = true
                 }

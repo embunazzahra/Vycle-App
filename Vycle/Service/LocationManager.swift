@@ -13,7 +13,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var context: ModelContext?
     private var bleManager: BLEManager?
     private var lastSavedLocation: CLLocation?
-    @Published var totalDistanceTraveled: Double = 0.0
+    @Published var totalDistanceTraveled: Double = 0
     @Published var isInsideBeaconRegion: Bool = false
     //    @Published var locationHistory: [LocationHistory] = []
     @AppStorage("vBeaconID") var vBeaconID: String = ""{
@@ -22,7 +22,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             updateBeaconRegion()
         }
     }
-    
+    @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     // ID: 4CC9
     private var beaconUUID: UUID {
         let vBeaconID = vBeaconID.isEmpty ? "0000" : vBeaconID
@@ -119,7 +119,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 //                //                print("Significant location change occurred, but outside of beacon region. No data saved.")
 //            }
             //        }
-            
         }
     }
     
@@ -231,20 +230,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         let currentLocation = CLLocation(latitude: latitude, longitude: longitude)
         
+        
+        
+        let tempDistance = SwiftDataService.shared.fetchLocationHistory().last?.distance ?? 0
+        
+        print(SwiftDataService.shared.fetchLocationHistory().last?.distance)
+          
         if let lastLocation = lastSavedLocation {
             // MKDirection buat liat jalan antara titik sekarang dan terakhir
             calculateRoute(from: lastLocation.coordinate, to: currentLocation.coordinate) { distance in
                 if let distance = distance {
-                    self.totalDistanceTraveled += distance / 1000
+                        self.totalDistanceTraveled += distance / 1000
+                    
                     //                    print("Distance traveled along the path: \(distance / 1000) kilometers")
                 }
-                let newLocation = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-                self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
+                    self.storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation:  self.totalDistanceTraveled)
                 
             }
+            
         } else {
-            let newLocation = LocationHistory(distance: nil, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
-            storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: self.totalDistanceTraveled)
+            storeLocation(latitude: latitude, longitude: longitude, distanceFromLastLocation: tempDistance)
+            self.totalDistanceTraveled = tempDistance
+            
         }
         
     }
@@ -264,6 +271,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("Failed to save location history: \(error.localizedDescription)")
         }
     }
+    
     
     // Handle beacon connection and disconnection
     func handleBeaconConnection(isConnected: Bool) {
