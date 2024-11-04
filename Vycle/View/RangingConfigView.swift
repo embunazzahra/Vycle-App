@@ -14,18 +14,21 @@ struct RangingConfigView: View {
     @Binding var onBoardingDataSaved: Bool
     @State private var configurationFailed = false
     @State private var showConnectingView = true
+    @State private var beaconDetected = false
 
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
-                if locationManager.isInsideBeaconRegion && !configurationFailed {
-                    ConfigurationStatusView(isSuccess: true)
-                        .onAppear() {
-                            saveConfigurationAndOnBoardingData()
-                            showConnectingView = false
-                        }
+                if locationManager.isInsideBeaconRegion && beaconDetected {
+                
+                        ConfigurationStatusView(isSuccess: true)
+                            .onAppear() {
+                                resetConfiguration()
+                                showConnectingView = false
+                            }
+                    
                 }
-                else if configurationFailed {
+                else if configurationFailed{
                     ConfigurationStatusView(isSuccess: false)
                         .onAppear() {
                             resetConfiguration()
@@ -39,6 +42,7 @@ struct RangingConfigView: View {
             ConnectingToBeaconView()
             .onAppear {
                 startConfigurationTimer()
+                startDetectionTimer()
             }
         }
     }
@@ -49,15 +53,16 @@ struct RangingConfigView: View {
         }
     }
     
-    private func saveConfigurationAndOnBoardingData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-            onBoardingDataSaved = true
-        }
-    }
     
     private func startConfigurationTimer() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             configurationFailed = true
+        }
+    }
+    
+    private func startDetectionTimer() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            beaconDetected = true
         }
     }
 }
