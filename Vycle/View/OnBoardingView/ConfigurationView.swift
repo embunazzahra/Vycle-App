@@ -26,8 +26,6 @@ struct ConfigurationView: View {
                     Text("Hubungkan VBeacon")
                         .title1(.emphasized)
                         .foregroundStyle(Color.neutral.shade300)
-                        .padding(.horizontal,16)
-                        .padding(.vertical, 24)
                     
                     Spacer()
                     
@@ -40,6 +38,8 @@ struct ConfigurationView: View {
                         Image("help")
                     }
                 }
+                .padding(.horizontal,16)
+                .padding(.vertical, 24)
             }
             
             Text("ID Perangkat")
@@ -143,7 +143,6 @@ struct ConfigurationView: View {
                 }
                 .padding(.top, -52)
             }
-        }
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
             NotificationCenter.default.addObserver(
