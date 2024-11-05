@@ -65,6 +65,7 @@ struct ConfigurationView: View {
                         isButtonEnabled = tempVBeaconID.count == 4
                     }
                     .onAppear() {
+                        tempVBeaconID = vBeaconID
                         isButtonEnabled = tempVBeaconID.count == 4
                     }
                     .toolbar {
