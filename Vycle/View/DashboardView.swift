@@ -25,6 +25,16 @@ struct DashboardView: View {
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
+    
+    var totalDistance: Double {
+        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+        if let firstLocation = locationHistory.first {
+            return Double(initialOdoValue) + (firstLocation.distance ?? 0)
+        } else {
+            return Double(initialOdoValue)
+        }
+    }
+    
     var body: some View {
         NavigationView {
             VStack{
@@ -49,6 +59,7 @@ struct DashboardView: View {
                         Spacer()
                     }
                 }.frame(height: 283)
+                
                 VStack{
                     HStack(alignment: .center) {
                         Image(systemName: "car.fill")
@@ -64,16 +75,15 @@ struct DashboardView: View {
                                     .headline()
                                     .foregroundStyle(.grayShade300)
                                 
-                                    List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
-                                        if location.distance == 0 {
-                                            Text("Time: \(location.time), Distance is 0: \(location.distance)")
-                                        } else {
-                                            Text("Time: \(location.time), Distance: \(location.distance)")
-                                        }
-                                        
-                                    }
+//                                    List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
+//                                        if location.distance == 0 {
+//                                            Text("Time: \(location.time), Distance is 0: \(location.distance)")
+//                                        } else {
+//                                            Text("Time: \(location.time), Distance: \(location.distance)")
+//                                        }
+//                                        
+//                                    }
                                
-                                
 //
                                 
                             } else {
@@ -146,10 +156,17 @@ struct DashboardView: View {
                 // Use locationManager data instead of hardcoded values
 //                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
 //                calculateTotalDistance()
+                let currentKilometer = Double(totalDistance)
+                
                 filteredReminders = Array(reminders.filter { reminder in
-                    let progress = getProgress(currentKilometer: calculateTotalDistance() ?? 0, targetKilometer: reminder.kmInterval)
-                    return progress > 0.7
-                }.prefix(2))
+                    let kilometerDifference = getKilometerDifference(currentKilometer: currentKilometer, reminder: reminder)
+                    return kilometerDifference <= 500
+                }
+                .sorted {
+                    getKilometerDifference(currentKilometer: currentKilometer, reminder: $0) <
+                    getKilometerDifference(currentKilometer: currentKilometer, reminder: $1)
+                }
+                .prefix(2))
 //                SwiftDataService.shared.insertOdometerData(odometer: Float(calculateTotalDistance() ?? 0))
                 if locationManager.checkAuthorizationStatus() != .authorizedAlways {
                     showSettingsAlert = true
@@ -167,9 +184,18 @@ struct DashboardView: View {
             
         }}
     
-    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+//    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+//        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+//    }
+    
+    private func getKilometerDifference(currentKilometer: Double, reminder: Reminder) -> Double {
+        if reminder.isDraft == true {
+            return 0.0
+        }
+        
+        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
     }
+    
     func openAppSettings() {
         guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
             return
