@@ -82,18 +82,6 @@ struct DashboardView: View {
                                 Text("\(Int(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
-                                
-//                                    List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
-//                                        if location.distance == 0 {
-//                                            Text("Time: \(location.time), Distance is 0: \(location.distance)")
-//                                        } else {
-//                                            Text("Time: \(location.time), Distance: \(location.distance)")
-//                                        }
-//                                        
-//                                    }
-                               
-//
-                                
                             } else {
                                 Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
                                     .headline()
