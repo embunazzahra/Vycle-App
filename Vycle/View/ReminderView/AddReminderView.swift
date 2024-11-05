@@ -17,7 +17,6 @@ struct AddReminderView: View {
         return Sparepart.allCases.filter { !usedSpareparts.contains($0) }
     }
 
-    // Selected spare part (the first available one by default)
     @State private var selectedSparepart: Sparepart?
 
     init(reminders: Binding<[Reminder]>) {

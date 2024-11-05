@@ -24,6 +24,16 @@ struct PengingatView: View {
     @State private var filteredReminders: [Reminder] = []
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
+    
+    var totalDistance: Double {
+        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+        if let firstLocation = locationHistory.first {
+            return Double(initialOdoValue) + (firstLocation.distance ?? 0)
+        } else {
+            return Double(initialOdoValue)
+        }
+    }
+
 
     var body: some View {
         VStack {
@@ -46,7 +56,7 @@ struct PengingatView: View {
                 VStack {
                     if !reminders.isEmpty {
                         let hasHighProgress = filteredReminders.contains { reminder in
-                            let currentKilometer = Double(initialOdometer.last?.currentKM ?? 0)
+                            let currentKilometer = Double(totalDistance)
                             let progress = getProgress(currentKilometer: currentKilometer, reminder: reminder)
                             return progress > 0.7
                         }
@@ -83,20 +93,25 @@ struct PengingatView: View {
         .onChange(of: reminders) { _ in
             updateFilteredReminders()
         }
-        .onChange(of: Double(initialOdometer.last?.currentKM ?? 0)) { _ in
+        .onChange(of: Double(totalDistance)) { _ in
             updateFilteredReminders()
         }
     }
 
     private func updateFilteredReminders() {
-        let currentKilometer = Double(initialOdometer.last?.currentKM ?? 0)
+        let currentKilometer = Double(totalDistance)
         
         let uniqueReminders = getUniqueReminders(reminders)
         
-        filteredReminders = uniqueReminders.filter { reminder in
-            let progress = getProgress(currentKilometer: currentKilometer, reminder: reminder)
-            return progress > 0.7
-        }
+        filteredReminders = uniqueReminders
+            .filter { reminder in
+                let progress = getProgress(currentKilometer: currentKilometer, reminder: reminder)
+                return progress > 0.7
+            }
+            .sorted {
+                getProgress(currentKilometer: currentKilometer, reminder: $0) >
+                getProgress(currentKilometer: currentKilometer, reminder: $1)
+            }
     }
 
 
@@ -119,12 +134,15 @@ struct PengingatView: View {
     }
 
     private func getProgress(currentKilometer: Double, reminder: Reminder) -> Double {
+        if reminder.isDraft {
+            return 0.0
+        }
+        
         let targetKilometer = reminder.kmInterval
         guard targetKilometer > 0 else { return 0.0 }
         let progress = (currentKilometer - Double(reminder.reminderOdo)) / Double(targetKilometer)
         return min(progress, 1.0)
     }
-
 }
 
 
