@@ -73,24 +73,41 @@ extension SwiftDataService {
 //    }
     
     private func checkAndNotifyIfNeeded() {
-            guard let latestOdometer = fetchOdometersForNotif().last else { return }
-            
-            let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
-            
-            for reminder in activeReminders {
-                let kilometerDifference = Float(reminder.kmInterval) - (Float(latestOdometer.currentKM) - Float(reminder.reminderOdo))
-                
-                if kilometerDifference <= 0 {
-                    if shouldNotifyOnce(reminderID: reminder.id) {
-                        sendImmediateNotification(for: reminder.sparepart)
-                        setLastNotifiedDate(reminderID: reminder.id)
-                        scheduleRepeatingNotification(for: reminder.sparepart)
-                    }
-                } else if kilometerDifference <= 500 {
-                    updateReminderDateToNow(reminder: reminder)
+        guard let latestOdometer = fetchOdometersForNotif().last else { return }
+        
+        let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
+        
+        print("Odometer terakhir: \(latestOdometer.currentKM)")
+        
+        let locationHistory = fetchLocationHistoryForNotif()
+        let totalLocationDistance = locationHistory.first?.distance ?? 0.0
+        
+        for reminder in activeReminders {
+            let kilometerDifference = Double(reminder.kmInterval) - ((Double(latestOdometer.currentKM) + totalLocationDistance) - Double(reminder.reminderOdo))
+
+            print("Processing reminder: \(reminder.sparepart.rawValue), Kilometer Difference: \(kilometerDifference)")
+
+            if kilometerDifference <= 0 {
+                print("inside 0 KM Difference for \(reminder.sparepart.rawValue)")
+
+                if shouldNotifyOnce(reminderID: reminder.id, sparepart: reminder.sparepart.rawValue) {
+                    print("Notification sent for \(reminder.sparepart)")
+                    sendImmediateNotification(for: reminder.sparepart)
+                    setLastNotifiedDate(reminderID: reminder.id, sparepart: reminder.sparepart.rawValue)
+                    scheduleRepeatingNotification(for: reminder.sparepart)
                 }
+            } else if kilometerDifference <= 500 {
+                print("inside 500 KM Difference")
+                updateReminderDateToNow(reminder: reminder)
             }
+        }
     }
+
+    private func fetchLocationHistoryForNotif() -> [LocationHistory] {
+        let fetchDescriptor = FetchDescriptor<LocationHistory>(sortBy: [SortDescriptor(\.time, order: .reverse)])
+        return (try? modelContext.fetch(fetchDescriptor)) ?? []
+    }
+
 
     private func updateReminderDateToNow(reminder: Reminder) {
         editReminder(reminder: reminder,
@@ -104,19 +121,19 @@ extension SwiftDataService {
                      isDraft: reminder.isDraft)
     }
 
-    private func shouldNotifyOnce(reminderID: PersistentIdentifier) -> Bool {
-        let reminderKey = "initialNotified_\(reminderID)"
+    private func shouldNotifyOnce(reminderID: PersistentIdentifier, sparepart: String) -> Bool {
+        let reminderKey = "initialNotified_\(sparepart)_\(reminderID)"
         return UserDefaults.standard.bool(forKey: reminderKey) == false
     }
 
-    private func setLastNotifiedDate(reminderID: PersistentIdentifier) {
-        let reminderKey = "initialNotified_\(reminderID)"
+    private func setLastNotifiedDate(reminderID: PersistentIdentifier, sparepart: String) {
+        let reminderKey = "initialNotified_\(sparepart)_\(reminderID)"
         UserDefaults.standard.set(true, forKey: reminderKey)
-        UserDefaults.standard.set(Date(), forKey: "lastNotified_\(reminderID)")
+        UserDefaults.standard.set(Date(), forKey: "lastNotified_\(reminderKey)")
     }
 
-    private func getLastNotifiedDate(forKey reminderKey: String) -> Date? {
-        return UserDefaults.standard.object(forKey: reminderKey) as? Date
+    private func getLastNotifiedDate(for sparepart: String) -> Date? {
+        return UserDefaults.standard.object(forKey: "lastNotified_\(sparepart)") as? Date
     }
 
     private func sendImmediateNotification(for sparepart: Sparepart) {

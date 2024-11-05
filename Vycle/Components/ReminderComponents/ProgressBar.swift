@@ -23,7 +23,7 @@ struct ProgressBar: View {
     }
     
     private var kilometerDifference: Float {
-        return targetKM - (Float(currentKM) - Float(reminder.reminderOdo))
+        return ceil(targetKM - (Float(currentKM) - Float(reminder.reminderOdo)))
     }
     
     private var progress: Float {
@@ -40,7 +40,7 @@ struct ProgressBar: View {
             if reminder.isDraft == false {
                 if kilometerDifference <= 500 {
                     Text("Sudah tiba bulannya nih!")
-                    Text("\(Int(kilometerDifference)) Kilometer lagi")
+//                    Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
                 } else {
@@ -80,8 +80,6 @@ struct ProgressBar: View {
     }
 }
 
-
-    
 //    private func updateReminderDateToNow() {
 //        if kilometerDifference <= 500 {
 //            swiftDataService.editReminder(
@@ -97,7 +95,6 @@ struct ProgressBar: View {
 //            )
 //        }
 //    }
-
 
 
 //#Preview {

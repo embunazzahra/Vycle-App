@@ -65,7 +65,12 @@ struct DashboardView: View {
                                     .foregroundStyle(.grayShade300)
                                 
                                     List(locationHistory.sorted(by: { $0.time > $1.time }).prefix(5), id: \.self) { location in
-                                        Text("Time: \(location.time), Distance: \(location.distance)")
+                                        if location.distance == 0 {
+                                            Text("Time: \(location.time), Distance is 0: \(location.distance)")
+                                        } else {
+                                            Text("Time: \(location.time), Distance: \(location.distance)")
+                                        }
+                                        
                                     }
                                
                                 
@@ -111,9 +116,10 @@ struct DashboardView: View {
                             HaveReminderView().padding(.horizontal, 16)
                         }
                         ForEach($filteredReminders, id: \.self) { $reminder in
+                            let totalDistance = calculateTotalDistance() ?? 0
                             SparepartReminderCard(
                                 reminder: $reminder,
-                                currentKM: Double(initialOdometer.last?.currentKM ?? 0)
+                                currentKM: totalDistance
                             )
                             .contentShape(Rectangle())
                             .listRowInsets(EdgeInsets())
@@ -141,7 +147,7 @@ struct DashboardView: View {
 //                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
 //                calculateTotalDistance()
                 filteredReminders = Array(reminders.filter { reminder in
-                    let progress = getProgress(currentKilometer: Double(initialOdometer.last?.currentKM ?? 0), targetKilometer: reminder.kmInterval)
+                    let progress = getProgress(currentKilometer: calculateTotalDistance() ?? 0, targetKilometer: reminder.kmInterval)
                     return progress > 0.7
                 }.prefix(2))
 //                SwiftDataService.shared.insertOdometerData(odometer: Float(calculateTotalDistance() ?? 0))
@@ -160,6 +166,7 @@ struct DashboardView: View {
             }
             
         }}
+    
     private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
         return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
     }
@@ -172,6 +179,7 @@ struct DashboardView: View {
             UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
         }
     }
+    
     func calculateTotalDistance() -> Double? {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
         if let firstLocation = locationHistory.first {

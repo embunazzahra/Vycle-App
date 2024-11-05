@@ -84,7 +84,7 @@ struct KilometerPickerSheet: View {
         }
         .onAppear {
             if selectedNumber == 0 {
-                selectedNumber = numbers.first ?? 1
+                selectedNumber = numbers.first ?? 1000
             }
         }
     }
