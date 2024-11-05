@@ -72,7 +72,7 @@ struct AddEditFramework: View {
 
     init(title: String, reminders: Binding<[Reminder]>, selectedSparepart: Sparepart,
          selectedDate: Date = Calendar.current.date(byAdding: .month, value: 1, to: Date().startOfMonth()) ?? Date().startOfMonth(),
-         selectedNumber: Int = 1,
+         selectedNumber: Int = 1000,
          reminderToEdit: Reminder? = nil,
          successNotification: @escaping () -> AnyView) {
         self.title = title

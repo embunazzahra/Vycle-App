@@ -53,7 +53,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 //            return("not always bro")
 //        @unknown default:
 //            return("not always bro")
-//           
+//
 //        }
         return locationManager.authorizationStatus
     }
@@ -113,12 +113,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         DispatchQueue.main.async {
             self.currentLocation = location.coordinate
-//            if self.isInsideBeaconRegion {
+            if self.isInsideBeaconRegion {
                 self.saveLocationHistory(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-//                print("Location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
-//            } else {
-//                //                print("Significant location change occurred, but outside of beacon region. No data saved.")
-//            }
+                print("Location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+            } else {
+                //                print("Significant location change occurred, but outside of beacon region. No data saved.")
+            }
             //        }
         }
     }
@@ -353,5 +353,3 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
 }
-
-

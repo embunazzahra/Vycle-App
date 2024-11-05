@@ -21,18 +21,23 @@ struct ProgressBar: View {
     var targetKM: Float {
         return Float(reminder.kmInterval)
     }
-    
-    private var kilometerDifference: Float {
-        return targetKM - (Float(currentKM) - Float(reminder.reminderOdo))
-    }
-    
-    private var progress: Float {
-        if reminder.isDraft {
+
+    var kilometerDifference: Float {
+        if reminder.isDraft == true {
             return 0.0
         }
-        
-        guard targetKM > 0 else { return 0.0 }
-        return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+        else {
+            return ceil(targetKM - (Float(currentKM) - Float(reminder.reminderOdo)))
+        }
+    }
+
+    var progress: Float {
+        if reminder.isDraft == true {
+            return 0.0
+        } else {
+            guard targetKM > 0 else { return 0.0 }
+            return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+        }
     }
     
     var body: some View {
@@ -40,7 +45,7 @@ struct ProgressBar: View {
             if reminder.isDraft == false {
                 if kilometerDifference <= 500 {
                     Text("Sudah tiba bulannya nih!")
-                    Text("\(Int(kilometerDifference)) Kilometer lagi")
+//                    Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
                 } else {
@@ -80,27 +85,4 @@ struct ProgressBar: View {
     }
 }
 
-
-    
-//    private func updateReminderDateToNow() {
-//        if kilometerDifference <= 500 {
-//            swiftDataService.editReminder(
-//                reminder: reminder,
-//                sparepart: reminder.sparepart,
-//                reminderOdo: reminder.reminderOdo,
-//                kmInterval: reminder.kmInterval,
-//                dueDate: Date(),
-//                timeInterval: reminder.timeInterval,
-//                vehicle: reminder.vehicle!,
-//                isRepeat: reminder.isRepeat,
-//                isDraft: reminder.isDraft
-//            )
-//        }
-//    }
-
-
-
-//#Preview {
-//    ProgressBar(currentKilometer: 200, maxKilometer: 200, serviceOdometer: 5, sparepart: Sparepart(rawValue: "Oil Filter")!)
-//}
 
