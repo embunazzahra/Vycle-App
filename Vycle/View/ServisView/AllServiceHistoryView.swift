@@ -19,15 +19,25 @@ struct AllServiceHistoryView: View {
         }
     }
     
+    var groupedServiceHistories: [Int: [Servis]] {
+        Dictionary(grouping: serviceHistories) { service in
+            Calendar.current.component(.year, from: service.date)
+        }
+    }
+    
     
     var body: some View {
-        //        ScrollView{
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Tahun ini")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-            List {
-                ForEach(serviceHistories) { history in
+        List {
+            ForEach(Array(groupedServiceHistories.keys.sorted(by: >)), id: \.self) { year in
+                // Display the year header
+                Text(year == Calendar.current.component(.year, from: Date()) ? "Tahun Ini" : String(year))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .padding(.top, 8)
+                    .listRowInsets(EdgeInsets())
+                
+                // Display each card under the corresponding year
+                ForEach(groupedServiceHistories[year] ?? []) { history in
                     ServiceHistoryCard(service: history) {
                         routes.navigate(to: .ServiceDetailView(service: history))
                     }
@@ -38,22 +48,20 @@ struct AllServiceHistoryView: View {
                             Label("Delete", systemImage: "trash")
                         }
                         .tint(.red)
-                        
                     }
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets()) // Remove default row insets
                     .background(Color.clear) // Set background color to clear
                 }
             }
-            .listStyle(PlainListStyle()) // Remove default list styling
-            .padding(.all, 0) // Remove all padding around the list
-            .scrollIndicators(.hidden)
-            
-            //            }
-            
+            .listRowSeparator(.hidden)
+            .listSectionSeparator(.hidden)
         }
+        .listStyle(PlainListStyle()) // Remove default list styling
+        .padding(.all, 0) // Remove all padding around the list
+        .scrollIndicators(.hidden)
         .navigationTitle("Histori servis")
-        .padding()
+        .padding(.horizontal)
     }
     
     // Update deleteHistory to remove from the model context
