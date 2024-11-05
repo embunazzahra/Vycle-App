@@ -14,6 +14,12 @@ struct ServiceHistoryView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     
+    var currentYearServiceHistories: [Servis] {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        return serviceHistories
+            .filter { Calendar.current.component(.year, from: $0.date) == currentYear } // Filter for current year
+            .sorted(by: { $0.date > $1.date }) // Sort by date in descending order
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -32,7 +38,7 @@ struct ServiceHistoryView: View {
                 .font(.subheadline)
                 .fontWeight(.semibold)
             List {
-                ForEach(serviceHistories) { history in
+                ForEach(currentYearServiceHistories) { history in
                     ServiceHistoryCard(service: history) {
                         routes.navigate(to: .ServiceDetailView(service: history))
                     }
