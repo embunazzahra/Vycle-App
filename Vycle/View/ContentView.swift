@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftData
-
+import ActivityKit
 struct ContentView: View {
     
     @Environment(\.modelContext) private var context
@@ -143,6 +143,42 @@ struct ContentView: View {
         
         /*.environmentObject(locationManager) */ // Provide LocationManager as EnvironmentObject
     }
+    
+//    var body: some View {
+//        VStack {
+//            Button(action: {
+//                do {
+//                    deleteAllActivities()
+////                    
+//                    let id = try LiveActivityManager.startActivity(connectionStatus: "Troe")
+//                    
+//                    UserDefaultsManager.saveNewActivity(connectionStatus: "TRue")
+//                } catch {
+//                    print(error.localizedDescription)
+//                }
+//                
+//            }, label: {
+//                Text("Place Order")
+//            })
+//            Button(action: {
+//                do {
+//                    deleteAllActivities()
+////
+////                    let id = try LiveActivityManager.startActivity(connectionStatus: "Troe")
+////
+////                    UserDefaultsManager.saveNewActivity(connectionStatus: "TRue")
+//                } catch {
+//                    print(error.localizedDescription)
+//                }
+//                
+//            }, label: {
+//                Text("delete Order")
+//            })
+//        }
+//        .padding()
+//    }
+ 
+    
     
     private func fetchAndCountUniqueSpareParts() {
         var uniqueSpareParts: Set<String> = []

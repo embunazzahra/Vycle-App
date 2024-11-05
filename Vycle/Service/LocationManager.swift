@@ -6,6 +6,7 @@ import UserNotifications
 import UIKit
 import MapKit
 import SwiftUI
+import ActivityKit
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager = CLLocationManager()
@@ -170,6 +171,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             isInsideBeaconRegion = true
             print("Entered beacon region")
             self.sendNotification()
+            do {
+                deleteAllActivities()
+//
+                let id = try LiveActivityManager.startActivity(connectionStatus: "Troe")
+                
+                UserDefaultsManager.saveNewActivity(connectionStatus: "TRue")
+            } catch {
+                print(error.localizedDescription)
+            }
             handleBeaconConnection(isConnected: true)
             if let currentLocation = currentLocation {
                 self.saveLocationHistory(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
@@ -182,6 +192,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("Exited beacon region")
             isInsideBeaconRegion = false
             handleBeaconConnection(isConnected: false)
+            do {
+                deleteAllActivities()
+//
+            } catch {
+                print(error.localizedDescription)
+            }
             self.sendExitNotification()
             if let currentLocation = currentLocation {
                 self.saveLocationHistory(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
@@ -191,6 +207,18 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
+    
+    private func deleteAllActivities() {
+        for item in UserDefaultsManager.fetchActivities() {
+            
+            if let activity = Activity<BeaconAttribute>.activities.first
+            {
+                    Task {
+                        await LiveActivityManager.endActivity(activity.id)
+                    }
+            }
+        }
+    }
     
     // Detect when entering a be
     
