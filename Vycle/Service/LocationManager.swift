@@ -311,9 +311,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     // Send notification when beacon status changes
     private func sendNotification() {
         let content = UNMutableNotificationContent()
-        content.title = "Beacon Entered"
+        content.title = "✨Beep Beep! IoT berhasil terhubung"
         content.body = """
-                    beacon has been saved.
+                    Perjalanan Anda Kini Tercatat Secara Otomatis dengan IoT!
                 """
         content.sound = .default
         
@@ -328,9 +328,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     private func sendExitNotification() {
         let content = UNMutableNotificationContent()
-        content.title = "Beacon Exited"
+        content.title = "🔌Szzt...! IoT terputus!"
         content.body = """
-                    exit has been saved.
+                    Kami mendeteksi bahwa koneksi Anda tidak terhubung
                 """
         content.sound = .default
         

@@ -51,11 +51,19 @@ struct DashboardView: View {
                 }.frame(height: 283)
                 VStack{
                     HStack(alignment: .center) {
-                        Image(systemName: "car.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.orange)
-                            .frame(height: 40)
+                        if SwiftDataService.shared.getCurrentVehicle()?.brand.isCustomBrand == true {
+                            Image("merk_kendaraan")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.orange)
+                                .frame(height: 40)
+                        } else {
+                            Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.orange)
+                                .frame(height: 40)
+                        }
                         VStack(alignment: .leading, spacing: 4){
                             Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                             if !locationHistory.isEmpty {

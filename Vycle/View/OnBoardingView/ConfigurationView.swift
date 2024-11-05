@@ -137,14 +137,16 @@ struct ConfigurationView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 24)
                 
-                CustomButton(
-                    title: "Lewati",
-                    buttonType: .tertiary
-                ) {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    onBoardingDataSaved = true
+                if !hideHeader {
+                    CustomButton(
+                        title: "Lewati",
+                        buttonType: .tertiary
+                    ) {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        onBoardingDataSaved = true
+                    }
+                    .padding(.top, -52)
                 }
-                .padding(.top, -52)
             }
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
