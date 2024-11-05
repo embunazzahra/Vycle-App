@@ -40,14 +40,14 @@ struct ConfigurationView: View {
                     }
                 }
                 .padding(.horizontal,16)
-                .padding(.vertical, 24)
+                .padding(.top, 24)
             }
             
             Text("ID Perangkat")
                 .headline()
                 .foregroundColor(Color.neutral.shade300)
                 .padding(.horizontal,16)
-                .padding(.top, 16)
+                .padding(.top, hideHeader ? 16 : 0)
             
             HStack {
                 Image("device")
