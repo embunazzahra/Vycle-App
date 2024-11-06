@@ -132,11 +132,22 @@ struct PengingatView: View {
     }
 
     private func getKilometerDifference(currentKilometer: Double, reminder: Reminder) -> Double {
-        if reminder.isDraft == true {
-            return 0.0
-        }
         
-        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
+        if reminder.dueDate <= Date() {
+            return 0.0
+        } else {
+            if reminder.isDraft == true {
+                return 0.0
+            }
+            else {
+                return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
+            }
+        }
+//        if reminder.isDraft == true {
+//            return 0.0
+//        }
+//        
+//        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
     }
     
 //    private func getProgress(currentKilometer: Double, reminder: Reminder) -> Double {
