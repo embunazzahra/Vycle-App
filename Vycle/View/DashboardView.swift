@@ -34,6 +34,7 @@ struct DashboardView: View {
             return Double(initialOdoValue)
         }
     }
+
     
     var body: some View {
         NavigationView {
@@ -121,17 +122,18 @@ struct DashboardView: View {
                         HStack{
                             HaveReminderView().padding(.horizontal, 16)
                         }
-                        ForEach($filteredReminders, id: \.self) { $reminder in
-                            let totalDistance = calculateTotalDistance() ?? 0
-                            SparepartReminderCard(
-                                reminder: $reminder,
-                                currentKM: totalDistance
-                            )
-                            .contentShape(Rectangle())
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                            .listSectionSeparator(.hidden)
-                        }
+//                        ForEach($filteredReminders, id: \.self) { $reminder in
+//                            let totalDistance = calculateTotalDistance() ?? 0
+//                            SparepartReminderCard(
+//                                reminder: $reminder,
+//                                currentKM: totalDistance
+//                            )
+//                            .contentShape(Rectangle())
+//                            .listRowInsets(EdgeInsets())
+//                            .listRowSeparator(.hidden)
+//                            .listSectionSeparator(.hidden)
+//                        }
+                        SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                         //                                MapView(locations: locationHistory).frame(height: 300)
                     } else {
                         
@@ -149,27 +151,19 @@ struct DashboardView: View {
                 }
                 Spacer()
             }.onAppear {
-                // Use locationManager data instead of hardcoded values
-//                SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
-//                calculateTotalDistance()
-                let currentKilometer = Double(totalDistance)
+                updateFilteredReminders()
                 
-                filteredReminders = Array(reminders.filter { reminder in
-                    let kilometerDifference = getKilometerDifference(currentKilometer: currentKilometer, reminder: reminder)
-                    return kilometerDifference <= 500
-                }
-                .sorted {
-                    getKilometerDifference(currentKilometer: currentKilometer, reminder: $0) <
-                    getKilometerDifference(currentKilometer: currentKilometer, reminder: $1)
-                }
-                .prefix(2))
-//                SwiftDataService.shared.insertOdometerData(odometer: Float(calculateTotalDistance() ?? 0))
                 if locationManager.checkAuthorizationStatus() != .authorizedAlways {
                     showSettingsAlert = true
                 }
-                
-                
-            }.alert(isPresented: $showSettingsAlert) {
+            }
+            .onChange(of: reminders) { _ in
+                updateFilteredReminders()
+            }
+            .onChange(of: Double(totalDistance)) { _ in
+                updateFilteredReminders()
+            }
+            .alert(isPresented: $showSettingsAlert) {
                 Alert(
                     title: Text("We does not Have the Access to Your Location While in the Background"),
                     message: Text("Tap Settings > Location and Select Always"),
@@ -183,6 +177,48 @@ struct DashboardView: View {
 //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
 //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
 //    }
+    
+    
+    private func updateFilteredReminders() {
+        let currentKilometer = Double(totalDistance)
+        
+        let uniqueReminders = getUniqueReminders(reminders)
+        
+        filteredReminders = Array(uniqueReminders
+            .filter { reminder in
+                let kilometerDifference = getKilometerDifference(currentKilometer: currentKilometer, reminder: reminder)
+                return kilometerDifference <= 500
+            }
+            .sorted {
+                if $0.isDraft != $1.isDraft {
+                    return !$0.isDraft
+                } else {
+                    return getKilometerDifference(currentKilometer: currentKilometer, reminder: $0) <
+                           getKilometerDifference(currentKilometer: currentKilometer, reminder: $1)
+                }
+            }
+            .prefix(2)
+        )
+    }
+
+
+    private func getUniqueReminders(_ reminders: [Reminder]) -> [Reminder] {
+        var uniqueReminders: [String: Reminder] = [:]
+
+        for reminder in reminders {
+            let sparepartKey = reminder.sparepart.rawValue
+            
+            if let existingReminder = uniqueReminders[sparepartKey] {
+                if reminder.dueDate > existingReminder.dueDate {
+                    uniqueReminders[sparepartKey] = reminder
+                }
+            } else {
+                uniqueReminders[sparepartKey] = reminder
+            }
+        }
+
+        return Array(uniqueReminders.values)
+    }
     
     private func getKilometerDifference(currentKilometer: Double, reminder: Reminder) -> Double {
         if reminder.isDraft == true {
@@ -216,7 +252,6 @@ struct DashboardView: View {
         }
         
     }
-    
     
 }
 
