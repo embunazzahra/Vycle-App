@@ -371,13 +371,12 @@ extension SwiftDataService {
                                 vehicle: vehicle)
         
         modelContext.insert(newService)
-        createReminder(for: newService.vehicle, with: odometerValue, service: newService, selectedParts: selectedParts)
-        
         do {
             try modelContext.save()
         } catch {
             print("Failed to save service: \(error)")
         }
+        createReminder(for: newService.vehicle, with: odometerValue, service: newService, selectedParts: selectedParts)
     }
     
     // Function to update an existing service
@@ -410,7 +409,7 @@ extension SwiftDataService {
     
     func deleteHistory(for service: Servis) {
         if let lastService = modelContext.model(for: service.persistentModelID) as? Servis {
-            modelContext.delete(lastService)
+            modelContext.deleteParentAndChildren(parent: lastService, childrenKeyPath: \Servis.reminders)
             
         } else {
             print("vehicle not found")
