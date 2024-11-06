@@ -62,9 +62,11 @@ struct AllReminderView: View {
                             set: { _ in }
                         ), locationManager: locationManager)
                     } else {
-                        Text("No reminders available.")
+                        Spacer()
+                        Text("Tidak ada pengingat.")
                             .font(.headline)
                             .foregroundColor(.gray)
+                        Spacer()
                     }
 
                     Spacer()
