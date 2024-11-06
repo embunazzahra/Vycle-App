@@ -111,6 +111,7 @@ struct DatePickerSheet: View {
         .onAppear {
             let calendar = Calendar.current
             selectedMonth = calendar.component(.month, from: selectedDate) - 1
+            
             selectedYear = calendar.component(.year, from: selectedDate)
         }
     }

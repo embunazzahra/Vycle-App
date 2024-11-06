@@ -110,6 +110,7 @@ struct AllReminderView: View {
     private func loadAvailableOptionsAndCounts() {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
+        formatter.locale = Locale(identifier: "id_ID")
         
         let uniqueReminders = latestReminders(from: reminders)
         let sortedReminders = uniqueReminders.sorted { $0.dueDate < $1.dueDate }
@@ -130,6 +131,7 @@ struct AllReminderView: View {
     private func getDateFrom(option: String) -> Date? {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
+        formatter.locale = Locale(identifier: "id_ID")
         return formatter.date(from: option)
     }
 }
