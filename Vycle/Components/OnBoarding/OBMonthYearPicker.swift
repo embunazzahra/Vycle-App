@@ -131,7 +131,7 @@ struct OBDatePickerSheet: View {
         var components = calendar.dateComponents([.year, .month], from: selectedDate)
         components.year = selectedYear
         components.month = selectedMonth + 1
-        components.day = 2
+        components.day = 1
         selectedDate = calendar.date(from: components) ?? Date().startOfMonth()
     }
 }

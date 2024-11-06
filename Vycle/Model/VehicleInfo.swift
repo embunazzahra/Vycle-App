@@ -106,10 +106,10 @@ enum Car: String, CaseIterable, Codable {
     private var suzukiSparepartIntervals: [Sparepart: Interval] {
         return [
             .filterUdara: Interval(month: 24, kilometer: 40000),
-            .oliMesin: Interval(month: 6, kilometer: 10000),
-            .oliGardan: Interval(month: 24, kilometer: 40000),
-            .oliTransmisi : Interval(month: 24, kilometer: 40000),
-            .filterOli: Interval(month: 6, kilometer: 10000),
+            .oliMesin: Interval(month: 3, kilometer: 5000),
+            .oliGardan: Interval(month: 12, kilometer: 20000),
+            .oliTransmisi : Interval(month: 12, kilometer: 20000),
+            .filterOli: Interval(month: 3, kilometer: 5000),
             .busi: Interval(month: 12, kilometer: 20000),
             .minyakRem : Interval(month: 24, kilometer: 40000),
             .minyakKopling : Interval(month: 24, kilometer: 40000),
@@ -127,15 +127,15 @@ enum Car: String, CaseIterable, Codable {
             .busi: Interval(month: 12, kilometer: 20000),
             .minyakRem : Interval(month: 24, kilometer: 40000),
             .minyakKopling : Interval(month: 24, kilometer: 40000),
-            .airCoolant : Interval(month: 24, kilometer: 40000)
+            .airCoolant : Interval(month: 24, kilometer: 80000)
         ]
     }
     
     private var mitsubishiSparepartIntervals: [Sparepart: Interval] {
         return [
-            .filterUdara: Interval(month: 24, kilometer: 40000),
+            .filterUdara: Interval(month: 12, kilometer: 20000),
             .oliMesin: Interval(month: 6, kilometer: 10000),
-            .oliGardan: Interval(month: 24, kilometer: 40000),
+            .oliGardan: Interval(month: 12, kilometer: 20000),
             .oliTransmisi : Interval(month: 24, kilometer: 40000),
             .filterOli: Interval(month: 6, kilometer: 10000),
             .busi: Interval(month: 12, kilometer: 20000),
@@ -201,4 +201,3 @@ enum Motorcycle: String, CaseIterable, Codable {
         ]
     }
 }
-
