@@ -221,11 +221,22 @@ struct DashboardView: View {
     }
     
     private func getKilometerDifference(currentKilometer: Double, reminder: Reminder) -> Double {
-        if reminder.isDraft == true {
+        if reminder.dueDate <= Date() {
             return 0.0
+        } else {
+            if reminder.isDraft == true {
+                return 0.0
+            }
+            else {
+                return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
+            }
         }
-        
-        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
+
+//        if reminder.isDraft == true {
+//            return 0.0
+//        }
+//        
+//        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
     }
     
     func openAppSettings() {

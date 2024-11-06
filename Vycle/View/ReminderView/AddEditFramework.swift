@@ -36,7 +36,6 @@ struct AddEditFramework: View {
         isPartChosen && isMonthYearChosen && isKilometerChosen
     }
 
-    // Calculate total distance based on initial odometer and location history
     var totalDistance: Double {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
         if let firstLocation = locationHistory.first {
