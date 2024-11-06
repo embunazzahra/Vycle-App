@@ -23,20 +23,28 @@ struct ProgressBar: View {
     }
 
     var kilometerDifference: Float {
-        if reminder.isDraft == true {
+        if reminder.dueDate <= Date() {
             return 0.0
-        }
-        else {
-            return ceil(targetKM - (Float(currentKM) - Float(reminder.reminderOdo)))
+        } else {
+            if reminder.isDraft == true {
+                return 0.0
+            }
+            else {
+                return ceil(targetKM - (Float(currentKM) - Float(reminder.reminderOdo)))
+            }
         }
     }
 
     var progress: Float {
-        if reminder.isDraft == true {
-            return 0.0
+        if reminder.dueDate <= Date() {
+            return 1.0
         } else {
-            guard targetKM > 0 else { return 0.0 }
-            return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+            if reminder.isDraft == true {
+                return 0.0
+            } else {
+                guard targetKM > 0 else { return 0.0 }
+                return min((Float(currentKM) - Float(reminder.reminderOdo)) / targetKM, 1.0)
+            }
         }
     }
     
