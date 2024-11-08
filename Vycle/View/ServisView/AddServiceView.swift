@@ -112,11 +112,7 @@ struct AddServiceView: View {
             } else {
                 updateService()
             }
-            if let latestVehicle = SwiftDataService.shared.getCurrentVehicle() {
-                if !latestVehicle.brand.isCustomBrand {
-                    hasNewNotification = true
-                }
-            }
+            hasNewNotification = true
             routes.navigateToRoot()
         }
         .frame(maxWidth: .infinity)

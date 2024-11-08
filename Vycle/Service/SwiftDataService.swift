@@ -426,29 +426,42 @@ extension SwiftDataService {
         print("the service is : \(service.date)")
         
         for sparepart in selectedParts {
-            guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
-                continue
-            }
-            
-//            let targetKM = odometer + Float(interval.kilometer)
             let reminderOdo = odometer
-            let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
             
-            //            let newService = service
-            let newReminder = Reminder(date: service.date,
-                                       sparepart: sparepart,
-                                       reminderOdo: reminderOdo,
-                                       kmInterval: Float(interval.kilometer),
-                                       dueDate: dueDate,
-                                       timeInterval: interval.month,
-                                       vehicle: service.vehicle,
-                                       isRepeat: true,
-                                       isDraft: false,
-                                       service: service,
-                                       isHelperOn: true)
-            NotificationManager.shared.scheduleNotification(for: newReminder)
-            
-            modelContext.insert(newReminder)
+            if let interval = vehicle.brand.intervalForSparepart(sparepart){
+                let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
+                
+                let newReminder = Reminder(date: service.date,
+                                           sparepart: sparepart,
+                                           reminderOdo: reminderOdo,
+                                           kmInterval: Float(interval.kilometer),
+                                           dueDate: dueDate,
+                                           timeInterval: interval.month,
+                                           vehicle: service.vehicle,
+                                           isRepeat: true,
+                                           isDraft: false,
+                                           service: service,
+                                           isHelperOn: true)
+                NotificationManager.shared.scheduleNotification(for: newReminder)
+                
+                modelContext.insert(newReminder)
+            }
+            // if the vehicle brand is custom, generate draft reminder
+            else {
+                let newReminder = Reminder(date: service.date,
+                                           sparepart: sparepart,
+                                           reminderOdo: reminderOdo,
+                                           kmInterval: 123, //will be ignore because it still draft
+                                           dueDate: Date(), //will be ignore because it still draft
+                                           timeInterval: 99, //will be ignore because it still draft
+                                           vehicle: service.vehicle,
+                                           isRepeat: true,
+                                           isDraft: true,
+                                           service: service,
+                                           isHelperOn: true)
+                
+                modelContext.insert(newReminder)
+            }
         }
         // Save the model context after adding the reminders
         do {
