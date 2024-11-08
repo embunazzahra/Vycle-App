@@ -34,8 +34,8 @@ struct DashboardView: View {
             return Double(initialOdoValue)
         }
     }
-
     
+    @State private var odometer: Float? = 10000
     var body: some View {
         NavigationView {
             VStack{
@@ -276,6 +276,26 @@ struct NoReminderView : View {
     }
 }
 
+struct HaveReminderView : View {
+    var body: some View {
+        HStack{
+            VStack(alignment: .leading){
+                Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
+                Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
+            }
+            Spacer()
+            Button(action: {
+                //
+            }){
+                ZStack{
+                    Color.primary.base
+                    Text("Lihat Semua").foregroundStyle(Color.background)
+                }.cornerRadius(14)
+            }.frame(width: 120, height: 35)
+        }
+        
+    }
+}
 
 struct BluetoothSheet: View {
     @Binding var showBluetoothSheet: Bool
