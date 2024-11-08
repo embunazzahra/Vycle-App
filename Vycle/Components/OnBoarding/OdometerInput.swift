@@ -68,13 +68,14 @@ struct OdometerInput: View {
                     .focused($fieldFocusState)
                     .onChange(of: fieldSix) { newVal in
                         handleInputChange(newVal) // Handle the input change
+//                        updateFieldsFromOdometer(odometer)
                     }
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
                             Spacer()
                             Button("Done") {
                                 fieldFocusState = false
-                            }
+                            }.tint(Color.primary.base)
                         }
                     }
             }
@@ -99,11 +100,14 @@ struct OdometerInput: View {
             return
         }
         
+        
         if newValue.count > 1 {
             if !areAllFieldsFilled() {
                 // Move all digits left when a new digit is added
-                updateOdometer()
+                
                 shiftLeftAndInsertLastDigit(String(newValue.last!)) // Use only the last entered digit
+                updateOdometer()
+                
             } else {
                 // If all fields are filled, don't allow overwriting the sixth field
                 fieldSix = String(newValue.first!)
@@ -156,7 +160,7 @@ struct OdometerInput: View {
 
         // Ensure we don't exceed 6 digits
         guard count <= 6 else {
-            print("Odometer value exceeds field limit.")
+//            print("Odometer value exceeds field limit.")
             return
         }
 

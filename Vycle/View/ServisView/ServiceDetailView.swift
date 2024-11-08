@@ -13,9 +13,10 @@ struct ServiceDetailView: View {
     let service: Servis
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in
+    @State var userOdometer: Int = 0
     
     var body: some View {
-        ScrollView {
+        ScrollView (showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading) {
                     Text("Tanggal servis")
@@ -25,7 +26,7 @@ struct ServiceDetailView: View {
                         .padding(.horizontal,12)
                 }
                 
-                OdometerInputView(odometerValue: $odometerValue, userOdometer: Int(service.odometer ?? 0), enable: false)
+                OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer, enable: false)
                 VStack(alignment: .leading) {
                     Text("Nama suku cadang")
                         .font(.headline)
@@ -36,7 +37,7 @@ struct ServiceDetailView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.grayTint200)
                             )
-                    })
+                    }, horizontalSpacing: 4, verticalSpacing: 4)
                 }
                 
                 if service.photo != nil {
@@ -52,6 +53,9 @@ struct ServiceDetailView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .stroke(Color.grayShade300, lineWidth: 0.5)
                             )
+                            .onTapGesture {
+                                routes.navigate(to: .PhotoReviewView(imageData: imageData))
+                            }
                     }
                 } else {
                     ZStack {
@@ -69,6 +73,15 @@ struct ServiceDetailView: View {
             .padding(.horizontal,16)
             .padding(.vertical,24)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+        .onAppear{
+            let odometers = SwiftDataService.shared.fetchOdometers()
+            
+            if let latestOdometer = odometers.last {
+                self.userOdometer = Int(latestOdometer.currentKM)
+            }
+            
+            self.odometerValue = "\(Int(service.odometer ?? 0))"
         }
         .safeAreaInset(edge: .bottom, content: {
             CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0) {

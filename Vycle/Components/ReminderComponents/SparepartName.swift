@@ -6,34 +6,34 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct SparepartName: View {
     @Binding var isPartChosen: Bool
     @Binding var isMonthYearChosen: Bool
     @Binding var selectedDate: Date
     @Binding var selectedSparepart: Sparepart
-    @Query var reminders: [Reminder]
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Suku cadang")
+            Text("Suku Cadang")
                 .font(.headline)
                 .padding(.horizontal, 16)
                 .padding(.bottom, -4)
-            
+
             ZStack {
                 Rectangle()
                     .frame(height: 56)
                     .cornerRadius(12)
                     .foregroundColor(Color.neutral.tint300)
                     .padding(.horizontal, 16)
-                
+
                 HStack {
+                    // SparepartWheelPicker for selecting spare part
                     SparepartWheelPicker(isPartChosen: $isPartChosen, selectedSparepart: $selectedSparepart)
-                    
+
                     Spacer()
-                    
+
+                    // DateWheelPicker for selecting date
                     DateWheelPicker(selectedDate: $selectedDate, isMonthYearChosen: $isMonthYearChosen)
                 }
                 .padding(.horizontal, 8)
@@ -43,6 +43,7 @@ struct SparepartName: View {
         .padding(.top, 24)
     }
 }
+
 
 
 

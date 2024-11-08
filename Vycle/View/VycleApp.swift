@@ -10,7 +10,10 @@ import SwiftData
 
 @main
 struct VycleApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     @StateObject var routes = Routes()
+//    @StateObject var locationManager: LocationManager = .init()
     
     var sharedModelContainer: ModelContainer = {
          let schema = Schema([
@@ -32,8 +35,10 @@ struct VycleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+//                .environmentObject(locationManager)
                 .environmentObject(routes)
                 .modelContainer(sharedModelContainer)
+                .preferredColorScheme(.light)
         }
     }
 }

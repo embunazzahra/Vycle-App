@@ -12,12 +12,14 @@ import SwiftData
 
 @Model
 class Servis {
+    var servisID: UUID = UUID()
     var date: Date
     var servicedSparepart: [Sparepart]
     var photo: Data?
 
     var odometer: Float?
     @Relationship var vehicle: Vehicle
+    @Relationship(deleteRule: .cascade, inverse: \Reminder.service) var reminders: [Reminder] = []
     init(date: Date, servicedSparepart: [Sparepart], photo: Data? = nil, odometer: Float? = nil, vehicle: Vehicle) {
         self.date = date
         self.servicedSparepart = servicedSparepart

@@ -7,12 +7,11 @@
 
 import SwiftUI
 
-
-
 struct ScrollPicker: View {
-    @State private var selectedSparepart: Sparepart? = nil
-    @State private var showSheet: Bool = true
-    
+    @Binding var selectedSparepart: Sparepart? // Bind selected sparepart to the parent view
+    @State private var showSheet: Bool = false
+    var availableSpareparts: [Sparepart] // Filtered spare parts available to choose from
+
     var body: some View {
         Button(action: {
             showSheet.toggle()
@@ -24,17 +23,22 @@ struct ScrollPicker: View {
                 .background(Color.neutral.tint100)
                 .cornerRadius(12)
         }
-       
+        .onAppear {
+            // If no sparepart is selected, set the first available spare part as the default
+            if selectedSparepart == nil, let firstAvailable = availableSpareparts.first {
+                selectedSparepart = firstAvailable
+            }
+        }
         .sheet(isPresented: $showSheet) {
-            VStack (alignment: .leading) {
+            VStack(alignment: .leading) {
                 Text("Suku Cadang")
                     .title3(.emphasized)
                     .foregroundStyle(Color.neutral.shade300)
-                    .padding(.horizontal,16)
-                    .padding(.vertical,14)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
                 
                 Picker(selection: $selectedSparepart, label: Text("Options")) {
-                    ForEach(Sparepart.allCases, id: \.self) { option in
+                    ForEach(availableSpareparts, id: \.self) { option in
                         Text(option.rawValue)
                             .title3(.regular)
                             .tag(option as Sparepart?)
@@ -43,10 +47,6 @@ struct ScrollPicker: View {
                 .pickerStyle(WheelPickerStyle())
                 .padding(.horizontal, 16)
                 Spacer()
-//                CustomButton(title: "Pilih"){
-//                    showSheet = false
-//                }
-    
             }
             .presentationDetents([.height(404)]) // Set the sheet height to 404 points
             .presentationDragIndicator(.hidden) // Adds a drag indicator for the sheet
@@ -56,13 +56,23 @@ struct ScrollPicker: View {
 }
 
 struct ScrollPickerExample: View {
+    @State private var reminders: [Reminder] = [] // Your list of reminders
+    @State private var selectedSparepart: Sparepart? = nil
+
+    // Filtered list of spare parts based on already-used ones
+    var availableSpareparts: [Sparepart] {
+        let usedSpareparts = reminders.map { $0.sparepart }
+        return Sparepart.allCases.filter { !usedSpareparts.contains($0) }
+    }
+
     var body: some View {
-        ScrollPicker()
+        ScrollPicker(selectedSparepart: $selectedSparepart, availableSpareparts: availableSpareparts)
     }
 }
 
 #Preview {
-    ZStack{
+    ZStack {
         ScrollPickerExample()
     }
 }
+

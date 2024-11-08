@@ -41,6 +41,17 @@ enum VehicleBrand:  Codable, Hashable {
         }
     }
     
+    func intervalForSparepart(_ sparepart: Sparepart) -> Interval? {
+            switch self {
+            case .car(let brand):
+                return brand.intervalForSparepart(sparepart)
+            case .motorcycle(let brand):
+                return brand.intervalForSparepart(sparepart)
+            case .custom(_):
+                return nil // atau Anda dapat memberikan logika khusus untuk merek kustom
+            }
+        }
+    
     // Check if it is a custom brand
     var isCustomBrand: Bool {
         if case .custom = self {
@@ -95,10 +106,10 @@ enum Car: String, CaseIterable, Codable {
     private var suzukiSparepartIntervals: [Sparepart: Interval] {
         return [
             .filterUdara: Interval(month: 24, kilometer: 40000),
-            .oliMesin: Interval(month: 6, kilometer: 10000),
-            .oliGardan: Interval(month: 24, kilometer: 40000),
-            .oliTransmisi : Interval(month: 24, kilometer: 40000),
-            .filterOli: Interval(month: 6, kilometer: 10000),
+            .oliMesin: Interval(month: 3, kilometer: 5000),
+            .oliGardan: Interval(month: 12, kilometer: 20000),
+            .oliTransmisi : Interval(month: 12, kilometer: 20000),
+            .filterOli: Interval(month: 3, kilometer: 5000),
             .busi: Interval(month: 12, kilometer: 20000),
             .minyakRem : Interval(month: 24, kilometer: 40000),
             .minyakKopling : Interval(month: 24, kilometer: 40000),
@@ -116,15 +127,15 @@ enum Car: String, CaseIterable, Codable {
             .busi: Interval(month: 12, kilometer: 20000),
             .minyakRem : Interval(month: 24, kilometer: 40000),
             .minyakKopling : Interval(month: 24, kilometer: 40000),
-            .airCoolant : Interval(month: 24, kilometer: 40000)
+            .airCoolant : Interval(month: 24, kilometer: 80000)
         ]
     }
     
     private var mitsubishiSparepartIntervals: [Sparepart: Interval] {
         return [
-            .filterUdara: Interval(month: 24, kilometer: 40000),
+            .filterUdara: Interval(month: 12, kilometer: 20000),
             .oliMesin: Interval(month: 6, kilometer: 10000),
-            .oliGardan: Interval(month: 24, kilometer: 40000),
+            .oliGardan: Interval(month: 12, kilometer: 20000),
             .oliTransmisi : Interval(month: 24, kilometer: 40000),
             .filterOli: Interval(month: 6, kilometer: 10000),
             .busi: Interval(month: 12, kilometer: 20000),
@@ -190,63 +201,3 @@ enum Motorcycle: String, CaseIterable, Codable {
         ]
     }
 }
-
-
-
-//enum VehicleBrand: Codable, Hashable {
-//    case honda
-//    case suzuki
-//    case toyota
-//    case daihatsu
-//    case mitsubishi
-//    case custom(String)
-//    
-//    var stringValue: String {
-//        switch self {
-//        case .honda: return "Honda"
-//        case .suzuki: return "Suzuki"
-//        case .toyota: return "Toyota"
-//        case .daihatsu: return "Daihatsu"
-//        case .mitsubishi: return "Mitsubishi"
-//        case .custom(let name): return name
-//        }
-//    }
-//    
-//    var isCustomBrand: Bool {
-//        if case .custom(_) = self {
-//            return true
-//        }
-//        return false
-//    }
-//}
-
-
-
-
-
-//enum Sparepart: String, Codable, CaseIterable {
-//    case filterUdara = "Filter udara"
-//    case oliMesin = "Oli mesin"
-//    case oliGardan = "Oli Gardan"
-//    case oliTransmisi = "Oli transmisi"
-//    case filterOli = "Filter Oli"
-//    case busi = "Busi"
-//    case minyakRem = "Minyak rem"
-//    case minyakKopling = "Minyak Kopling"
-//    case coolant = "Coolant"
-//}
-//
-//enum VehicleType: String, Codable, CaseIterable {
-//    case car
-//    case motorcycle
-//}
-//
-//enum Brand: String, Codable, CaseIterable {
-//    case toyota
-//    case honda
-//    case ford
-//    case bmw
-//    case yamaha
-//    case suzuki
-//    case mercedes
-//}

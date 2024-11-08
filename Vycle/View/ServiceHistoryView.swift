@@ -12,7 +12,14 @@ struct ServiceHistoryView: View {
     @EnvironmentObject var routes: Routes
     @Query var serviceHistories : [Servis]
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     
+    var currentYearServiceHistories: [Servis] {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        return serviceHistories
+            .filter { Calendar.current.component(.year, from: $0.date) == currentYear } // Filter for current year
+            .sorted(by: { $0.date > $1.date }) // Sort by date in descending order
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -31,7 +38,7 @@ struct ServiceHistoryView: View {
                 .font(.subheadline)
                 .fontWeight(.semibold)
             List {
-                ForEach(serviceHistories) { history in
+                ForEach(currentYearServiceHistories) { history in
                     ServiceHistoryCard(service: history) {
                         routes.navigate(to: .ServiceDetailView(service: history))
                     }
@@ -51,6 +58,7 @@ struct ServiceHistoryView: View {
             }
             .listStyle(PlainListStyle()) // Remove default list styling
             .padding(.all, 0) // Remove all padding around the list
+            .scrollIndicators(.hidden)
             
             
         }
@@ -60,7 +68,21 @@ struct ServiceHistoryView: View {
 
     // Update deleteHistory to remove from the model context
     func deleteHistory(_ history: Servis) {
-        modelContext.delete(history) // Deletes the history from the context
+//        SwiftDataService.shared.deleteHistory(for: history)
+//        print("reminders count is \(reminders.count)")
+//        modelContext.delete(history)
+//        do {
+//            try modelContext.save()
+//        } catch {
+//            fatalError(error.localizedDescription)
+//        }
+        
+        SwiftDataService.shared.deleteHistory(for: history)
+        if !serviceHistories.isEmpty {
+            hasNewNotification = true
+        } else {
+            hasNewNotification = false
+        }
     }
     
 }

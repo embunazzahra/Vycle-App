@@ -10,6 +10,7 @@ import SwiftUI
 enum ButtonStyleType {
     case primary
     case secondary
+    case tertiary
     case disabled
     case clear
     
@@ -18,6 +19,8 @@ enum ButtonStyleType {
         case .primary:
             return Color.primary.base
         case .secondary:
+            return Color.clear
+        case .tertiary:
             return Color.clear
         case .disabled:
             return Color.neutral.base
@@ -31,7 +34,7 @@ enum ButtonStyleType {
         switch self {
         case .primary, .disabled:
             return Color.neutral.tint300
-        case .secondary:
+        case .secondary, .tertiary:
             return Color.primary.base
         case .clear:
             return Color.clear

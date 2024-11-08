@@ -9,12 +9,17 @@ import SwiftUI
 
 struct BTIndicator: View {
     @ObservedObject var locationManager: LocationManager  // Observe locationManager for region status
-
+    @AppStorage("vBeaconID") private var vBeaconID: String = ""
     var body: some View {
         HStack{
             Image(locationManager.isInsideBeaconRegion ? "bt" : "bt_red").frame(height: 18)
-            Text(locationManager.isInsideBeaconRegion ? "IoT Tersambung" : "IoT Terputus").foregroundStyle(locationManager.isInsideBeaconRegion ? .lima500 : .persianRed600)
-                .frame(height: 18)
+            if vBeaconID != "" {
+                Text(locationManager.isInsideBeaconRegion ? "\((vBeaconID).uppercased())" : "\((vBeaconID).uppercased())").foregroundStyle(locationManager.isInsideBeaconRegion ? .lima500 : .persianRed600)
+                    .frame(height: 18)
+            } else {
+                Text("Belum Terkonfigurasi").foregroundStyle(.persianRed600)
+                    .frame(height: 18)
+            }
             
         }
         .padding(.horizontal, 20)

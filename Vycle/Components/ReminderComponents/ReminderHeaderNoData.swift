@@ -10,7 +10,7 @@ import SwiftUI
 struct ReminderHeaderNoData: View {
     var body: some View {
         VStack (alignment: .center, spacing: 8) {
-            Image(systemName: "bell.slash.fill")
+            Image("notifications_off")
                 .font(.system(size: 20, weight: .bold))
             
             Text("Belum ada pengingat terdaftar")

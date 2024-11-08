@@ -10,11 +10,11 @@ import SwiftData
 
 struct AddServiceView: View {
     @EnvironmentObject var routes: Routes
-    @Environment(\.modelContext) var modelContext
+    //    @Environment(\.modelContext) var modelContext
     
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in textfield
-    @State private var userOdometer: Int = 78250
+    @State private var userOdometer: Int = 0
     
     // For date selection
     @State private var showDatePicker = false
@@ -31,11 +31,13 @@ struct AddServiceView: View {
     @State private var showGallery = false
     @State private var isShowingDialog: Bool = false
     
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
+    
     var service: Servis?
     
     // Computed property to determine if the button should be disabled
     private var isButtonDisabled: Bool {
-        selectedParts.isEmpty || odometerValue.isEmpty // Disable if parts are empty or TextField is empty
+        selectedParts.isEmpty || odometerValue.isEmpty || Int(odometerValue) ?? 0 > userOdometer
     }
     
     
@@ -46,13 +48,20 @@ struct AddServiceView: View {
     
     
     var body: some View {
-        ScrollView {
+        ScrollView (showsIndicators: false){
             VStack(alignment: .leading, spacing: 20) {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
                 ChooseSparepartView(selectedParts: $selectedParts)
-                if selectedImage != nil {
+                if let selectedImage = selectedImage {
                     ImagePreviewView(selectedImage: $selectedImage)
+                        .onTapGesture {
+                            if let imageData = selectedImage.jpegData(compressionQuality: 1.0) {
+                                routes.navigate(to: .PhotoReviewView(imageData: imageData))
+                            } else {
+                                print("Failed to convert UIImage to Data")
+                            }
+                        }
                 } else {
                     PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)
                 }
@@ -67,17 +76,31 @@ struct AddServiceView: View {
         .navigationTitle(service == nil ? "Tambahkan servis" : "Edit catatan servis")
         .navigationBarBackButtonHidden(false)
         .onAppear {
+            let odometers = SwiftDataService.shared.fetchOdometers()
+            
+            if let latestOdometer = odometers.last {
+                self.userOdometer = Int(latestOdometer.currentKM)
+            }
+            
+            // initiate edit service view
             if let service = service {
                 self.odometerValue = "\(Int(service.odometer ?? 0))"
-                self.userOdometer = Int(service.odometer ?? 0)
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
-                // Check if service.photo is not nil and assign it to selectedImage
-                if let photoData = service.photo {
-                    self.selectedImage = UIImage(data: photoData) // Convert Data to UIImage
-                } else {
-                    self.selectedImage = nil // If photo is nil, set selectedImage to nil
+                
+                if let photoData = service.photo, selectedImage == nil {
+                    self.selectedImage = UIImage(data: photoData)
                 }
+            } else {
+                let locationHistory = SwiftDataService.shared.fetchLocationHistory()
+                
+                // if location is exist, the users is using IOT, so odometer value is not empty
+                if let latestLocation = locationHistory.last {
+                    if let latestOdometer = odometers.last {
+                        odometerValue = "\(Int(latestOdometer.currentKM))"
+                    }
+                }
+                
             }
         }
     }
@@ -88,6 +111,11 @@ struct AddServiceView: View {
                 saveNewService()
             } else {
                 updateService()
+            }
+            if let latestVehicle = SwiftDataService.shared.getCurrentVehicle() {
+                if !latestVehicle.brand.isCustomBrand {
+                    hasNewNotification = true
+                }
             }
             routes.navigateToRoot()
         }
@@ -105,40 +133,30 @@ struct AddServiceView: View {
         return Date() // Return current date if conversion fails
     }
     
+    // MARK: SwiftData Service
+    
     // Function to save a new service to the database
     private func saveNewService() {
-        let odometer = Float(odometerValue) ?? 0.0
-        let newService = Servis(date: selectedDate,
-                                servicedSparepart: Array(self.selectedParts),
-                                photo: selectedImage?.jpegData(compressionQuality: 1.0),
-                                odometer: odometer,
-                                vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
+        let vehicle = SwiftDataService.shared.getCurrentVehicle()
         
-        modelContext.insert(newService)
         
-        do {
-            try modelContext.save()
-        } catch {
-            print("Failed to save service: \(error)")
+        if let latestVehicle = vehicle {
+            SwiftDataService.shared.saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: Float(odometerValue) ?? 0.0, selectedImage: selectedImage?.jpegData(compressionQuality: 1.0), vehicle: latestVehicle)
+            print("vehicle brand saved is:\(latestVehicle.brand)")
         }
+        
     }
     
     // Function to update an existing service
     private func updateService() {
         guard let serviceToUpdate = service else { return }
         
-        // Update properties of the existing service
-        serviceToUpdate.date = selectedDate
-        serviceToUpdate.odometer = Float(odometerValue) ?? 0.0
-        serviceToUpdate.servicedSparepart = Array(selectedParts)
-        serviceToUpdate.photo = selectedImage?.jpegData(compressionQuality: 1.0)
-        
-        // Save the changes in the model context
-        do {
-            try modelContext.save()
-        } catch {
-            print("Failed to update service: \(error)")
-        }
+        // Panggil fungsi updateService dari SwiftDataService
+        SwiftDataService.shared.updateService(service: serviceToUpdate,
+                                              selectedDate: selectedDate,
+                                              selectedParts: selectedParts,
+                                              odometerValue: Float(odometerValue) ?? 0.0,
+                                              selectedImage: selectedImage?.jpegData(compressionQuality: 1.0))
     }
 }
 
