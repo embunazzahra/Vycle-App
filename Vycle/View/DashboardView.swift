@@ -35,7 +35,6 @@ struct DashboardView: View {
         }
     }
     
-    @State private var odometer: Float? = 10000
     var body: some View {
         NavigationView {
             VStack{
@@ -401,27 +400,6 @@ struct OdometerSheet: View {
                 }
             }
         }
-        
-    }
-}
-struct HaveReminderView : View {
-    @EnvironmentObject var routes: Routes
-    var body: some View {
-        HStack{
-            VStack(alignment: .leading){
-                Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
-                Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
-            }
-            Spacer()
-            Button(action: {
-                routes.navigate(to: .AllReminderView)
-            }){
-                ZStack{
-                    Color.primary.base
-                    Text("Lihat Semua").foregroundStyle(Color.background)
-                }.cornerRadius(14)
-            }.frame(width: 120, height: 35)
-        } .padding(.top, -30)
         
     }
 }
