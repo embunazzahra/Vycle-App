@@ -69,7 +69,7 @@ struct ContentView: View {
                             Image(selectedTab == .servis ? "service_icon_blue" : "service_icon")
                             Text("Servis")
                         }.tag(Tab.servis)
-                        PengingatView(locationManager: locationManager).tabItem {
+                        ReminderView(locationManager: locationManager).tabItem {
                             Image(
                                 selectedTab == .pengingat
                                 ? (hasNewNotification ? "reminder_icon_blue_notif" : "reminder_icon_blue")
@@ -107,6 +107,8 @@ struct ContentView: View {
                                     PhotoReviewView(imageData: imageData)
                                 case .BeaconConfigView:
                                     BeaconConfigView(locationManager: locationManager)
+                                case .ReminderView:
+                                    ReminderView(locationManager: locationManager)
                             }
                         }
                         .toolbar {

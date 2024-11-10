@@ -54,7 +54,9 @@ struct AllReminderView: View {
                             .multilineTextAlignment(.leading)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(16)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 24)
+                    .padding(.bottom, 8)
 
                     if !sortedReminders.isEmpty {
                         SparepartReminderListView(reminders: Binding(
@@ -142,7 +144,7 @@ struct AllReminderView: View {
 struct CustomScrollPicker: View {
     @Binding var selectedOption: String
     let options: [String]
-    let reminderCounts: [String: Int]  // New parameter to hold the reminder counts
+    let reminderCounts: [String: Int] 
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {

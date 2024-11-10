@@ -160,9 +160,20 @@ struct SparepartReminderListView: View {
 
             try context.save()
             print("Context successfully saved.")
+            
+            refreshReminders()
 
         } catch {
             print("Failed to fetch or save context: \(error.localizedDescription)")
+        }
+    }
+    
+    private func refreshReminders() {
+        let fetchDescriptor = FetchDescriptor<Reminder>()
+        do {
+            reminders = try context.fetch(fetchDescriptor)
+        } catch {
+            print("Failed to fetch reminders: \(error.localizedDescription)")
         }
     }
 
