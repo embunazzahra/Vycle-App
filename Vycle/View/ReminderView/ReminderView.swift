@@ -47,16 +47,26 @@ struct ReminderView: View {
     
     var sortedReminders: [Reminder] {
         let filteredReminders = remindersForSelectedMonthAndYear(from: latestReminders(from: reminders))
-        return filteredReminders.sorted { $0.date < $1.date }
+        
+        return filteredReminders.sorted {
+            let kmDifference1 = getKilometerDifference(currentKilometer: totalDistance, reminder: $0)
+            let kmDifference2 = getKilometerDifference(currentKilometer: totalDistance, reminder: $1)
+            
+            if kmDifference1 == kmDifference2 {
+                return $0.sparepart.rawValue < $1.sparepart.rawValue
+            } else {
+                return kmDifference1 < kmDifference2
+            }
+        }
     }
-    
+
     var body: some View {
         VStack {
             VStack {
                 if !reminders.isEmpty {
                     ReminderHeader(reminders: reminders)
                     if !availableOptions.isEmpty {
-                        CustomScrollPicker(
+                        CustomScrollPickerWithDraft(
                             selectedOption: $selectedOption,
                             options: availableOptions,
                             reminderCounts: remindersCountByOption
@@ -131,13 +141,16 @@ struct ReminderView: View {
     
     private func remindersForSelectedMonthAndYear(from uniqueReminders: [Reminder]) -> [Reminder] {
         guard let selectedDate = getDateFrom(option: selectedOption) else {
-            return []
+            return uniqueReminders.filter { $0.isDraft }
         }
+        
         let calendar = Calendar.current
         return uniqueReminders.filter {
-            calendar.isDate($0.dueDate, equalTo: selectedDate, toGranularity: .month)
+            calendar.isDate($0.dueDate, equalTo: selectedDate, toGranularity: .month) && !$0.isDraft
         }
     }
+
+
     
     private func latestReminders(from reminders: [Reminder]) -> [Reminder] {
         var latestReminders: [String: Reminder] = [:]
@@ -158,29 +171,40 @@ struct ReminderView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         formatter.locale = Locale(identifier: "id_ID")
-        
+
         let uniqueReminders = latestReminders(from: reminders)
-        let sortedReminders = uniqueReminders.sorted { $0.dueDate < $1.dueDate }
-        
+        let sortedReminders = uniqueReminders.filter { !$0.isDraft }.sorted { $0.dueDate < $1.dueDate }
+
         var optionCountMap: [String: Int] = [:]
-        
+
         for reminder in sortedReminders {
             let option = formatter.string(from: reminder.dueDate)
             optionCountMap[option, default: 0] += 1
         }
-        
-        availableOptions = Array(optionCountMap.keys).sorted {
-            getDateFrom(option: $0)! < getDateFrom(option: $1)!
+
+        if reminders.contains(where: { $0.isDraft }) {
+            optionCountMap["Drafts"] = reminders.filter { $0.isDraft }.count
+        }
+
+        availableOptions = optionCountMap.keys.sorted {
+            if $0 == "Drafts" { return true }
+            if $1 == "Drafts" { return false }
+            return getDateFrom(option: $0) ?? Date.distantPast < getDateFrom(option: $1) ?? Date.distantPast
         }
         remindersCountByOption = optionCountMap
     }
-    
+
+
     private func getDateFrom(option: String) -> Date? {
+        if option == "Drafts" {
+            return nil
+        }
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         formatter.locale = Locale(identifier: "id_ID")
         return formatter.date(from: option)
     }
+
     
     private func getKilometerDifference(currentKilometer: Double, reminder: Reminder) -> Double {
         
@@ -197,7 +221,47 @@ struct ReminderView: View {
     }
 }
 
+struct CustomScrollPickerWithDraft: View {
+    @Binding var selectedOption: String
+    let options: [String]
+    let reminderCounts: [String: Int]
 
-#Preview {
-//    ReminderView(locationManager: locationManager)
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 20) {
+                ForEach(options, id: \.self) { option in
+                    VStack {
+                        Text(option)
+                            .subhead(.regular)
+                        
+                        HStack {
+                            Text("\(reminderCounts[option] ?? 0)")
+                                .subhead(.emphasized)
+                            Text("pengingat")
+                                .subhead(.emphasized)
+                        }
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 5)
+                    .foregroundColor(selectedOption == option ? .white : .white)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(selectedOption == option ? Color.primary.shade200 : Color.clear)
+                            .frame(width: 132, height: 52)
+                    )
+                    .onTapGesture {
+                        withAnimation {
+                            selectedOption = option
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+    }
 }
+
+
+
+
+
