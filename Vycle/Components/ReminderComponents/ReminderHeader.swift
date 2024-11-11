@@ -32,23 +32,22 @@ struct ReminderHeader: View {
                     Text("pengingat terdaftar")
                         .body(.emphasized)
                 }
-                
-                Text("Tapi jangan khawatir, waktunya masih jauh!")
-                    .caption1(.regular)
+//                Text("Tapi jangan khawatir, waktunya masih jauh!")
+//                    .caption1(.regular)
             }
             
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(.white, lineWidth: 1)
-                    .frame(width: 219, height: 32)
-
-                Text("Cek seluruh pengingat")
-                    .subhead(.regular)
-            }
-            .padding(.top, 8)
-            .onTapGesture {
-                routes.navigate(to: .AllReminderView)
-            }
+//            ZStack {
+//                RoundedRectangle(cornerRadius: 12)
+//                    .stroke(.white, lineWidth: 1)
+//                    .frame(width: 219, height: 32)
+//
+//                Text("Cek seluruh pengingat")
+//                    .subhead(.regular)
+//            }
+//            .padding(.top, 8)
+//            .onTapGesture {
+//                routes.navigate(to: .AllReminderView)
+//            }
         }
         .padding(.top, 24)
         .background(Color.primary.tone100)

@@ -10,27 +10,30 @@ import SwiftUI
 struct AddReminderView: View {
     @Binding var reminders: [Reminder]
     @EnvironmentObject var routes: Routes
-    
-    // Computed property for available spare parts, filtering out the ones that are already in reminders
+
     var availableSpareparts: [Sparepart] {
         let usedSpareparts = reminders.map { $0.sparepart }
         return Sparepart.allCases.filter { !usedSpareparts.contains($0) }
     }
 
     @State private var selectedSparepart: Sparepart?
+    @Binding var isResetHidden: Bool
 
-    init(reminders: Binding<[Reminder]>) {
+    init(reminders: Binding<[Reminder]>, isResetHidden: Binding<Bool> = .constant(true)) {
         self._reminders = reminders
+        self._isResetHidden = isResetHidden
     }
 
     var body: some View {
         AddEditFramework(
             title: "Tambahkan Pengingat",
             reminders: $reminders,
-            selectedSparepart: selectedSparepart ?? availableSpareparts.first ?? Sparepart.allCases.first!
-        ) {
-            AnyView(AddSuccessNotification(reminders: $reminders))
-        }
+            selectedSparepart: selectedSparepart ?? availableSpareparts.first ?? Sparepart.allCases.first!,
+            successNotification: {
+                AnyView(AddSuccessNotification(reminders: $reminders))
+            },
+            isResetHidden: $isResetHidden
+        )
         .onAppear {
             if selectedSparepart == nil {
                 selectedSparepart = availableSpareparts.first
@@ -41,9 +44,10 @@ struct AddReminderView: View {
 
 #Preview {
     let reminders: [Reminder] = []
-    return AddReminderView(reminders: .constant(reminders))
+    return AddReminderView(reminders: .constant(reminders), isResetHidden: .constant(true))
         .environmentObject(Routes())
 }
+
 
 
 

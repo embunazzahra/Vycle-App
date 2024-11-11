@@ -69,7 +69,6 @@ struct SparepartPickerSheet: View {
             .frame(height: 254)
             .clipped()
             .onAppear {
-                // Automatically select the first available part if none is selected
                 if availableSpareparts.contains(selectedSparepart) == false {
                     selectedSparepart = availableSpareparts.first ?? selectedSparepart
                 }
