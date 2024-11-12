@@ -12,6 +12,7 @@ enum ButtonStyleType {
     case secondary
     case tertiary
     case disabled
+    case destructive
     case clear
     
     func backgroundColor() -> Color {
@@ -24,6 +25,8 @@ enum ButtonStyleType {
             return Color.clear
         case .disabled:
             return Color.neutral.base
+        case .destructive:
+            return Color.clear
         case .clear:
             return Color.clear
         }
@@ -36,6 +39,8 @@ enum ButtonStyleType {
             return Color.neutral.tint300
         case .secondary, .tertiary:
             return Color.primary.base
+        case .destructive:
+            return Color.persianRed500
         case .clear:
             return Color.clear
         }
@@ -116,6 +121,9 @@ struct CustomButtonExample: View {
                     print("Tes")
                 }
                 CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
+                    print("Tes")
+                }
+                CustomButton(title: "Hapus Servis", iconName: "trash_icon", iconPosition: .left, buttonType: .destructive) {
                     print("Tes")
                 }
             }
