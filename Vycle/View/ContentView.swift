@@ -109,6 +109,9 @@ struct ContentView: View {
                                     BeaconConfigView(locationManager: locationManager)
                                 case .ReminderView:
                                     ReminderView(locationManager: locationManager)
+                                case .GuideView:
+                                    GuideView()
+                                
                             }
                         }
                         .toolbar {

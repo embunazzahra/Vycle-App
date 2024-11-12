@@ -126,34 +126,44 @@ struct DashboardView: View {
                 }.padding(.horizontal, 16).offset(y: -45)
 
                 VStack {
-                    if !filteredReminders.isEmpty {
-                        HStack{
-                            HaveReminderView().padding(.horizontal, 16)
+                    if SwiftDataService.shared.fetchServices().isEmpty{
+                        HStack(alignment: .top){
+                            VStack(alignment: .leading){
+                                Text("Siap-siap servis berkala di 70k!").headline().foregroundColor(.neutral.shade300)
+                                Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
+                            }
+                            Spacer()
+                        }.padding(.horizontal, 16).offset(y: -30)
+                        ZStack{
+//                            Color.green
+                            Image("dashboard_card").resizable()
+                                .scaledToFill()
+                                .frame(width: 360, height: 200)
+                                .clipped()
+                                .offset(y: -25)
+                            HStack{
+                                Text("Lihat suku cadang lebih detail").foregroundStyle(Color.accentColor)
+                                Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                            }.padding(.horizontal, 16).padding(.vertical, 8)
+                            .background(
+                              RoundedRectangle(cornerRadius: 10)
+                                .stroke(.blue, lineWidth: 1)
+                            ).offset(y: 40)
+                                .onTapGesture{
+                                    routes.navigate(to: .GuideView)
+                                }
                         }
-//                        ForEach($filteredReminders, id: \.self) { $reminder in
-//                            let totalDistance = calculateTotalDistance() ?? 0
-//                            SparepartReminderCard(
-//                                reminder: $reminder,
-//                                currentKM: totalDistance
-//                            )
-//                            .contentShape(Rectangle())
-//                            .listRowInsets(EdgeInsets())
-//                            .listRowSeparator(.hidden)
-//                            .listSectionSeparator(.hidden)
-//                        }
-                        SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                        //                                MapView(locations: locationHistory).frame(height: 300)
-                    } else {
                         
-//                                                        Spacer()
-//                                                        Text("last location: \(locationHistory.first?.distance)")
-//                                                        Text("last location: \(locationHistory.first?.time)")
-//                                                        ForEach(locationHistory){location in
-//                                                            Text("Time: \(location.time) Longitude: \(location.longitude) Latitude: \(location.latitude) Distance: \(location.distance)")
-//                        
-//                                                        }
-                        NoReminderView()
-        
+                    } else {
+                        if !filteredReminders.isEmpty {
+                            HStack{
+                                HaveReminderView().padding(.horizontal, 16)
+                            }
+                            SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                        } else {
+                            NoReminderView()
+            
+                        }
                     }
                     
                 }
