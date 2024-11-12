@@ -10,7 +10,6 @@ import SwiftUI
 struct VehicleOdometerView: View {
     @Binding var odometer: Float?
     @Binding var currentPage: Int
-    @Binding var isMovingForward: Bool
     @Binding var keyboardHeight: CGFloat
     
     var isButtonEnabled: Bool {
@@ -49,7 +48,6 @@ struct VehicleOdometerView: View {
             ) {
                 if isButtonEnabled {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    isMovingForward = true
                     currentPage += 1
                 }
             }

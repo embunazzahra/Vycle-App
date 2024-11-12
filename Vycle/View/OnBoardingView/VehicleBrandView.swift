@@ -12,7 +12,6 @@ struct VehicleBrandView: View {
     @Binding var vehicleBrand: VehicleBrand?
     @Binding var otherBrandsList: [String]
     @Binding var currentPage: Int
-    @Binding var isMovingForward: Bool
     @State private var showAddBrandSheet: Bool = false
     
     var isButtonEnabled: Bool {
@@ -85,8 +84,7 @@ struct VehicleBrandView: View {
                         vehicleBrand: $vehicleBrand,
                         otherBrandsList: $otherBrandsList,
                         brandsList: brandsList,
-                        currentPage: $currentPage,
-                        isMovingForward: $isMovingForward
+                        currentPage: $currentPage
                     )
                 }
             }
@@ -101,7 +99,6 @@ struct VehicleBrandView: View {
                 verticalPadding: 0
             ) {
                 if isButtonEnabled {
-                    isMovingForward = true
                     currentPage += 1
                 }
             }
@@ -120,7 +117,6 @@ struct AddBrandSheet: View {
     @State var showError: Bool = false
     var brandsList: [VehicleBrand]
     @Binding var currentPage: Int
-    @Binding var isMovingForward: Bool
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -175,7 +171,6 @@ struct AddBrandSheet: View {
                         vehicleBrand = .custom(otherBrand)
                         presentationMode.wrappedValue.dismiss()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            isMovingForward = true
                             currentPage += 1
                         }
                     } else {

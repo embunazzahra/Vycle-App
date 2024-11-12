@@ -10,8 +10,8 @@ import SwiftUI
 struct StepIndicator: View {
     @Binding var currentStep: Int
     
-    let totalSteps = 4
-    let stepLabels = ["Merk", "Odometer", "Histori", "Konfigurasi"]
+    let totalSteps = 3
+    let stepLabels = ["Merk", "Odometer", "Konfigurasi"]
 
     var body: some View {
         ZStack {
