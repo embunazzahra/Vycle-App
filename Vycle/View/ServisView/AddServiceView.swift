@@ -35,11 +35,18 @@ struct AddServiceView: View {
     
     @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     
+    @FocusState private var focusedField: Bool
+    
     var service: Servis?
     
     // Computed property to determine if the button should be disabled
     private var isButtonDisabled: Bool {
         selectedParts.isEmpty || odometerValue.isEmpty || priceValue.isEmpty || Int(odometerValue) ?? 0 > userOdometer
+    }
+    
+    enum Field {
+        case odometer
+        case price
     }
     
     
@@ -54,8 +61,10 @@ struct AddServiceView: View {
             VStack(alignment: .leading, spacing: 20) {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
+                    .focused($focusedField)
                 ChooseSparepartView(selectedParts: $selectedParts)
                 PriceInputView(value: $priceValue)
+                    .focused($focusedField)
                 addPhotoView()
                     
             }
@@ -68,6 +77,18 @@ struct AddServiceView: View {
         })
         .navigationTitle(service == nil ? "Tambahkan servis" : "Edit catatan servis")
         .navigationBarBackButtonHidden(false)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    focusedField = false // Dismiss the keyboard when 'Done' is tapped
+                }
+                .foregroundStyle(Color.primary.base) // Customizes the button color
+            }
+        }
+        .onTapGesture {
+            focusedField = false //dismiss
+        }
         .onAppear {
             let odometers = SwiftDataService.shared.fetchOdometers()
             

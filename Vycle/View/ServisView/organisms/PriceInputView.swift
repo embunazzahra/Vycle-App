@@ -32,19 +32,6 @@ struct PriceInputView: View {
                             .fill( Color.white ) // Gray background
                         
                     )
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            
-                            Button(action: {
-                                isInputActive = false // Dismiss the keyboard
-                            }) {
-                                Text("Done")
-                                    .foregroundStyle(Color.primary.base) // Change the button color here
-                            }
-                            
-                        }
-                    }
                 Image("KM_text_logo")
                     .resizable()
                     .scaledToFit()
