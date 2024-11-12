@@ -34,9 +34,9 @@ struct ServiceHistoryView: View {
                         routes.navigate(to: .AllServiceHistoryView)
                     }
             }
-            Text("Tahun ini")
-                .font(.subheadline)
-                .fontWeight(.semibold)
+//            Text("Tahun ini")
+//                .font(.subheadline)
+//                .fontWeight(.semibold)
             List {
                 ForEach(currentYearServiceHistories) { history in
                     ServiceHistoryCard(service: history) {
