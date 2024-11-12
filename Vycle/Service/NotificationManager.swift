@@ -39,7 +39,6 @@ class NotificationManager {
             } else {
                 print("Initial notification scheduled for reminder: \(reminder.sparepart.rawValue) at \(reminder.dueDate)")
                 
-                // Schedule repeating notification every 7 days
                 let repeatTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 604800, repeats: true)
                 let repeatRequest = UNNotificationRequest(identifier: "\(reminder.reminderID.uuidString)-repeat", content: content, trigger: repeatTrigger)
                 
@@ -62,35 +61,35 @@ class NotificationManager {
     }
     
 
-    func testScheduleNotification(for reminder: Reminder) {
-        let content = UNMutableNotificationContent()
-        content.title = "Test Notification for \(reminder.sparepart.rawValue)"
-        content.body = "This is a test notification for your \(reminder.sparepart.rawValue)!"
-        content.sound = .default
-        
-        let triggerDate = reminder.dueDate
-        let triggerComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: triggerDate)
-        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerComponents, repeats: false)
-        
-        let request = UNNotificationRequest(identifier: "\(reminder.reminderID.uuidString)-test", content: content, trigger: trigger)
-        
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error scheduling test notification: \(error.localizedDescription)")
-            } else {
-                print("Initial test notification scheduled for reminder: \(reminder.sparepart.rawValue) at \(triggerDate)")
-                
-                let repeatTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
-                let repeatRequest = UNNotificationRequest(identifier: "\(reminder.reminderID.uuidString)-test-repeat", content: content, trigger: repeatTrigger)
-                
-                UNUserNotificationCenter.current().add(repeatRequest) { error in
-                    if let error = error {
-                        print("Error scheduling repeating test notification: \(error.localizedDescription)")
-                    } else {
-                        print("Repeating test notification scheduled for reminder: \(reminder.sparepart.rawValue) every 60 seconds")
-                    }
-                }
-            }
-        }
-    }
+//    func testScheduleNotification(for reminder: Reminder) {
+//        let content = UNMutableNotificationContent()
+//        content.title = "Test Notification for \(reminder.sparepart.rawValue)"
+//        content.body = "This is a test notification for your \(reminder.sparepart.rawValue)!"
+//        content.sound = .default
+//        
+//        let triggerDate = reminder.dueDate
+//        let triggerComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: triggerDate)
+//        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerComponents, repeats: false)
+//        
+//        let request = UNNotificationRequest(identifier: "\(reminder.reminderID.uuidString)-test", content: content, trigger: trigger)
+//        
+//        UNUserNotificationCenter.current().add(request) { error in
+//            if let error = error {
+//                print("Error scheduling test notification: \(error.localizedDescription)")
+//            } else {
+//                print("Initial test notification scheduled for reminder: \(reminder.sparepart.rawValue) at \(triggerDate)")
+//                
+//                let repeatTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
+//                let repeatRequest = UNNotificationRequest(identifier: "\(reminder.reminderID.uuidString)-test-repeat", content: content, trigger: repeatTrigger)
+//                
+//                UNUserNotificationCenter.current().add(repeatRequest) { error in
+//                    if let error = error {
+//                        print("Error scheduling repeating test notification: \(error.localizedDescription)")
+//                    } else {
+//                        print("Repeating test notification scheduled for reminder: \(reminder.sparepart.rawValue) every 60 seconds")
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

@@ -11,6 +11,7 @@ struct EditReminderView: View {
     @Binding var reminder: Reminder
     @EnvironmentObject var routes: Routes
     @State private var isNotificationShowed = false
+    @State private var isResetHidden: Bool = false
 
     var body: some View {
         AddEditFramework(
@@ -19,10 +20,12 @@ struct EditReminderView: View {
             selectedSparepart: reminder.sparepart,
             selectedDate: reminder.dueDate,
             selectedNumber: Int(reminder.reminderOdo),
-            reminderToEdit: reminder
-        ) {
-            AnyView(EditSuccessNotification(reminders: .constant([reminder])))
-        }
+            reminderToEdit: reminder,
+            successNotification: {
+                AnyView(EditSuccessNotification(reminders: .constant([reminder])))
+            },
+            isResetHidden: $isResetHidden
+        )
         .onAppear {
             setupNavigationBarWithoutScroll()
         }

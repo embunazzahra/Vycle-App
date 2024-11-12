@@ -12,7 +12,8 @@ struct DashboardView: View {
     @EnvironmentObject var routes: Routes
     @ObservedObject var locationManager: LocationManager
     @Query var trips: [Trip]
-    @Query var vehicles : [Vehicle]
+//    @Query var vehicles : [Vehicle]
+    
     @State private var showSettingsAlert = false
     @Query var reminders : [Reminder]
     @State private var showingAlert = false
@@ -34,18 +35,25 @@ struct DashboardView: View {
             return Double(initialOdoValue)
         }
     }
-
     
     var body: some View {
         NavigationView {
             VStack{
                 ZStack {
                     Color.pink
-                    Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
-                        .resizable() // Makes the image resizable
-                        .scaledToFill() // Scales the image to fill the available space
-                        .frame(maxWidth: .infinity, maxHeight: .infinity) // Ensures it stretches to fill the frame
-                        .clipped() // Clips any overflowing parts of the image
+                    if SwiftDataService.shared.fetchServices().isEmpty {
+                        Image("dashboard_empty")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipped()
+                    } else {
+                        Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipped()
+                    }
                     VStack{
                         HStack{
                             BTIndicator(locationManager: locationManager).onTapGesture {
@@ -276,6 +284,26 @@ struct NoReminderView : View {
     }
 }
 
+struct HaveReminderView : View {
+    var body: some View {
+        HStack{
+            VStack(alignment: .leading){
+                Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
+                Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
+            }
+            Spacer()
+            Button(action: {
+                //
+            }){
+                ZStack{
+                    Color.primary.base
+                    Text("Lihat Semua").foregroundStyle(Color.background)
+                }.cornerRadius(14)
+            }.frame(width: 120, height: 35)
+        }
+        
+    }
+}
 
 struct BluetoothSheet: View {
     @Binding var showBluetoothSheet: Bool
@@ -381,27 +409,6 @@ struct OdometerSheet: View {
                 }
             }
         }
-        
-    }
-}
-struct HaveReminderView : View {
-    @EnvironmentObject var routes: Routes
-    var body: some View {
-        HStack{
-            VStack(alignment: .leading){
-                Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
-                Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
-            }
-            Spacer()
-            Button(action: {
-                routes.navigate(to: .AllReminderView)
-            }){
-                ZStack{
-                    Color.primary.base
-                    Text("Lihat Semua").foregroundStyle(Color.background)
-                }.cornerRadius(14)
-            }.frame(width: 120, height: 35)
-        } .padding(.top, -30)
         
     }
 }

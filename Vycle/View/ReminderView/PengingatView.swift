@@ -2,15 +2,15 @@
 import SwiftUI
 import SwiftData
 
-struct RoundedCornersShape: Shape {
-    var corners: UIRectCorner
-    var radius: CGFloat
-    
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
+//struct RoundedCornersShape: Shape {
+//    var corners: UIRectCorner
+//    var radius: CGFloat
+//    
+//    func path(in rect: CGRect) -> Path {
+//        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+//        return Path(path.cgPath)
+//    }
+//}
 
 struct PengingatView: View {
     @Query var reminders: [Reminder]
@@ -56,14 +56,13 @@ struct PengingatView: View {
                         }
                         
                         if hasHighKilometerDifference {
-//                            DummyView()
                             ReminderContentNear()
                                 .frame(width: 390)
-                                .padding(.vertical, 8)
+                                .padding(.top, 24)
+                                .padding(.bottom, 8)
                             SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                         } else {
                             Spacer()
-//                            DummyView()
                             ReminderContentFar()
                             Spacer()
                         }
