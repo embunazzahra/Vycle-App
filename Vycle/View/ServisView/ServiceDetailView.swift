@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ServiceDetailView: View {
     @EnvironmentObject var routes: Routes
@@ -14,6 +15,8 @@ struct ServiceDetailView: View {
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in
     @State var userOdometer: Int = 0
+    @Query var serviceHistories : [Servis]
+    @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     
     var body: some View {
         ScrollView (showsIndicators: false) {
@@ -84,12 +87,26 @@ struct ServiceDetailView: View {
             self.odometerValue = "\(Int(service.odometer ?? 0))"
         }
         .safeAreaInset(edge: .bottom, content: {
-            CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0) {
-                routes.navigate(to: .AddServiceView(service: service))
+            VStack {
+                CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0) {
+                    routes.navigate(to: .AddServiceView(service: service))
+                }
+                CustomButton(title: "Hapus Servis", iconName: "trash_icon", iconPosition: .left, buttonType: .destructive,horizontalPadding: 0, verticalPadding: 0) {
+                    deleteHistory(service)
+                }
             }
         })
         .navigationTitle("Catatan servis")
         
+    }
+    
+    func deleteHistory(_ history: Servis) {
+        SwiftDataService.shared.deleteHistory(for: history)
+        if !serviceHistories.isEmpty {
+            hasNewNotification = true
+        } else {
+            hasNewNotification = false
+        }
     }
 }
 
