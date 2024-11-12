@@ -43,15 +43,8 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $routes.navPath) {
             if isShowSplash {
-                SplashView()
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            withAnimation {
-                                isShowSplash = false
-                            }
-                        }
-                    }
-            } else{
+                SplashView(isShowSplash: $isShowSplash)
+            } else {
                 if !onBoardingDataSaved {
                     OnBoardingView(
                         locationManager: locationManager,
@@ -59,6 +52,9 @@ struct ContentView: View {
                         vBeaconID: $vBeaconID,
                         onBoardingDataSaved: $onBoardingDataSaved
                     )
+                    .onAppear(){
+                        selectedTab = .servis
+                    }
                 } else {
                     TabView(selection: $selectedTab) {
                         DashboardView(locationManager: locationManager).tabItem {
