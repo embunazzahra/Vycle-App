@@ -238,7 +238,8 @@ extension SwiftDataService {
                 let serviceData = Servis(
                     date: date,
                     servicedSparepart: servicedSpareparts,
-                    vehicle: self.getCurrentVehicle()!
+                    vehicle: self.getCurrentVehicle()!,
+                    totalPrice: 0
                 )
                 modelContext.insert(serviceData)
                 
@@ -458,13 +459,15 @@ extension SwiftDataService {
                         selectedParts: Set<Sparepart>,
                         odometerValue: Float,
                         selectedImage: Data?,
-                        vehicle: Vehicle) {
+                        vehicle: Vehicle,
+                        totalPrice: Float) {
         
         let newService = Servis(date: selectedDate,
                                 servicedSparepart: Array(selectedParts),
                                 photo: selectedImage,
                                 odometer: odometerValue,
-                                vehicle: vehicle)
+                                vehicle: vehicle,
+                                totalPrice: totalPrice)
         
         modelContext.insert(newService)
         do {
@@ -480,10 +483,11 @@ extension SwiftDataService {
                        selectedDate: Date,
                        selectedParts: Set<Sparepart>,
                        odometerValue: Float,
-                       selectedImage: Data?) {
+                       selectedImage: Data?,
+                       totalPrice: Float) {
         
         if let vehicle = modelContext.model(for: service.vehicle.persistentModelID) as? Vehicle {
-            saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: odometerValue, selectedImage: selectedImage, vehicle: vehicle)
+            saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: odometerValue, selectedImage: selectedImage, vehicle: vehicle, totalPrice: totalPrice)
             
         } else {
             print("vehicle not found")
