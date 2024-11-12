@@ -31,13 +31,15 @@ struct AddServiceView: View {
     @State private var showGallery = false
     @State private var isShowingDialog: Bool = false
     
+    @State private var priceValue: String = ""
+    
     @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     
     var service: Servis?
     
     // Computed property to determine if the button should be disabled
     private var isButtonDisabled: Bool {
-        selectedParts.isEmpty || odometerValue.isEmpty || Int(odometerValue) ?? 0 > userOdometer
+        selectedParts.isEmpty || odometerValue.isEmpty || priceValue.isEmpty || Int(odometerValue) ?? 0 > userOdometer
     }
     
     
@@ -53,6 +55,7 @@ struct AddServiceView: View {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
                 ChooseSparepartView(selectedParts: $selectedParts)
+                PriceInputView(value: $priceValue)
                 addPhotoView()
                     
             }
