@@ -42,37 +42,41 @@ struct ServiceDetailView: View {
                             )
                     }, horizontalSpacing: 4, verticalSpacing: 4)
                 }
-                
-                if service.photo != nil {
-                    if let imageData = service.photo, let uiImage = UIImage(data: imageData) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: 142)
-                            .clipped()
-                            .contentShape(Rectangle())
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay( // Add the border
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.grayShade300, lineWidth: 0.5)
-                            )
-                            .onTapGesture {
-                                routes.navigate(to: .PhotoReviewView(imageData: imageData))
-                            }
+                VStack(alignment: .leading) {
+                    Text("Bukti Pembayaran")
+                    .font(.headline)
+                    if service.photo != nil {
+                        if let imageData = service.photo, let uiImage = UIImage(data: imageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity, maxHeight: 142)
+                                .clipped()
+                                .contentShape(Rectangle())
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay( // Add the border
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.grayShade300, lineWidth: 0.5)
+                                )
+                                .onTapGesture {
+                                    routes.navigate(to: .PhotoReviewView(imageData: imageData))
+                                }
+                        }
+                    } else {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.neutral.shade100)
+                                .frame(maxWidth: .infinity, minHeight: 142)
+                            Image("image_icon")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 36, height: 36)
+                                .cornerRadius(8)
+                        }
                     }
-                } else {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.neutral.shade100)
-                            .frame(maxWidth: .infinity, minHeight: 142)
-                        Image("image_icon")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 36, height: 36)
-                            .cornerRadius(8)
-                    }
+
                 }
-            }
+                            }
             .padding(.horizontal,16)
             .padding(.vertical,24)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -88,13 +92,16 @@ struct ServiceDetailView: View {
         }
         .safeAreaInset(edge: .bottom, content: {
             VStack {
-                CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0) {
+                CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .primary, horizontalPadding: 0, verticalPadding: 0) {
                     routes.navigate(to: .AddServiceView(service: service))
                 }
                 CustomButton(title: "Hapus Servis", iconName: "trash_icon", iconPosition: .left, buttonType: .destructive,horizontalPadding: 0, verticalPadding: 0) {
                     deleteHistory(service)
                 }
             }
+            .padding(.top,20)
+            .frame(maxWidth: .infinity)
+            .background(.white)
         })
         .navigationTitle("Catatan servis")
         

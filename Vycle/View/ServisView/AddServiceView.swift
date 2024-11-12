@@ -53,18 +53,8 @@ struct AddServiceView: View {
                 ServiceDateView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
                 OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer)
                 ChooseSparepartView(selectedParts: $selectedParts)
-                if let selectedImage = selectedImage {
-                    ImagePreviewView(selectedImage: $selectedImage)
-                        .onTapGesture {
-                            if let imageData = selectedImage.jpegData(compressionQuality: 1.0) {
-                                routes.navigate(to: .PhotoReviewView(imageData: imageData))
-                            } else {
-                                print("Failed to convert UIImage to Data")
-                            }
-                        }
-                } else {
-                    PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)
-                }
+                addPhotoView()
+                    
             }
             .padding(.horizontal,16)
             .padding(.vertical,24)
@@ -117,6 +107,27 @@ struct AddServiceView: View {
         }
         .frame(maxWidth: .infinity)
         .background(Color.neutral.tint300)
+    }
+    
+    func addPhotoView() -> some View {
+        VStack(alignment: .leading) {
+            Text("Bukti Pembayaran")
+                .font(.headline)
+            Text("Opsional")
+                .font(.footnote)
+            if let selectedImage = selectedImage {
+                ImagePreviewView(selectedImage: $selectedImage)
+                    .onTapGesture {
+                        if let imageData = selectedImage.jpegData(compressionQuality: 1.0) {
+                            routes.navigate(to: .PhotoReviewView(imageData: imageData))
+                        } else {
+                            print("Failed to convert UIImage to Data")
+                        }
+                    }
+            } else {
+                PhotoInputView(isShowingDialog: $isShowingDialog, showCamera: $showCamera, showGallery: $showGallery, selectedImage: $selectedImage)
+            }
+        }
     }
     
     // Helper function to convert String to Date
