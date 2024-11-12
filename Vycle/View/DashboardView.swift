@@ -101,22 +101,27 @@ struct DashboardView: View {
                         }.padding(.horizontal, 10)
                         Spacer()
                         
-                        Button(action: {
-                            // Action for editing
-                            _ = calculateTotalDistance()
-                            showOdoSheet.toggle()
-                            
-                        }) {
-                            Image(systemName: "pencil").foregroundStyle(Color.white)
-                        }.frame(width: 28, height: 28).background(Color.blue).cornerRadius(8).sheet(isPresented: $showOdoSheet) {
-                            
-                            OdometerSheet(
-                                showSheet: $showOdoSheet,
-                                odometer: $odometer,
-                                showOdoSheet: $showOdoSheet,
-                                calculateTotalDistance: calculateTotalDistance // Pass the function here
-                            )
-                            
+                        VStack{
+                            Button(action: {
+                                // Action for editing
+                                _ = calculateTotalDistance()
+                                showOdoSheet.toggle()
+                                
+                            }) {
+                                Image(systemName: "pencil").foregroundStyle(Color.primary.shade100)
+                            }.frame(width: 28, height: 28).background(Color.white).overlay( // Add the border
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.primary.shade100, lineWidth: 1)
+                            ).sheet(isPresented: $showOdoSheet) {
+                                OdometerSheet(
+                                    showSheet: $showOdoSheet,
+                                    odometer: $odometer,
+                                    showOdoSheet: $showOdoSheet,
+                                    calculateTotalDistance: calculateTotalDistance // Pass the function here
+                                )
+                                
+                            }
+                            Text("Edit").caption2(.emphasized).foregroundStyle(Color.primary.shade100)
                         }
                     }
                     .padding()
