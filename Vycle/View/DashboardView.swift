@@ -129,7 +129,7 @@ struct DashboardView: View {
                     if SwiftDataService.shared.fetchServices().isEmpty{
                         HStack(alignment: .top){
                             VStack(alignment: .leading){
-                                Text("Siap-siap servis berkala di 70k!").headline().foregroundColor(.neutral.shade300)
+                                Text("Siap-siap servis berkala di \(getRoundedOdometer())!").headline().foregroundColor(.neutral.shade300)
                                 Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
                             }
                             Spacer()
@@ -196,6 +196,14 @@ struct DashboardView: View {
 //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
 //    }
     
+    private func getRoundedOdometer() -> Int {
+        let totalDistance = calculateTotalDistance() ?? 0
+        return roundUpToNextTenThousand(totalDistance)
+    }
+    func roundUpToNextTenThousand(_ value: Double) -> Int {
+        let interval = 10000
+        return ((Int(value) + interval - 1) / interval) * interval
+    }
     
     private func updateFilteredReminders() {
         let currentKilometer = Double(totalDistance)

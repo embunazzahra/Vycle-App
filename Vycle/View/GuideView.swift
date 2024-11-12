@@ -52,7 +52,6 @@ struct GuideView: View {
         let totalDistance = calculateTotalDistance() ?? 0
         return roundUpToNextTenThousand(totalDistance)
     }
-    
     func calculateTotalDistance() -> Double? {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
         if let firstLocation = locationHistory.first {
