@@ -107,6 +107,9 @@ struct ContentView: View {
                                     PhotoReviewView(imageData: imageData)
                                 case .BeaconConfigView:
                                     BeaconConfigView(locationManager: locationManager)
+                                case .GuideView:
+                                    GuideView()
+                                
                             }
                         }
                         .toolbar {

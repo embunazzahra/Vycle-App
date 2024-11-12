@@ -25,6 +25,7 @@ import SwiftUI
         case EditReminderView(reminder: Reminder)
         case PhotoReviewView(imageData: Data)
         case BeaconConfigView
+        case GuideView
     }
 
     func navigate(to destination: Destination) {
