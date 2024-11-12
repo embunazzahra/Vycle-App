@@ -32,6 +32,7 @@ class SwiftDataService {
         }
     }
     //testing
+    
 }
 
 extension SwiftDataService {
@@ -87,6 +88,16 @@ extension SwiftDataService {
 
             print("Processing reminder: \(reminder.sparepart.rawValue), Kilometer Difference: \(kilometerDifference)")
 
+//            if kilometerDifference > 500 {
+//                if isDateUpdated(reminderID: reminder.id) {
+//                    resetDateUpdated(reminderID: reminder.id)
+//                    resetReminderDateToBefore(reminder: Reminder, vehicleType: VehicleType, vehicleBrand: VehicleBrand, servicedSpareparts: [Sparepart], service: Servis)
+//                } else {
+//                    print("Nothing")
+//                }
+//                
+//            } else
+            
             if kilometerDifference <= 0 {
                 print("inside 0 KM Difference for \(reminder.sparepart.rawValue)")
 
@@ -96,9 +107,16 @@ extension SwiftDataService {
                     setLastNotifiedDate(reminderID: reminder.id, sparepart: reminder.sparepart.rawValue)
                     scheduleRepeatingNotification(for: reminder.sparepart)
                 }
+                
+                if !isDateUpdated(reminderID: reminder.id) {
+                    updateReminderDateToNow(reminder: reminder)
+                    setDateUpdated(reminderID: reminder.id)
+                }
+                
             } else if kilometerDifference <= 500 {
                 print("inside 500 KM Difference")
                 updateReminderDateToNow(reminder: reminder)
+                setDateUpdated(reminderID: reminder.id)
             }
         }
     }
@@ -118,8 +136,50 @@ extension SwiftDataService {
                      timeInterval: reminder.timeInterval,
     //                     vehicle: reminder.vehicle!,
                      isRepeat: reminder.isRepeat,
-                     isDraft: reminder.isDraft)
+                     isDraft: reminder.isDraft,
+                     isHelperOn: reminder.isDraft,
+                     reminderType: reminder.reminderType,
+                     isUsingData: reminder.isUsingData)
     }
+    
+    
+//    private func resetReminderDateToBefore(reminder: Reminder, vehicleType: VehicleType, vehicleBrand: VehicleBrand, servicedSpareparts: [Sparepart], service: Servis) {
+//        let vehicle = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+//        
+//        for sparepart in servicedSpareparts {
+//            guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
+//                continue
+//            }
+//
+//            let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
+//
+//            editReminder(reminder: reminder,
+//                         sparepart: reminder.sparepart,
+//                         reminderOdo: reminder.reminderOdo,
+//                         kmInterval: reminder.kmInterval,
+//                         dueDate: dueDate,
+//                         timeInterval: reminder.timeInterval,
+//                         //                     vehicle: reminder.vehicle!,
+//                         isRepeat: reminder.isRepeat,
+//                         isDraft: reminder.isDraft)
+//        }
+//    }
+
+    
+    private func isDateUpdated(reminderID: PersistentIdentifier) -> Bool {
+        let key = "dateUpdated_\(reminderID)"
+        return UserDefaults.standard.bool(forKey: key)
+    }
+
+    private func setDateUpdated(reminderID: PersistentIdentifier) {
+        let key = "dateUpdated_\(reminderID)"
+        UserDefaults.standard.set(true, forKey: key)
+    }
+
+//    private func resetDateUpdated(reminderID: PersistentIdentifier) {
+//        let key = "dateUpdated_\(reminderID)"
+//        UserDefaults.standard.set(false, forKey: key)
+//    }
 
     private func shouldNotifyOnce(reminderID: PersistentIdentifier, sparepart: String) -> Bool {
         let reminderKey = "initialNotified_\(sparepart)_\(reminderID)"
@@ -238,7 +298,9 @@ extension SwiftDataService {
                         vehicle: self.getCurrentVehicle()!,
                         isRepeat: true, // Set true if you want reminders to repeat
                         isDraft: true,
-                        isHelperOn: true
+                        isHelperOn: false,
+                        reminderType: "Service Reminder",
+                        isUsingData: true
                     )
                     modelContext.insert(reminderData)
                 }
@@ -314,7 +376,7 @@ extension SwiftDataService {
 }
 
 extension SwiftDataService {
-    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool) {
+    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, reminderType: String, isUsingData: Bool) {
         let newReminder = Reminder(
             date: Date(),
             sparepart: sparepart,
@@ -325,7 +387,9 @@ extension SwiftDataService {
             vehicle: vehicle,
             isRepeat: isRepeat,
             isDraft: isDraft,
-            isHelperOn: false
+            isHelperOn: false,
+            reminderType: "Manual Reminder",
+            isUsingData: false
         )
         modelContext.insert(newReminder)
         saveModelContext()
@@ -337,7 +401,7 @@ extension SwiftDataService {
         print("Added reminder: \(newReminder.sparepart.rawValue)")
     }
     
-    func editReminder(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool) {
+    func editReminder(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, reminderType: String, isUsingData: Bool) {
         reminder.sparepart = sparepart
         reminder.reminderOdo = reminderOdo
         reminder.kmInterval = kmInterval
@@ -346,6 +410,9 @@ extension SwiftDataService {
 //        reminder.vehicle = vehicle
         reminder.isRepeat = isRepeat
         reminder.isDraft = isDraft
+        reminder.isHelperOn = isHelperOn
+        reminder.reminderType = "Edited Reminder"
+        reminder.isUsingData = isUsingData
         saveModelContext()
         
         NotificationManager.shared.cancelNotification(for: reminder)
@@ -426,29 +493,47 @@ extension SwiftDataService {
         print("the service is : \(service.date)")
         
         for sparepart in selectedParts {
-            guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
-                continue
-            }
-            
-//            let targetKM = odometer + Float(interval.kilometer)
             let reminderOdo = odometer
-            let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
             
-            //            let newService = service
-            let newReminder = Reminder(date: service.date,
-                                       sparepart: sparepart,
-                                       reminderOdo: reminderOdo,
-                                       kmInterval: Float(interval.kilometer),
-                                       dueDate: dueDate,
-                                       timeInterval: interval.month,
-                                       vehicle: service.vehicle,
-                                       isRepeat: true,
-                                       isDraft: false,
-                                       service: service,
-                                       isHelperOn: true)
-            NotificationManager.shared.scheduleNotification(for: newReminder)
-            
-            modelContext.insert(newReminder)
+            if let interval = vehicle.brand.intervalForSparepart(sparepart){
+                let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
+                
+                let newReminder = Reminder(date: service.date,
+                                           sparepart: sparepart,
+                                           reminderOdo: reminderOdo,
+                                           kmInterval: Float(interval.kilometer),
+                                           dueDate: dueDate,
+                                           timeInterval: interval.month,
+                                           vehicle: service.vehicle,
+                                           isRepeat: true,
+                                           isDraft: false,
+                                           service: service,
+                                           isHelperOn: true,
+                                           reminderType: "Service Reminder",
+                                           isUsingData: false)
+                NotificationManager.shared.scheduleNotification(for: newReminder)
+                
+                modelContext.insert(newReminder)
+            }
+            // if the vehicle brand is custom, generate draft reminder
+            else {
+                let newReminder = Reminder(date: service.date,
+                                           sparepart: sparepart,
+                                           reminderOdo: reminderOdo,
+                                           kmInterval: 123, //will be ignore because it still draft
+                                           dueDate: Date(), //will be ignore because it still draft
+                                           timeInterval: 99, //will be ignore because it still draft
+                                           vehicle: service.vehicle,
+                                           isRepeat: true,
+                                           isDraft: true,
+                                           service: service,
+                                           isHelperOn: true,
+                                           reminderType: "draft",
+                                           isUsingData: false
+                )
+                
+                modelContext.insert(newReminder)
+            }
         }
         // Save the model context after adding the reminders
         do {
