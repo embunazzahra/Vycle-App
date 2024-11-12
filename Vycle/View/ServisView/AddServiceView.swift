@@ -101,6 +101,7 @@ struct AddServiceView: View {
                 self.odometerValue = "\(Int(service.odometer ?? 0))"
                 self.selectedDate =  service.date
                 self.selectedParts = Set(service.servicedSparepart)
+                self.priceValue = "\(Int(service.totalPrice ?? 0))"
                 
                 if let photoData = service.photo, selectedImage == nil {
                     self.selectedImage = UIImage(data: photoData)
@@ -172,7 +173,7 @@ struct AddServiceView: View {
         
         
         if let latestVehicle = vehicle {
-            SwiftDataService.shared.saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: Float(odometerValue) ?? 0.0, selectedImage: selectedImage?.jpegData(compressionQuality: 1.0), vehicle: latestVehicle)
+            SwiftDataService.shared.saveNewService(selectedDate: selectedDate, selectedParts: selectedParts, odometerValue: Float(odometerValue) ?? 0.0, selectedImage: selectedImage?.jpegData(compressionQuality: 1.0), vehicle: latestVehicle, totalPrice: Float(priceValue) ?? 0.0)
             print("vehicle brand saved is:\(latestVehicle.brand)")
         }
         
@@ -187,7 +188,8 @@ struct AddServiceView: View {
                                               selectedDate: selectedDate,
                                               selectedParts: selectedParts,
                                               odometerValue: Float(odometerValue) ?? 0.0,
-                                              selectedImage: selectedImage?.jpegData(compressionQuality: 1.0))
+                                              selectedImage: selectedImage?.jpegData(compressionQuality: 1.0),
+                                              totalPrice: Float(priceValue) ?? 0.0)
     }
 }
 

@@ -16,16 +16,18 @@ class Servis {
     var date: Date
     var servicedSparepart: [Sparepart]
     var photo: Data?
+    var totalPrice: Float
 
     var odometer: Float?
     @Relationship var vehicle: Vehicle
     @Relationship(deleteRule: .cascade, inverse: \Reminder.service) var reminders: [Reminder] = []
-    init(date: Date, servicedSparepart: [Sparepart], photo: Data? = nil, odometer: Float? = nil, vehicle: Vehicle) {
+    init(date: Date, servicedSparepart: [Sparepart], photo: Data? = nil, odometer: Float? = nil, vehicle: Vehicle, totalPrice: Float) {
         self.date = date
         self.servicedSparepart = servicedSparepart
         self.photo = photo
         self.odometer = odometer
         self.vehicle = vehicle
+        self.totalPrice = totalPrice
     }
 }
 
