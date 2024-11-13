@@ -132,6 +132,16 @@ struct AddEditFramework: View {
         }
     }
     
+//    func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
+//        guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
+//            return nil
+//        }
+//        
+//        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: Date()) ?? Date()
+//        
+//        return (interval, dueDate)
+//    }
+    
     func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
         guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
             return nil
