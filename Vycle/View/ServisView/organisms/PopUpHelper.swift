@@ -8,6 +8,6 @@ import SwiftUI
 
 class PopUpHelper: ObservableObject {
     @Published var showPopUp: Bool = false
-    @Published var popUpType: PopUpType = .success
+    @Published var popUpType: PopUpType = .addServiceSuccess
     var popUpAction: (() -> Void)? = nil
 }

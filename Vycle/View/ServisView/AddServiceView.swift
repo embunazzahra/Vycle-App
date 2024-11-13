@@ -10,7 +10,7 @@ import SwiftData
 
 struct AddServiceView: View {
     @EnvironmentObject var routes: Routes
-    //    @Environment(\.modelContext) var modelContext
+    @EnvironmentObject var popUpHelper: PopUpHelper
     
     // For vehicle mileage
     @State private var odometerValue: String = "" // track user input in textfield
@@ -124,11 +124,22 @@ struct AddServiceView: View {
         CustomButton(title: service == nil ? "Simpan catatan" : "Simpan perubahan", iconName: "save_icon", iconPosition: .left, buttonType: isButtonDisabled ? .disabled : .primary, horizontalPadding: 0) {
             if service == nil {
                 saveNewService()
+                
+                popUpHelper.popUpType = .addServiceSuccess
+                popUpHelper.popUpAction = {
+                    routes.navigateToRoot()
+                }
+                
             } else {
                 updateService()
+                
+                popUpHelper.popUpType = .updateServiceSuccess
+                popUpHelper.popUpAction = {
+                    routes.navigateToRoot()
+                }
             }
             hasNewNotification = true
-            routes.navigateToRoot()
+            popUpHelper.showPopUp = true
         }
         .frame(maxWidth: .infinity)
         .background(Color.neutral.tint300)
