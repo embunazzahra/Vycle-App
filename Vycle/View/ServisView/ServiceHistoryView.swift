@@ -11,7 +11,6 @@ import SwiftData
 struct ServiceHistoryView: View {
     @EnvironmentObject var routes: Routes
     @Query var serviceHistories : [Servis]
-    @Environment(\.modelContext) private var modelContext
     @AppStorage("hasNewNotification") var hasNewNotification: Bool = false
     
     var currentYearServiceHistories: [Servis] {
