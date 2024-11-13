@@ -115,7 +115,7 @@ struct ConfigurationView: View {
             
                 VStack {
                     CustomButton(
-                        title: "Cek Perangkat",
+                        title: "Hubungkan Perangkat",
                         iconName: "bluetooth_searching",
                         iconPosition: .right,
                         buttonType: isButtonEnabled ? .primary : .disabled,

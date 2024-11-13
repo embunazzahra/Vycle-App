@@ -101,22 +101,27 @@ struct DashboardView: View {
                         }.padding(.horizontal, 10)
                         Spacer()
                         
-                        Button(action: {
-                            // Action for editing
-                            _ = calculateTotalDistance()
-                            showOdoSheet.toggle()
-                            
-                        }) {
-                            Image(systemName: "pencil").foregroundStyle(Color.white)
-                        }.frame(width: 28, height: 28).background(Color.blue).cornerRadius(8).sheet(isPresented: $showOdoSheet) {
-                            
-                            OdometerSheet(
-                                showSheet: $showOdoSheet,
-                                odometer: $odometer,
-                                showOdoSheet: $showOdoSheet,
-                                calculateTotalDistance: calculateTotalDistance // Pass the function here
-                            )
-                            
+                        VStack{
+                            Button(action: {
+                                // Action for editing
+                                _ = calculateTotalDistance()
+                                showOdoSheet.toggle()
+                                
+                            }) {
+                                Image(systemName: "pencil").foregroundStyle(Color.primary.shade100)
+                            }.frame(width: 28, height: 28).background(Color.white).overlay( // Add the border
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.primary.shade100, lineWidth: 1)
+                            ).sheet(isPresented: $showOdoSheet) {
+                                OdometerSheet(
+                                    showSheet: $showOdoSheet,
+                                    odometer: $odometer,
+                                    showOdoSheet: $showOdoSheet,
+                                    calculateTotalDistance: calculateTotalDistance // Pass the function here
+                                )
+                                
+                            }
+                            Text("Edit").caption2(.emphasized).foregroundStyle(Color.primary.shade100)
                         }
                     }
                     .padding()
@@ -126,34 +131,44 @@ struct DashboardView: View {
                 }.padding(.horizontal, 16).offset(y: -45)
 
                 VStack {
-                    if !filteredReminders.isEmpty {
-                        HStack{
-                            HaveReminderView().padding(.horizontal, 16)
+                    if SwiftDataService.shared.fetchServices().isEmpty{
+                        HStack(alignment: .top){
+                            VStack(alignment: .leading){
+                                Text("Siap-siap servis berkala di \(getRoundedOdometer())!").headline().foregroundColor(.neutral.shade300)
+                                Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
+                            }
+                            Spacer()
+                        }.padding(.horizontal, 16).offset(y: -30)
+                        ZStack{
+//                            Color.green
+                            Image("dashboard_card").resizable()
+                                .scaledToFill()
+                                .frame(width: 360, height: 200)
+                                .clipped()
+                                .offset(y: -25)
+                            HStack{
+                                Text("Lihat suku cadang lebih detail").foregroundStyle(Color.accentColor)
+                                Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                            }.padding(.horizontal, 16).padding(.vertical, 8)
+                            .background(
+                              RoundedRectangle(cornerRadius: 10)
+                                .stroke(.blue, lineWidth: 1)
+                            ).offset(y: 40)
+                                .onTapGesture{
+                                    routes.navigate(to: .GuideView)
+                                }
                         }
-//                        ForEach($filteredReminders, id: \.self) { $reminder in
-//                            let totalDistance = calculateTotalDistance() ?? 0
-//                            SparepartReminderCard(
-//                                reminder: $reminder,
-//                                currentKM: totalDistance
-//                            )
-//                            .contentShape(Rectangle())
-//                            .listRowInsets(EdgeInsets())
-//                            .listRowSeparator(.hidden)
-//                            .listSectionSeparator(.hidden)
-//                        }
-                        SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                        //                                MapView(locations: locationHistory).frame(height: 300)
-                    } else {
                         
-//                                                        Spacer()
-//                                                        Text("last location: \(locationHistory.first?.distance)")
-//                                                        Text("last location: \(locationHistory.first?.time)")
-//                                                        ForEach(locationHistory){location in
-//                                                            Text("Time: \(location.time) Longitude: \(location.longitude) Latitude: \(location.latitude) Distance: \(location.distance)")
-//                        
-//                                                        }
-                        NoReminderView()
-        
+                    } else {
+                        if !filteredReminders.isEmpty {
+                            HStack{
+                                HaveReminderView().padding(.horizontal, 16)
+                            }
+                            SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                        } else {
+                            NoReminderView()
+            
+                        }
                     }
                     
                 }
@@ -186,6 +201,14 @@ struct DashboardView: View {
 //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
 //    }
     
+    private func getRoundedOdometer() -> Int {
+        let totalDistance = calculateTotalDistance() ?? 0
+        return roundUpToNextTenThousand(totalDistance)
+    }
+    func roundUpToNextTenThousand(_ value: Double) -> Int {
+        let interval = 10000
+        return ((Int(value) + interval - 1) / interval) * interval
+    }
     
     private func updateFilteredReminders() {
         let currentKilometer = Double(totalDistance)
