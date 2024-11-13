@@ -22,16 +22,21 @@ struct ServiceDetailView: View {
         ScrollView (showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading) {
-                    Text("Tanggal servis")
+                    Text("Tanggal Servis")
                         .font(.headline)
                     Text(service.date.formattedDate())
                         .padding(.vertical, 9)
                         .padding(.horizontal,12)
                 }
-                
-                OdometerInputView(odometerValue: $odometerValue, userOdometer: userOdometer, enable: false)
                 VStack(alignment: .leading) {
-                    Text("Nama suku cadang")
+                    Text("Kilometer Kendaraan")
+                        .font(.headline)
+                    Text("\(userOdometer.formatted()) Kilometer")
+                        .padding(.vertical, 9)
+                        .padding(.horizontal,12)
+                }
+                VStack(alignment: .leading) {
+                    Text("Suku Cadang")
                         .font(.headline)
                     WrappingHStack(models: service.servicedSparepart, viewGenerator: { part in
                         Text(part.rawValue)
@@ -41,6 +46,13 @@ struct ServiceDetailView: View {
                                     .fill(Color.grayTint200)
                             )
                     }, horizontalSpacing: 4, verticalSpacing: 4)
+                }
+                VStack(alignment: .leading) {
+                    Text("Total Biaya Servis")
+                        .font(.headline)
+                    Text("Rp \(service.totalPrice.formatted())")
+                        .padding(.vertical, 9)
+                        .padding(.horizontal,12)
                 }
                 VStack(alignment: .leading) {
                     Text("Bukti Pembayaran")
