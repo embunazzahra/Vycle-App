@@ -63,8 +63,12 @@ struct PopUpMessage: View {
     
     func doButtonFunction() {
         switch type {
-        case .success:
-            routes.navigateBack()
+        case .addServiceSuccess, .updateServiceSuccess:
+            isShowingPopUp = false
+            if let action = action {
+                action()
+            }
+ 
         case .delete:
             isShowingPopUp = false
         }
@@ -72,12 +76,13 @@ struct PopUpMessage: View {
 }
 
 enum PopUpType {
-    case success
+    case addServiceSuccess
+    case updateServiceSuccess
     case delete
 
     func icon() -> String {
         switch self {
-        case .success:
+        case .addServiceSuccess, .updateServiceSuccess:
             return "success_icon"
         case .delete:
             return "question_mark_icon"
@@ -86,7 +91,7 @@ enum PopUpType {
 
     func title() -> String {
         switch self {
-        case .success:
+        case .addServiceSuccess,.updateServiceSuccess:
             return "Berhasil!"
         case .delete:
             return "Yakin, nih?"
@@ -95,7 +100,7 @@ enum PopUpType {
     
     func titleColor() -> Color {
         switch self {
-        case .success:
+        case .addServiceSuccess, .updateServiceSuccess:
             return Color.lima500
         case .delete:
             return Color.neutral.tone300
@@ -104,8 +109,10 @@ enum PopUpType {
 
     func message() -> String {
         switch self {
-        case .success:
-            return "Pengingat servismu telah diubah"
+        case .addServiceSuccess:
+            return "Catatan servismu telah tersimpan"
+        case .updateServiceSuccess:
+            return "Catatan servismu berhasil diubah"
         case .delete:
             return "Suku cadang yang berasal dari servis ini akan terhapus"
         }
@@ -113,8 +120,8 @@ enum PopUpType {
 
     func buttonText() -> String {
         switch self {
-        case .success:
-            return "Kembali ke pengingat"
+        case .addServiceSuccess, .updateServiceSuccess:
+            return "Kembali ke Halaman Servis"
         case .delete:
             return "Tetap menyimpan"
         }
@@ -122,7 +129,7 @@ enum PopUpType {
 }
 
 #Preview {
-    PopUpMessage(type: .success, isShowingPopUp: .constant(true))
+    PopUpMessage(type: .addServiceSuccess, isShowingPopUp: .constant(true))
     
     // Preview with action provided
     PopUpMessage(type: .delete, isShowingPopUp: .constant(true), action: {
