@@ -21,7 +21,7 @@ struct ServiceHistoryView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack( spacing: 8) {
             HStack {
                 Text("Histori servis")
                     .font(.headline)
@@ -33,33 +33,47 @@ struct ServiceHistoryView: View {
                         routes.navigate(to: .AllServiceHistoryView)
                     }
             }
-//            Text("Tahun ini")
-//                .font(.subheadline)
-//                .fontWeight(.semibold)
-            List {
-                ForEach(currentYearServiceHistories) { history in
-                    ServiceHistoryCard(service: history) {
-                        routes.navigate(to: .ServiceDetailView(service: history))
-                    }
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            deleteHistory(history)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                        .tint(.red)
-                        
-                    }
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets()) // Remove default row insets
-                    .background(Color.clear) // Set background color to clear
+            if currentYearServiceHistories.isEmpty {
+                VStack {
+                    Spacer()
+                    Image("book_and_pencil")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 236, height: 200)
+                        .foregroundStyle(.yellow)
+                    Text("Tahun ini belum ada catatan servis, nih 🙁")
+                        .font(.headline)
+                        .padding(.bottom, 4)
+                    Text("Coba lihat selengkapnya untuk cek servis yang sebelumnya")
+                        .font(.footnote)
+                        .padding(.bottom, 12)
+                    Spacer()
                 }
             }
-            .listStyle(PlainListStyle()) // Remove default list styling
-            .padding(.all, 0) // Remove all padding around the list
-            .scrollIndicators(.hidden)
-            
-            
+            else {
+                List {
+                    ForEach(currentYearServiceHistories) { history in
+                        ServiceHistoryCard(service: history) {
+                            routes.navigate(to: .ServiceDetailView(service: history))
+                        }
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                deleteHistory(history)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .tint(.red)
+                            
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets()) // Remove default row insets
+                        .background(Color.clear) // Set background color to clear
+                    }
+                }
+                .listStyle(PlainListStyle()) // Remove default list styling
+                .padding(.all, 0) // Remove all padding around the list
+                .scrollIndicators(.hidden)
+            }
         }
         .padding()
         .navigationTitle("Servis")
