@@ -16,7 +16,7 @@ struct OdometerInputView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Kilometer kendaraan")
+            Text("Kilometer Kendaraan")
                 .font(.headline)
             
             OdometerServisTextField(text: $odometerValue, placeholder: userOdometer.formattedWithSeparator(), enable: enable, isOverLimit: $isOverLimit)
