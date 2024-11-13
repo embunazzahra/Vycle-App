@@ -31,16 +31,12 @@ struct AddEditFramework: View {
 
     @Binding var reminders: [Reminder]
     var reminderToEdit: Reminder?
-
-    private var initialSelectedDate: Date
-    private var initialSelectedNumber: Int
-    private var initialSelectedSparepart: Sparepart
     
     var isAddReminderView: Bool = false
 
     @Binding var isResetHidden: Bool
     
-    @State private var isDataUsed = false
+    @State private var isDataUsed: Bool
 
     var isButtonEnabled: Bool {
         isPartChosen && isMonthYearChosen && isKilometerChosen
@@ -106,9 +102,7 @@ struct AddEditFramework: View {
             self._selectedSparepart = State(initialValue: selectedSparepart)
         }
 
-        self.initialSelectedDate = self._selectedDate.wrappedValue
-        self.initialSelectedNumber = self._selectedNumber.wrappedValue
-        self.initialSelectedSparepart = self._selectedSparepart.wrappedValue
+        self.isDataUsed = false
         
     }
 
@@ -124,7 +118,6 @@ struct AddEditFramework: View {
             isKilometerChosen = true
             resetTrigger.toggle()
             
-            // Delayed re-evaluation
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 checkIfDataIsUsed()
             }
@@ -134,12 +127,23 @@ struct AddEditFramework: View {
     }
 
     
+//    func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
+//        guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
+//            return nil
+//        }
+//        
+//        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: Date()) ?? Date()
+//        
+//        return (interval, dueDate)
+//    }
+    
     func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
         guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
             return nil
         }
         
-        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: Date()) ?? Date()
+        let reminder = reminderToEdit?.date ?? Date()
+        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: reminder) ?? Date()
         
         return (interval, dueDate)
     }
@@ -148,7 +152,7 @@ struct AddEditFramework: View {
     var body: some View {
         ZStack {
             VStack {
-                if isDataUsed == true || (reminders.contains(where: { $0.isUsingData == true }) && reminders.contains(where: { $0.isHelperOn })){
+                if isDataUsed == true {
                     ZStack {
                         Rectangle()
                             .cornerRadius(12)
@@ -191,7 +195,7 @@ struct AddEditFramework: View {
                 .padding(.horizontal, 16)
                 
                 if !isResetHidden {
-                    if selectedDate != initialSelectedDate || selectedNumber != initialSelectedNumber || selectedSparepart != initialSelectedSparepart || reminders.contains(where: { $0.reminderType != "Service Reminder" }) {
+                    if isDataUsed == false {
                         VStack(alignment: .leading) {
                             Text("Setelan awal")
                                 .font(.headline)
@@ -240,23 +244,42 @@ struct AddEditFramework: View {
                 
                 Spacer()
                 
-                CustomButton(title: reminderToEdit == nil ? "Tambahkan Pengingat" : "Edit Pengingat", iconName: "add_box", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
+                CustomButton(title: reminderToEdit == nil ? "Tambahkan Pengingat" : "Simpan Perubahan", iconName: "add_box", iconPosition: .left, buttonType: isButtonEnabled ? .primary : .disabled) {
                     isNotificationShowed = true
 
                     if let reminderToEdit = reminderToEdit {
-                        swiftDataService.editReminder(
-                            reminder: reminderToEdit,
-                            sparepart: selectedSparepart,
-                            reminderOdo: reminderOdo,
-                            kmInterval: Float(selectedNumber),
-                            dueDate: selectedDate.startOfMonth(),
-                            timeInterval: monthInterval,
-                            isRepeat: true,
-                            isDraft: false,
-                            isHelperOn: false,
-                            reminderType: "Edited Reminder",
-                            isUsingData: false
-                        )
+                        if reminderToEdit.isDraft == true {
+                            swiftDataService.editDraft(
+                                reminder: reminderToEdit,
+                                sparepart: selectedSparepart,
+                                reminderOdo: reminderOdo,
+                                kmInterval: Float(selectedNumber),
+                                dueDate: selectedDate.startOfMonth(),
+                                timeInterval: monthInterval,
+                                isRepeat: true,
+                                isDraft: false,
+                                isHelperOn: true,
+//                                reminderType: "Edited Reminder",
+//                                isUsingData: true,
+                                isEdited: true
+                                )
+                        } else {
+                            swiftDataService.editReminder(
+                                reminder: reminderToEdit,
+                                sparepart: selectedSparepart,
+//z                                reminderOdo: reminderOdo,
+                                kmInterval: Float(selectedNumber),
+                                dueDate: selectedDate.startOfMonth(),
+                                timeInterval: monthInterval,
+                                isRepeat: true,
+                                isDraft: false,
+                                isHelperOn: false,
+//                                reminderType: "Edited Reminder",
+//                                isUsingData: false,
+                                isEdited: true
+                                )
+                        }
+
                     } else {
                         swiftDataService.insertReminder(
                             sparepart: selectedSparepart,
@@ -268,12 +291,25 @@ struct AddEditFramework: View {
                             isRepeat: true,
                             isDraft: false,
                             isHelperOn: false,
-                            reminderType: "Manual Reminder",
-                            isUsingData: false
+//                            reminderType: "Manual Reminder",
+//                            isUsingData: false,
+                            isEdited: false
                         )
                     }
                 }
+                
+                Button(action: {
+
+                }) {
+                    HStack {
+                        Image("delete")
+                        Text("Hapus Pengingat")
+                            .foregroundColor(Color.persianRed500)
+                            .body(.regular)
+                    }
+                }
                 .padding(.bottom, 16)
+
             }
             .navigationTitle(title)
             .navigationBarBackButtonHidden(false)
@@ -288,11 +324,12 @@ struct AddEditFramework: View {
             }
         }
         .animation(.easeInOut, value: isNotificationShowed)
-//        .onAppear{
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                checkIfDataIsUsed()
-//            }
-//        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                checkIfDataIsUsed()
+            }
+        }
+
         .onChange(of: selectedDate) { _ in checkIfDataIsUsed() }
         .onChange(of: selectedSparepart) { _ in checkIfDataIsUsed() }
         .onChange(of: selectedNumber) { _ in checkIfDataIsUsed() }
@@ -311,11 +348,22 @@ struct AddEditFramework: View {
         let expectedKilometer = Int(reminderData.interval.kilometer)
         let expectedSparepart = savedReminder.sparepart
 
-        isDataUsed = (Calendar.current.isDate(selectedDate, equalTo: expectedDate, toGranularity: .day) &&
+        isDataUsed = (Calendar.current.isDate(selectedDate, equalTo: expectedDate, toGranularity: .month) &&
                       selectedNumber == expectedKilometer &&
                       selectedSparepart == expectedSparepart)
 
+        
+        print("tanggal reminder dibuat: \(reminderToEdit?.date)")
         print("isDataUsed: \(isDataUsed)")
+        
+        print("expectedDate: \(expectedDate)")
+        print("selectedDate: \(selectedDate)")
+        print("expectedKilometer: \(expectedKilometer)")
+        print("selectedKilometer: \(selectedNumber )")
+        print("expectedSparepart: \(expectedSparepart)")
+        print("selectedSparepart: \(selectedSparepart)")
+        
+        
     }
 
     func resetToData() {

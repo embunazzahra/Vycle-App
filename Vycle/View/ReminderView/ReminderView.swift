@@ -149,15 +149,13 @@ struct ReminderView: View {
             calendar.isDate($0.dueDate, equalTo: selectedDate, toGranularity: .month) && !$0.isDraft
         }
     }
-
-
     
     private func latestReminders(from reminders: [Reminder]) -> [Reminder] {
         var latestReminders: [String: Reminder] = [:]
         
         for reminder in reminders {
             let sparepartKey = reminder.sparepart.rawValue
-            if let existingReminder = latestReminders[sparepartKey], reminder.dueDate > existingReminder.dueDate {
+            if let existingReminder = latestReminders[sparepartKey], reminder.date > existingReminder.date {
                 latestReminders[sparepartKey] = reminder
             } else if latestReminders[sparepartKey] == nil {
                 latestReminders[sparepartKey] = reminder
