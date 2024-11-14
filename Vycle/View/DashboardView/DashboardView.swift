@@ -38,146 +38,197 @@ struct DashboardView: View {
     
     var body: some View {
         NavigationView {
-            VStack{
-                ZStack {
-                    Color.pink
-                    if SwiftDataService.shared.fetchServices().isEmpty {
-                        Image("dashboard_empty")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .clipped()
-                    } else {
-                        Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .clipped()
-                    }
-                    VStack{
-                        HStack{
-                            BTIndicator(locationManager: locationManager).onTapGesture {
-//                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
-//                                showBluetoothSheet.toggle()
-                                routes.navigate(to: .BeaconConfigView)
-                            }
-                            Spacer()
-                        }.padding(.leading, 16).padding(.top, 16)
-                        Spacer()
-                        
-                        Spacer()
-                    }
-                }.frame(height: 283)
-                
+            ScrollView {
                 VStack{
-                    HStack(alignment: .center) {
-                        if SwiftDataService.shared.getCurrentVehicle()?.brand.isCustomBrand == true {
-                            Image("merk_kendaraan")
+                    ZStack {
+                        Color.pink
+                        if SwiftDataService.shared.fetchServices().isEmpty {
+                            Image("dashboard_empty")
                                 .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.orange)
-                                .frame(height: 40)
-                        } else {
-                            Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.orange)
-                                .frame(height: 40)
-                        }
-                        VStack(alignment: .leading, spacing: 4){
-                            Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
-                            if !locationHistory.isEmpty {
-                                let totalDistance = calculateTotalDistance() ?? 0
-                                Text("\(Int(totalDistance)) Kilometer")
-                                    .headline()
-                                    .foregroundStyle(.grayShade300)
-                            } else {
-                                Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
-                                    .headline()
-                                    .foregroundStyle(.grayShade300)
-                            }
-                            
-                            
-                        }.padding(.horizontal, 10)
-                        Spacer()
-                        
-                        VStack{
-                            Button(action: {
-                                // Action for editing
-                                _ = calculateTotalDistance()
-                                showOdoSheet.toggle()
-                                
-                            }) {
-                                Image(systemName: "pencil").foregroundStyle(Color.primary.shade100)
-                            }.frame(width: 28, height: 28).background(Color.white).overlay( // Add the border
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.primary.shade100, lineWidth: 1)
-                            ).sheet(isPresented: $showOdoSheet) {
-                                OdometerSheet(
-                                    showSheet: $showOdoSheet,
-                                    odometer: $odometer,
-                                    showOdoSheet: $showOdoSheet,
-                                    calculateTotalDistance: calculateTotalDistance // Pass the function here
-                                )
-                                
-                            }
-                            Text("Edit").caption2(.emphasized).foregroundStyle(Color.primary.shade100)
-                        }
-                    }
-                    .padding()
-                    .background(Color(.background))
-                    .cornerRadius(12)
-                    .shadow(radius: 4, y: 2)
-                }.padding(.horizontal, 16).offset(y: -45)
-                
-                CustomButton(title: "rangkuman data") {
-                    routes.navigate(to: .DataSummaryView)
-                }
-
-                VStack {
-                    if SwiftDataService.shared.fetchServices().isEmpty{
-                        HStack(alignment: .top){
-                            VStack(alignment: .leading){
-                                Text("Siap-siap servis berkala di \(getRoundedOdometer())!").headline().foregroundColor(.neutral.shade300)
-                                Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
-                            }
-                            Spacer()
-                        }.padding(.horizontal, 16).offset(y: -30)
-                        ZStack{
-//                            Color.green
-                            Image("dashboard_card").resizable()
                                 .scaledToFill()
-                                .frame(width: 360, height: 200)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .clipped()
-                                .offset(y: -25)
+                        } else {
+                            Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .clipped()
+                        }
+                        VStack{
                             HStack{
-                                Text("Lihat suku cadang lebih detail").foregroundStyle(Color.accentColor)
-                                Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
-                            }.padding(.horizontal, 16).padding(.vertical, 8)
-                            .background(
-                              RoundedRectangle(cornerRadius: 10)
-                                .stroke(.blue, lineWidth: 1)
-                            ).offset(y: 40)
-                                .onTapGesture{
-                                    routes.navigate(to: .GuideView)
+                                BTIndicator(locationManager: locationManager).onTapGesture {
+    //                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
+    //                                showBluetoothSheet.toggle()
+                                    routes.navigate(to: .BeaconConfigView)
                                 }
+                                Spacer()
+                            }.padding(.leading, 16).padding(.top, 16)
+                            Spacer()
+                            
+                            Spacer()
+                        }
+                    }.frame(height: 283)
+                    
+                    VStack{
+                        HStack(alignment: .center) {
+                            if SwiftDataService.shared.getCurrentVehicle()?.brand.isCustomBrand == true {
+                                Image("merk_kendaraan")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(.orange)
+                                    .frame(height: 40)
+                            } else {
+                                Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(.orange)
+                                    .frame(height: 40)
+                            }
+                            VStack(alignment: .leading, spacing: 4){
+                                Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
+                                if !locationHistory.isEmpty {
+                                    let totalDistance = calculateTotalDistance() ?? 0
+                                    Text("\(Int(totalDistance)) Kilometer")
+                                        .headline()
+                                        .foregroundStyle(.grayShade300)
+                                } else {
+                                    Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
+                                        .headline()
+                                        .foregroundStyle(.grayShade300)
+                                }
+                                
+                                
+                            }.padding(.horizontal, 10)
+                            Spacer()
+                            
+                            VStack{
+                                Button(action: {
+                                    // Action for editing
+                                    _ = calculateTotalDistance()
+                                    showOdoSheet.toggle()
+                                    
+                                }) {
+                                    Image(systemName: "pencil").foregroundStyle(Color.primary.shade100)
+                                }.frame(width: 28, height: 28).background(Color.white).overlay( // Add the border
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.primary.shade100, lineWidth: 1)
+                                ).sheet(isPresented: $showOdoSheet) {
+                                    OdometerSheet(
+                                        showSheet: $showOdoSheet,
+                                        odometer: $odometer,
+                                        showOdoSheet: $showOdoSheet,
+                                        calculateTotalDistance: calculateTotalDistance // Pass the function here
+                                    )
+                                    
+                                }
+                                Text("Edit").caption2(.emphasized).foregroundStyle(Color.primary.shade100)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.background))
+                        .cornerRadius(12)
+                        .shadow(radius: 4, y: 2)
+                    }.padding(.horizontal, 16).offset(y: -45)
+                    
+                    VStack {
+                        if SwiftDataService.shared.fetchServices().isEmpty{
+                            HStack(alignment: .top){
+                                VStack(alignment: .leading){
+                                    Text("Siap-siap servis berkala di \(getRoundedOdometer())!").headline().foregroundColor(.neutral.shade300)
+                                    Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
+                                }
+                                Spacer()
+                            }.padding(.horizontal, 16).offset(y: -30)
+                            ZStack{
+                                //                            Color.green
+                                Image("dashboard_card").resizable()
+                                    .scaledToFill()
+                                    .frame(width: 360, height: 200)
+                                    .clipped()
+                                    .offset(y: -25)
+                                HStack{
+                                    Text("Lihat suku cadang lebih detail").foregroundStyle(Color.accentColor)
+                                    Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                                }.padding(.horizontal, 16).padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(.blue, lineWidth: 1)
+                                    ).offset(y: 40)
+                                    .onTapGesture{
+                                        routes.navigate(to: .GuideView)
+                                    }
+                            }
+                            
+                        } else {
+                            if !filteredReminders.isEmpty {
+                                HStack{
+                                    HaveReminderView().padding(.horizontal, 16)
+                                }
+                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                            } else {
+                                NoReminderView()
+                                
+                            }
+                            //Data analytics
+                            HStack(alignment: .top){
+                                VStack(alignment: .leading){
+                                    Text("Ada ringkasan data, nih😉").headline().foregroundColor(.neutral.shade300)
+                                    Text("Coba cek seluruh aktivitas kendaraanmu di sini").footnote(.regular).foregroundColor(.neutral.tone300)
+                                }
+                                Spacer()
+                            }
+                            .padding(.horizontal, 17)
+                            .padding(.top)
+                            ZStack{
+                                Image("ringkasan_data_card").resizable()
+                                    .scaledToFill()
+                                    .frame(width: 360, height: 200)
+                                    .clipped()
+                                    .overlay (
+                                        HStack{
+                                            Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
+                                            Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                                        }
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 6)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(.blue, lineWidth: 1)
+                                            )
+                                            .offset(y:-12)
+                                            .onTapGesture{
+                                                routes.navigate(to: .GuideView)
+                                            }
+                                        ,
+                                        alignment: .bottom
+                                    )
+                                    
+//                                HStack{
+//                                    Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
+//                                    Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+//                                }
+//                                .padding(.horizontal, 16).padding(.vertical, 8)
+//                                    .background(
+//                                        RoundedRectangle(cornerRadius: 10)
+//                                            .stroke(.blue, lineWidth: 1)
+//                                    )
+//                                    .offset(y: 60)
+//                                    .onTapGesture{
+//                                        routes.navigate(to: .GuideView)
+//                                    }
+                            }
+                            .padding(.bottom)
                         }
                         
-                    } else {
-                        if !filteredReminders.isEmpty {
-                            HStack{
-                                HaveReminderView().padding(.horizontal, 16)
-                            }
-                            SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                        } else {
-                            NoReminderView()
-            
-                        }
                     }
                     
+
                 }
-                Spacer()
-            }.onAppear {
+            }
+            
+            
+            .onAppear {
                 updateFilteredReminders()
                 
                 if locationManager.checkAuthorizationStatus() != .authorizedAlways {
