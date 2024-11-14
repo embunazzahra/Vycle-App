@@ -259,23 +259,20 @@ struct AddEditFramework: View {
                                 isRepeat: true,
                                 isDraft: false,
                                 isHelperOn: true,
-//                                reminderType: "Edited Reminder",
-//                                isUsingData: true,
+                                reminderType: "Edited Reminder",
                                 isEdited: true
                                 )
                         } else {
                             swiftDataService.editReminder(
                                 reminder: reminderToEdit,
                                 sparepart: selectedSparepart,
-//z                                reminderOdo: reminderOdo,
                                 kmInterval: Float(selectedNumber),
                                 dueDate: selectedDate.startOfMonth(),
                                 timeInterval: monthInterval,
                                 isRepeat: true,
                                 isDraft: false,
                                 isHelperOn: false,
-//                                reminderType: "Edited Reminder",
-//                                isUsingData: false,
+                                reminderType: "Edited Reminder",
                                 isEdited: true
                                 )
                         }
@@ -291,25 +288,27 @@ struct AddEditFramework: View {
                             isRepeat: true,
                             isDraft: false,
                             isHelperOn: false,
-//                            reminderType: "Manual Reminder",
-//                            isUsingData: false,
+                            reminderType: "Manual Reminder",
                             isEdited: false
                         )
                     }
                 }
                 
-                Button(action: {
-
-                }) {
-                    HStack {
-                        Image("delete")
-                        Text("Hapus Pengingat")
-                            .foregroundColor(Color.persianRed500)
-                            .body(.regular)
+                if !isResetHidden {
+                    Button(action: {
+                        if let reminderToEdit = reminderToEdit {
+                            deleteReminder(reminder: reminderToEdit)
+                        }
+                    }) {
+                        HStack {
+                            Image("delete")
+                            Text("Hapus Pengingat")
+                                .foregroundColor(Color.persianRed500)
+                                .body(.regular)
+                        }
                     }
+                    .padding(.bottom, 16)
                 }
-                .padding(.bottom, 16)
-
             }
             .navigationTitle(title)
             .navigationBarBackButtonHidden(false)
@@ -335,6 +334,49 @@ struct AddEditFramework: View {
         .onChange(of: selectedNumber) { _ in checkIfDataIsUsed() }
     }
     
+    private func deleteReminder(reminder: Reminder?) {
+        guard let reminder = reminder else { return }
+
+        let sparepartToDelete = reminder.sparepart.rawValue
+        print("Deleting all reminders with sparepart: \(sparepartToDelete)")
+
+        let fetchDescriptor = FetchDescriptor<Reminder>()
+
+        do {
+            let allReminders = try context.fetch(fetchDescriptor)
+            let remindersToDelete = allReminders.filter {
+                $0.sparepart.rawValue.caseInsensitiveCompare(sparepartToDelete) == .orderedSame
+            }
+
+            remindersToDelete.forEach { reminder in
+                NotificationManager.shared.cancelNotification(for: reminder)
+                context.delete(reminder)
+            }
+
+            reminders.removeAll {
+                $0.sparepart.rawValue.caseInsensitiveCompare(sparepartToDelete) == .orderedSame
+            }
+
+            try context.save()
+            print("Context successfully saved.")
+
+            refreshReminders()
+
+        } catch {
+            print("Failed to fetch or save context: \(error.localizedDescription)")
+        }
+    }
+
+    
+    private func refreshReminders() {
+        let fetchDescriptor = FetchDescriptor<Reminder>()
+        do {
+            reminders = try context.fetch(fetchDescriptor)
+        } catch {
+            print("Failed to fetch reminders: \(error.localizedDescription)")
+        }
+    }
+
         
     private func checkIfDataIsUsed() {
         guard let savedReminder = reminderToEdit,

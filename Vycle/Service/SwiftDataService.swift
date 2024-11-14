@@ -65,25 +65,40 @@ extension SwiftDataService {
         guard let latestOdometer = fetchOdometersForNotif().last else { return }
         
         let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
-        
-        print("Odometer terakhir: \(latestOdometer.currentKM)")
+        print("Latest odometer reading: \(latestOdometer.currentKM)")
         
         let locationHistory = fetchLocationHistoryForNotif()
         let totalLocationDistance = locationHistory.first?.distance ?? 0.0
         
+        // Track notifications for spare parts already processed in this loop
+        var notifiedSpareParts: Set<String> = []
+
         for reminder in activeReminders {
             let kilometerDifference = Double(reminder.kmInterval) - ((Double(latestOdometer.currentKM) + totalLocationDistance) - Double(reminder.reminderOdo))
-
+            
             print("Processing reminder: \(reminder.sparepart.rawValue), Kilometer Difference: \(kilometerDifference)")
             
+            // Skip if already notified for this spare part in this loop
+            if notifiedSpareParts.contains(reminder.sparepart.rawValue) {
+                continue
+            }
+            
             if kilometerDifference <= 0 {
-                print("inside 0 KM Difference for \(reminder.sparepart.rawValue)")
+                print("Inside 0 KM Difference for \(reminder.sparepart.rawValue)")
 
-                if shouldNotifyOnce(reminderID: reminder.id, sparepart: reminder.sparepart.rawValue) {
-                    print("Notification sent for \(reminder.sparepart)")
-                    sendImmediateNotification(for: reminder.sparepart)
-                    setLastNotifiedDate(reminderID: reminder.id, sparepart: reminder.sparepart.rawValue)
-                    scheduleRepeatingNotification(for: reminder.sparepart)
+                let remindersForSparePart = activeReminders.filter { $0.sparepart.rawValue == reminder.sparepart.rawValue }
+                
+                let sortedReminders = remindersForSparePart.sorted { $0.date > $1.date }
+                
+                if let latestReminder = sortedReminders.first {
+                    if latestReminder.id == reminder.id && shouldNotifyOnce(reminderID: reminder.id, sparepart: reminder.sparepart.rawValue) {
+                        print("Notification sent for \(reminder.sparepart.rawValue)")
+                        sendImmediateNotification(for: reminder.sparepart)
+                        setLastNotifiedDate(reminderID: reminder.id, sparepart: reminder.sparepart.rawValue)
+                        scheduleRepeatingNotification(for: reminder.sparepart)
+                        
+                        notifiedSpareParts.insert(reminder.sparepart.rawValue)
+                    }
                 }
                 
                 if !isDateUpdated(reminderID: reminder.id) {
@@ -92,12 +107,13 @@ extension SwiftDataService {
                 }
                 
             } else if kilometerDifference <= 500 {
-                print("inside 500 KM Difference")
+                print("Inside 500 KM Difference")
                 updateReminderDateToNow(reminder: reminder)
                 setDateUpdated(reminderID: reminder.id)
             }
         }
     }
+
 
     private func fetchLocationHistoryForNotif() -> [LocationHistory] {
         let fetchDescriptor = FetchDescriptor<LocationHistory>(sortBy: [SortDescriptor(\.time, order: .reverse)])
@@ -114,7 +130,9 @@ extension SwiftDataService {
                      isRepeat: reminder.isRepeat,
                      isDraft: reminder.isDraft,
                      isHelperOn: reminder.isDraft,
-                     isEdited: reminder.isEdited)
+                     reminderType: reminder.reminderType,
+                     isEdited: reminder.isEdited,
+                     date: reminder.date)
     }
 
     private func isDateUpdated(reminderID: PersistentIdentifier) -> Bool {
@@ -245,7 +263,7 @@ extension SwiftDataService {
                         isRepeat: true, // Set true if you want reminders to repeat
                         isDraft: true,
                         isHelperOn: false,
-//                        reminderType: "Service Reminder",
+                        reminderType: "Service Reminder",
 //                        isUsingData: true,
                         isEdited: false
                     )
@@ -323,7 +341,7 @@ extension SwiftDataService {
 }
 
 extension SwiftDataService {
-    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, isEdited: Bool) {
+    func insertReminder(sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, reminderType: String, isEdited: Bool) {
         let existingReminders = fetchReminders(for: sparepart, dueBefore: dueDate)
         
         for reminder in existingReminders {
@@ -342,6 +360,7 @@ extension SwiftDataService {
             isRepeat: isRepeat,
             isDraft: isDraft,
             isHelperOn: false,
+            reminderType: "Manual Reminder",
             isEdited: false
         )
         
@@ -369,10 +388,8 @@ extension SwiftDataService {
         }
     }
 
-
-
     
-    func editReminder(reminder: Reminder, sparepart: Sparepart, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, isEdited: Bool) {
+    func editReminder(reminder: Reminder, sparepart: Sparepart, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, reminderType: String, isEdited: Bool, date: Date? = nil) {
         reminder.sparepart = sparepart
         reminder.kmInterval = kmInterval
         reminder.dueDate = dueDate
@@ -380,18 +397,30 @@ extension SwiftDataService {
         reminder.isRepeat = isRepeat
         reminder.isDraft = isDraft
         reminder.isHelperOn = isHelperOn
-//        reminder.reminderType = "Edited Reminder"
-//        reminder.isUsingData = isUsingData
+        reminder.reminderType = "Edited Reminder"
         reminder.isEdited = true
+        reminder.date = Date()
         saveModelContext()
         
-        NotificationManager.shared.cancelNotification(for: reminder)
-        NotificationManager.shared.scheduleNotification(for: reminder)
+        let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
+        
+        let remindersForSparePart = activeReminders.filter { $0.sparepart.rawValue == reminder.sparepart.rawValue }
+        let sortedReminders = remindersForSparePart.sorted { $0.dueDate > $1.dueDate }
+        
+        if let latestReminder = sortedReminders.first {
+            if latestReminder.id == reminder.id {
+                NotificationManager.shared.cancelNotification(for: reminder)
+                
+                NotificationManager.shared.scheduleNotification(for: reminder)
+                
+                print("Notification canceled and rescheduled for \(reminder.sparepart.rawValue) with due date \(reminder.dueDate)")
+            }
+        }
         
         print("Reminder edited successfully!")
     }
     
-    func editDraft(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, isEdited: Bool) {
+    func editDraft(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, reminderType: String, isEdited: Bool) {
         reminder.sparepart = sparepart
         reminder.reminderOdo = reminderOdo
         reminder.kmInterval = kmInterval
@@ -400,20 +429,31 @@ extension SwiftDataService {
         reminder.isRepeat = isRepeat
         reminder.isDraft = isDraft
         reminder.isHelperOn = isHelperOn
-//        reminder.reminderType = "Edited Reminder"
-//        reminder.isUsingData = isUsingData
+        reminder.reminderType = reminderType
         reminder.isEdited = true
         saveModelContext()
         
-        NotificationManager.shared.cancelNotification(for: reminder)
-        NotificationManager.shared.scheduleNotification(for: reminder)
+        let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
+        
+        let remindersForSparePart = activeReminders.filter { $0.sparepart.rawValue == reminder.sparepart.rawValue }
+        let sortedReminders = remindersForSparePart.sorted { $0.dueDate > $1.dueDate }
+        
+        if let latestReminder = sortedReminders.first {
+            if latestReminder.id == reminder.id {
+                NotificationManager.shared.cancelNotification(for: reminder)
+                
+                NotificationManager.shared.scheduleNotification(for: reminder)
+                
+                print("Notification canceled and rescheduled for \(reminder.sparepart.rawValue) with due date \(reminder.dueDate)")
+            }
+        }
+        
         
         print("Reminder edited successfully!")
     }
 }
 
 extension SwiftDataService {
-    // Function to save a new service to the database
     func saveNewService(selectedDate: Date,
                         selectedParts: Set<Sparepart>,
                         odometerValue: Float,
@@ -464,17 +504,49 @@ extension SwiftDataService {
     }
     
     func deleteHistory(for service: Servis) {
-        if let lastService = modelContext.model(for: service.persistentModelID) as? Servis {
-            // sebelum delete reminder, cek dulu apakah ada existing reminder dengan nama sparepart yang sama, apabila ada, ambil sparepart terbaru tersebut untuk menambahkan notif
+        guard let lastService = modelContext.model(for: service.persistentModelID) as? Servis else {
+            print("Service not found")
+            return
+        }
+
+        print("Reminders for last service: \(lastService.reminders)")
+        print("Spare part for last service: \(lastService.servicedSparepart)")
+
+        do {
+            let allReminders = try modelContext.fetch(FetchDescriptor<Reminder>())
+            let sparePartName = lastService.reminders.first?.sparepart.rawValue ?? ""
+            
+            let remindersWithSameSparePart = allReminders.filter { $0.sparepart.rawValue == sparePartName }
+            
+            if let latestReminder = remindersWithSameSparePart.sorted(by: { $0.date > $1.date }).first {
+                NotificationManager.shared.cancelNotification(for: latestReminder)
+                print("Cancelled notification for the last reminder with spare part: \(sparePartName)")
+            }
             
             modelContext.deleteParentAndChildren(parent: lastService, childrenKeyPath: \Servis.reminders)
+            print("Successfully deleted the service and all associated reminders for spare part: \(sparePartName)")
             
-        } else {
-            print("vehicle not found")
+            saveModelContext()
+            
+            // fetch lagi buat dapetin data terbaru
+            let updatedReminders = try modelContext.fetch(FetchDescriptor<Reminder>())
+            let remainingRemindersWithSameSparePart = updatedReminders.filter {
+                $0.sparepart.rawValue == sparePartName && !$0.isDeleted
+            }
+            
+            if let newLatestReminder = remainingRemindersWithSameSparePart.sorted(by: { $0.date > $1.date }).first {
+                NotificationManager.shared.scheduleNotification(for: newLatestReminder)
+                print("Scheduled notification for the new latest reminder with spare part: \(sparePartName)")
+            } else {
+                print("No remaining reminders with spare part: \(sparePartName)")
+            }
+            
+        } catch {
+            print("Failed to fetch reminders: \(error)")
         }
-    
-        saveModelContext()
     }
+
+
     
     func createReminder(for vehicle: Vehicle,
                         with odometer: Float,
@@ -486,6 +558,7 @@ extension SwiftDataService {
         for sparepart in selectedParts {
             let existingReminders = fetchReminders(for: sparepart, dueBefore: service.date)
             print("existingReminders: \(existingReminders.count)")
+            
             for reminder in existingReminders {
                 NotificationManager.shared.cancelNotification(for: reminder)
                 print("Canceled notification for existing reminder: \(reminder.sparepart)")
@@ -495,29 +568,51 @@ extension SwiftDataService {
                 continue
             }
             
-            let reminderOdo = odometer
-            let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: service.date) ?? Date()
+            let latestReminder = existingReminders.sorted { $0.date > $1.date }.first
             
-            // Create a new reminder
+            let kmInterval: Float
+            let timeInterval: Int
+            let dueDate: Date
+            
+            if let latestReminder = latestReminder {
+                print("Latest dueDate: \(latestReminder.dueDate)")
+
+                print("Latest timeInterval: \(latestReminder.timeInterval)")
+
+                print("Latest kmInterval: \(latestReminder.kmInterval)")
+
+                print("in latestReminder")
+                kmInterval = latestReminder.kmInterval
+                timeInterval = latestReminder.timeInterval
+                dueDate = latestReminder.dueDate
+            } else {
+                print("else latestReminder")
+                kmInterval = Float(interval.kilometer)
+                timeInterval = interval.month
+                dueDate = Calendar.current.date(byAdding: .month, value: timeInterval, to: service.date) ?? Date()
+            }
             let newReminder = Reminder(
                 date: service.date,
                 sparepart: sparepart,
-                reminderOdo: reminderOdo,
-                kmInterval: Float(interval.kilometer),
+                reminderOdo: odometer,
+                kmInterval: kmInterval,
                 dueDate: dueDate,
-                timeInterval: interval.month,
+                timeInterval: timeInterval,
                 vehicle: service.vehicle,
                 isRepeat: true,
                 isDraft: false,
                 service: service,
                 isHelperOn: true,
+                reminderType: "Service Reminder",
                 isEdited: false
             )
             
             NotificationManager.shared.scheduleNotification(for: newReminder)
             
             modelContext.insert(newReminder)
+            
         }
+
         
         do {
             try modelContext.save()
@@ -546,7 +641,7 @@ extension ModelContext {
         for child in children {
             self.delete(child)  // Hapus setiap child
         }
-        
+    
         
         self.delete(parent)  // Hapus parent setelah child dihapus
         

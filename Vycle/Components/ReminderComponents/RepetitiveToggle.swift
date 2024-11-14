@@ -58,7 +58,7 @@ struct RepetitiveToggle: View {
                 }
                 .padding(.horizontal, 16)
             }
-            
+                    
         }
     }
 }

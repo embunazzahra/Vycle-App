@@ -24,8 +24,8 @@ class NotificationManager {
     
     func scheduleNotification(for reminder: Reminder) {
         let content = UNMutableNotificationContent()
-        content.title = "Reminder for \(reminder.sparepart.rawValue)"
-        content.body = "It's time to service your \(reminder.sparepart.rawValue) in your vehicle!"
+        content.title = "🚗 Honk! Kilometer suku cadang sudah mendekat, siap ganti!"
+        content.body = "Waktunya untuk cek dan ganti \(reminder.sparepart.rawValue) biar kendaraanmu tetap prima di jalan! 🔧✨"
         content.sound = .default
         
         let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: reminder.dueDate)
@@ -57,7 +57,6 @@ class NotificationManager {
         let notificationID = reminder.reminderID.uuidString
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationID])
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["\(notificationID)-repeat"])
-        print("Notification for \(reminder.sparepart.rawValue) cancelled.")
+        print("Notification for \(reminder.sparepart.rawValue) cancelled at \(reminder.dueDate).")
     }
-    
 }
