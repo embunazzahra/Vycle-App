@@ -20,7 +20,9 @@ struct AddEditFramework: View {
     @State private var isMonthYearChosen = false
     @State private var isKilometerChosen = false
     @State private var isNotificationShowed = false
+    @State private var isCancelShowed = false
 
+    
     @State private var selectedDate: Date
     @State private var selectedNumber: Int
     @State private var selectedSparepart: Sparepart
@@ -125,17 +127,6 @@ struct AddEditFramework: View {
             print("Reset to default: isDataUsed:", isDataUsed)
         }
     }
-
-    
-//    func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
-//        guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
-//            return nil
-//        }
-//        
-//        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: Date()) ?? Date()
-//        
-//        return (interval, dueDate)
-//    }
     
     func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
         guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
@@ -147,7 +138,6 @@ struct AddEditFramework: View {
         
         return (interval, dueDate)
     }
-
 
     var body: some View {
         ZStack {
@@ -162,20 +152,61 @@ struct AddEditFramework: View {
                                   RoundedRectangle(cornerRadius: 12)
                                     .stroke(Color.primary.base, lineWidth: 1)
                               )
-                            .padding(.horizontal, 16)
                         HStack {
-                            Spacer()
                             Image("Info_blue")
                                 .padding(.bottom, 10)
                             Text("Pengingat yang disediakan merupakan data dari buku manual merk kendaraanmu")
                                 .caption1(.regular)
                                 .foregroundColor(Color.primary.base)
                             Spacer()
-                        }
-                        .padding(.horizontal, 16)
+                        } .padding(.leading, 10)
                     }
+                    .padding(.horizontal, 16)
                     .padding(.top, 16)
                     .padding(.bottom, -16)
+                }
+                
+                if let reminderToEdit = reminderToEdit {
+                    ZStack {
+                        Rectangle()
+                            .cornerRadius(8)
+                            .frame(height: 36)
+                            .foregroundColor(Color.neutral.tint100)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.neutral.tone300, lineWidth: 1)
+                            )
+                        
+                        HStack {
+                            Image("event")
+                            
+                            let dateFormatter: DateFormatter = {
+                                let formatter = DateFormatter()
+                                formatter.dateFormat = "MM/dd/yyyy"
+                                return formatter
+                            }()
+
+                            if reminders.contains(where: { $0.reminderType == "Service Reminder" }) {
+                                Text("Pengingat berasal dari servis pada \(dateFormatter.string(from: reminderToEdit.date))")
+                                    .caption1(.regular)
+                                    .foregroundColor(Color.neutral.tone300)
+                            } else if reminders.contains(where: { $0.reminderType == "Manual Reminder" }) {
+                                Text("Pengingat dibuat secara manual pada \(dateFormatter.string(from: reminderToEdit.date))")
+                                    .caption1(.regular)
+                                    .foregroundColor(Color.neutral.tone300)
+                            } else if reminders.contains(where: { $0.reminderType == "Edited Reminder" }) {
+                                Text("Pengingat dibuat secara manual pada \(dateFormatter.string(from: reminderToEdit.date))")
+                                    .caption1(.regular)
+                                    .foregroundColor(Color.neutral.tone300)
+                            }
+                            
+                            Spacer()
+                        } .padding(.leading, 10)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, -16)
+
                 }
                 
                 SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
@@ -296,9 +327,7 @@ struct AddEditFramework: View {
                 
                 if !isResetHidden {
                     Button(action: {
-                        if let reminderToEdit = reminderToEdit {
-                            deleteReminder(reminder: reminderToEdit)
-                        }
+                        isCancelShowed = true
                     }) {
                         HStack {
                             Image("delete")
@@ -312,7 +341,7 @@ struct AddEditFramework: View {
             }
             .navigationTitle(title)
             .navigationBarBackButtonHidden(false)
-            .navigationBarHidden(isNotificationShowed)
+            .navigationBarHidden(isNotificationShowed || isCancelShowed)
             .id(resetTrigger)
 
             if isNotificationShowed {
@@ -321,6 +350,62 @@ struct AddEditFramework: View {
                 successNotification()
                     .transition(.opacity)
             }
+            
+            if isCancelShowed {
+                Color.black.opacity(0.6)
+                    .edgesIgnoringSafeArea(.all)
+                
+                ZStack {
+                    Rectangle()
+                        .frame(width: 261, height: 300)
+                        .cornerRadius(12)
+                        .foregroundStyle(Color.neutral.tint300)
+                    
+                    VStack {
+                        Spacer()
+                        Image("cancel icon")
+                        Text("Yakin Nih?")
+                            .title2(.emphasized)
+                            .foregroundColor(Color.neutral.tone300)
+                            .padding(.bottom, 2)
+                        Text("Pengingat suku cadang ini tidak akan muncul di daftar pengingat lhoo")
+                            .callout(.regular)
+                            .foregroundColor(Color.neutral.tone100)
+                            .frame(width: 200)
+                            .multilineTextAlignment(.center)
+                          
+                        Button(action: {
+                            isCancelShowed = false
+                        }) {
+                            ZStack {
+                                Rectangle()
+                                    .frame(width: 128, height: 40)
+                                    .cornerRadius(12)
+                                    .foregroundColor(Color.blueLoyaltyTone100)
+                                Text("Tetap simpan")
+                                    .body(.regular)
+                                    .foregroundColor(Color.neutral.tint300)
+                            }
+                        }
+                        .padding(.top, 10)
+                        
+                        Button(action: {
+                            if let reminderToEdit = reminderToEdit {
+                                deleteReminder(reminder: reminderToEdit)
+                            }
+                            routes.navigateBack()
+                        }) {
+                           Text("Lanjutkan hapus")
+                                .body(.regular)
+                                .foregroundColor(Color.persianRed500)
+                        }
+                        .padding(1)
+
+                        Spacer()
+                    }
+                } .transition(.opacity)
+            }
+            
         }
         .animation(.easeInOut, value: isNotificationShowed)
         .onAppear {

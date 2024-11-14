@@ -16,8 +16,8 @@ struct ReminderContentNoData: View {
             Image("empty_state_reminder")
                 .font(.system(size: 100))
                 .padding(8)
-                .foregroundColor(Color.blue)
-            
+                .foregroundColor(Color.blueLoyaltyTone100)
+
             HStack {
                 Spacer()
                 Text("Tambahkan pengingat dengan tombol di bawah ini yuk")
