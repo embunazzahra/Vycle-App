@@ -137,22 +137,59 @@ struct TotalCostView: View {
 }
 
 struct SparepartDataCard: View {
+    var sparepart: Sparepart
+    var count: Int
+    
+    private var imageName: String {
+        switch sparepart {
+        case .oliMesin:
+            return "olimesin_twotone"
+            
+        case .busi:
+            return "busi_twotone"
+
+        case .filterOli:
+            return "filteroli_twotone"
+
+        case .minyakKopling:
+            return "minyakkopling_twotone"
+
+        case .minyakRem:
+            return "minyakrem_twotone"
+            
+        case .oliTransmisi:
+            return "olitransmisi_twotone"
+            
+        case .airCoolant:
+            return "aircoolant_twotone"
+            
+        case .filterUdara:
+            return "filterudara_twotone"
+            
+        case .oliGardan:
+            return "oligardan_twotone"
+
+        default:
+            return ""
+        }
+    }
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color.primary.tone300)
                 .overlay(
-                    Image("filterudara_twotone"),
+                    Image(imageName),
                     alignment: .bottomTrailing
                 )
             
             HStack{
                 VStack {
-                    Text("Filter udara")
+                    Text(sparepart.rawValue)
                         .foregroundStyle(Color.neutral.tint300)
                         .font(.footnote)
                     HStack(spacing: 3){
-                        Text("5")
+                        Text("\(count)")
                             .font(.title3)
                             .fontWeight(.semibold)
                             .foregroundStyle(Color.neutral.tint300)
@@ -186,7 +223,7 @@ struct SparepartDataView: View {
                     .font(.footnote)
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
                     ForEach(sparepartData, id: \.self) { card in
-                        SparepartDataCard()
+                        SparepartDataCard(sparepart: .filterUdara, count: 5)
                     }
                 }
             }
