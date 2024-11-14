@@ -15,12 +15,64 @@ struct DataSummaryView: View {
         VStack(spacing: 12){
             Text("Ringkasan servis kendaraanmu di VYCLE! Lihat semua riwayat servis dengan mudah di satu tempat")
                 .font(.subheadline)
-            TotalMileageView()
-            SparepartDataView(sparepartData: sparepartData)
-            TotalCostView()
+            
+            ZStack{
+                HStack{
+                    ForEach((TabbedItems.allCases), id: \.self){ item in
+                        Button{
+                            selectedTab = item.rawValue
+                        } label: {
+                            CustomTabItem( title: item.title, isActive: (selectedTab == item.rawValue))
+                        }
+                        // Add separator except for the last item
+                        if item != TabbedItems.allCases.last && selectedTab != item.rawValue {
+                            Image("separator")
+                        }
+                    }
+                }
+                .padding(6)
+            }
+            .background(Color.primary.tint300.opacity(0.75))
+            .cornerRadius(9)
+            
+            TabView(selection: $selectedTab) {
+                VStack {
+                    TotalMileageView()
+                    SparepartDataView(sparepartData: sparepartData)
+                    TotalCostView()
+                    Spacer()
+                }
+                .tag(0)
+                
+                VStack {
+                    TotalMileageView()
+                    SparepartDataView(sparepartData: sparepartData)
+                    TotalCostView()
+                    Spacer()
+                }
+                .tag(1)
+                
+                VStack {
+                    TotalMileageView()
+                    SparepartDataView(sparepartData: sparepartData)
+                    TotalCostView()
+                    Spacer()
+                }
+                .tag(2)
+                
+                VStack {
+                    TotalMileageView()
+                    SparepartDataView(sparepartData: sparepartData)
+                    TotalCostView()
+                    Spacer()
+                }
+                .tag(3)
+            }
+            
         }
         .padding()
     }
+    
 }
 
 #Preview {
@@ -158,5 +210,41 @@ struct SparepartDataView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
         }
+    }
+}
+
+enum TabbedItems: Int, CaseIterable{
+    case ytd = 0
+    case threeYears
+    case fiveYears
+    case all
+    
+    var title: String{
+        switch self {
+        case .ytd:
+            return "YTD"
+        case .threeYears:
+            return "3 Tahun"
+        case .fiveYears:
+            return "5 Tahun"
+        case .all:
+            return "Seluruhnya"
+        }
+    }
+}
+
+extension DataSummaryView{
+    func CustomTabItem(title: String, isActive: Bool) -> some View{
+        HStack(spacing: 10){
+            Spacer()
+            Text(title)
+                .font(.system(size: 14))
+                .foregroundColor(isActive ? .white : .black)
+                .fontWeight(isActive ? .semibold : .regular)
+            Spacer()
+        }
+        .frame(height: 24)
+        .background(isActive ? Color.primary.shade200 : .clear)
+        .cornerRadius(8)
     }
 }
