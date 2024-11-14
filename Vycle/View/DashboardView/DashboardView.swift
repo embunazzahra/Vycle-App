@@ -12,7 +12,7 @@ struct DashboardView: View {
     @EnvironmentObject var routes: Routes
     @ObservedObject var locationManager: LocationManager
     @Query var trips: [Trip]
-//    @Query var vehicles : [Vehicle]
+    //    @Query var vehicles : [Vehicle]
     
     @State private var showSettingsAlert = false
     @Query var reminders : [Reminder]
@@ -58,8 +58,8 @@ struct DashboardView: View {
                         VStack{
                             HStack{
                                 BTIndicator(locationManager: locationManager).onTapGesture {
-    //                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
-    //                                showBluetoothSheet.toggle()
+                                    //                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
+                                    //                                showBluetoothSheet.toggle()
                                     routes.navigate(to: .BeaconConfigView)
                                 }
                                 Spacer()
@@ -166,64 +166,21 @@ struct DashboardView: View {
                                     HaveReminderView().padding(.horizontal, 16)
                                 }
                                 SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                                DataSummaryCardView()
+                                
                             } else {
+                                DataSummaryCardView()
+                                    .offset(y: -30)
                                 NoReminderView()
+                                    .offset(y: -30)
                                 
                             }
-                            //Data analytics
-                            HStack(alignment: .top){
-                                VStack(alignment: .leading){
-                                    Text("Ada ringkasan data, nih😉").headline().foregroundColor(.neutral.shade300)
-                                    Text("Coba cek seluruh aktivitas kendaraanmu di sini").footnote(.regular).foregroundColor(.neutral.tone300)
-                                }
-                                Spacer()
-                            }
-                            .padding(.horizontal, 17)
-                            .padding(.top)
-                            ZStack{
-                                Image("ringkasan_data_card").resizable()
-                                    .scaledToFill()
-                                    .frame(width: 360, height: 200)
-                                    .clipped()
-                                    .overlay (
-                                        HStack{
-                                            Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
-                                            Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
-                                        }
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 6)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .stroke(.blue, lineWidth: 1)
-                                            )
-                                            .offset(y:-12)
-                                            .onTapGesture{
-                                                routes.navigate(to: .GuideView)
-                                            }
-                                        ,
-                                        alignment: .bottom
-                                    )
-                                    
-//                                HStack{
-//                                    Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
-//                                    Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
-//                                }
-//                                .padding(.horizontal, 16).padding(.vertical, 8)
-//                                    .background(
-//                                        RoundedRectangle(cornerRadius: 10)
-//                                            .stroke(.blue, lineWidth: 1)
-//                                    )
-//                                    .offset(y: 60)
-//                                    .onTapGesture{
-//                                        routes.navigate(to: .GuideView)
-//                                    }
-                            }
-                            .padding(.bottom)
+                            
                         }
                         
                     }
                     
-
+                    
                 }
             }
             
@@ -252,9 +209,9 @@ struct DashboardView: View {
             
         }}
     
-//    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-//        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
-//    }
+    //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+    //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+    //    }
     
     private func getRoundedOdometer() -> Int {
         let totalDistance = calculateTotalDistance() ?? 0
@@ -280,17 +237,17 @@ struct DashboardView: View {
                     return !$0.isDraft
                 } else {
                     return getKilometerDifference(currentKilometer: currentKilometer, reminder: $0) <
-                           getKilometerDifference(currentKilometer: currentKilometer, reminder: $1)
+                        getKilometerDifference(currentKilometer: currentKilometer, reminder: $1)
                 }
             }
             .prefix(2)
         )
     }
-
-
+    
+    
     private func getUniqueReminders(_ reminders: [Reminder]) -> [Reminder] {
         var uniqueReminders: [String: Reminder] = [:]
-
+        
         for reminder in reminders {
             let sparepartKey = reminder.sparepart.rawValue
             
@@ -302,7 +259,7 @@ struct DashboardView: View {
                 uniqueReminders[sparepartKey] = reminder
             }
         }
-
+        
         return Array(uniqueReminders.values)
     }
     
@@ -317,12 +274,12 @@ struct DashboardView: View {
                 return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
             }
         }
-
-//        if reminder.isDraft == true {
-//            return 0.0
-//        }
-//        
-//        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
+        
+        //        if reminder.isDraft == true {
+        //            return 0.0
+        //        }
+        //
+        //        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
     }
     
     func openAppSettings() {
@@ -352,12 +309,73 @@ struct DashboardView: View {
     
 }
 
+#Preview {
+    DashboardView(locationManager: LocationManager())
+}
+
 
 struct NoReminderView : View {
     var body: some View {
         Image("no-service-dashboard")
         Text("Belum ada suku cadang yang mendesak").headline().foregroundColor(.neutral.shade300)
         Text("Saat ini aman, tapi pastikan siap sebelum waktunya tiba").footnote(.regular).foregroundColor(.neutral.tone300)
+        
+    }
+}
+
+struct DataSummaryCardView : View {
+    @EnvironmentObject var routes: Routes
+    
+    var body: some View {
+        //Data analytics
+        HStack(alignment: .top){
+            VStack(alignment: .leading){
+                Text("Ada ringkasan data, nih😉").headline().foregroundColor(.neutral.shade300)
+                Text("Coba cek seluruh aktivitas kendaraanmu di sini").footnote(.regular).foregroundColor(.neutral.tone300)
+            }
+            Spacer()
+        }
+        .padding(.horizontal)
+        
+        ZStack{
+            Image("ringkasan_data_card").resizable()
+                .scaledToFill()
+                .frame(width: 360, height: 200)
+                .clipped()
+                .overlay (
+                    HStack{
+                        Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
+                        Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                    }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(.blue, lineWidth: 1)
+                        )
+                        .offset(y:-12)
+                        .onTapGesture{
+                            routes.navigate(to: .GuideView)
+                        }
+                    ,
+                    alignment: .bottom
+                )
+            
+            //                                HStack{
+            //                                    Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
+            //                                    Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+            //                                }
+            //                                .padding(.horizontal, 16).padding(.vertical, 8)
+            //                                    .background(
+            //                                        RoundedRectangle(cornerRadius: 10)
+            //                                            .stroke(.blue, lineWidth: 1)
+            //                                    )
+            //                                    .offset(y: 60)
+            //                                    .onTapGesture{
+            //                                        routes.navigate(to: .GuideView)
+            //                                    }
+        }
+        .padding(.bottom)
         
     }
 }
@@ -474,12 +492,12 @@ struct OdometerSheet: View {
             VStack{
                 Spacer()
                 CustomButton(title: "Simpan Perubahan"){
-//                    SwiftDataService.shared.insertOnBoarding(
-//                        vehicleType: .car,
-//                        vehicleBrand: .car(.honda),
-//                        odometer: odometer ?? 0,
-//                        serviceHistory: []
-//                    )
+                    //                    SwiftDataService.shared.insertOnBoarding(
+                    //                        vehicleType: .car,
+                    //                        vehicleBrand: .car(.honda),
+                    //                        odometer: odometer ?? 0,
+                    //                        serviceHistory: []
+                    //                    )
                     SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
                     SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
                     showOdoSheet.toggle()
