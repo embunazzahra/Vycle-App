@@ -26,7 +26,7 @@ struct DashboardView: View {
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
-    @State private var dummyReminder: Reminder = Reminder(date: Date(), sparepart: .airCoolant, reminderOdo: 123, kmInterval: 123, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleID: UUID(), vehicleType: .car, brand: .car(.daihatsu)), isRepeat: true, isDraft: false, isHelperOn: false, reminderType: "hh", isUsingData: true)
+    
     
     var totalDistance: Double {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
@@ -169,8 +169,11 @@ struct DashboardView: View {
                                     }
                                     SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                                     
-                                    SparepartReminderCard(reminder: $dummyReminder, currentKM: totalDistance)
-                                        .contentShape(Rectangle())
+                                    ForEach(filteredReminders.indices, id: \.self) { index in
+                                        SparepartReminderCard(reminder: $filteredReminders[index], currentKM: totalDistance)
+                                            .contentShape(Rectangle())
+                                    }
+
                                     
                                     
                                     DataSummaryCardView()
