@@ -12,67 +12,48 @@ struct DataSummaryView: View {
     @State private var selectedTab: Int = 0 // 0: YTD, 1: 3 Tahun, 2: 5 Tahun, 3: Seluruhnya
     
     var body: some View {
+        
         VStack(spacing: 12){
-            Text("Ringkasan servis kendaraanmu di VYCLE! Lihat semua riwayat servis dengan mudah di satu tempat")
-                .font(.subheadline)
-            
-            ZStack{
-                HStack{
-                    ForEach((TabbedItems.allCases), id: \.self){ item in
-                        Button{
-                            selectedTab = item.rawValue
-                        } label: {
-                            CustomTabItem( title: item.title, isActive: (selectedTab == item.rawValue))
-                        }
-                        // Add separator except for the last item
-                        if item != TabbedItems.allCases.last && selectedTab != item.rawValue {
-                            Image("separator")
+            VStack {
+                Text("Ringkasan servis kendaraanmu di VYCLE! Lihat semua riwayat servis dengan mudah di satu tempat")
+                    .font(.subheadline)
+                
+                ZStack{
+                    HStack{
+                        ForEach((TabbedItems.allCases), id: \.self){ item in
+                            Button{
+                                selectedTab = item.rawValue
+                            } label: {
+                                CustomTabItem( title: item.title, isActive: (selectedTab == item.rawValue))
+                            }
+                            // Add separator except for the last item
+                            if item != TabbedItems.allCases.last && selectedTab != item.rawValue {
+                                Image("separator")
+                            }
                         }
                     }
+                    .padding(6)
                 }
-                .padding(6)
+                .background(Color.gray.opacity(0.12))
+                .cornerRadius(9)
             }
-            .background(Color.primary.tint300.opacity(0.75))
-            .cornerRadius(9)
             
-            TabView(selection: $selectedTab) {
-                VStack {
-                    TotalMileageView()
-                    SparepartDataView(sparepartData: sparepartData)
-                    TotalCostView()
-                    Spacer()
-                }
-                .tag(0)
-                
-                VStack {
-                    TotalMileageView()
-                    SparepartDataView(sparepartData: sparepartData)
-                    TotalCostView()
-                    Spacer()
-                }
-                .tag(1)
-                
-                VStack {
-                    TotalMileageView()
-                    SparepartDataView(sparepartData: sparepartData)
-                    TotalCostView()
-                    Spacer()
-                }
-                .tag(2)
-                
-                VStack {
-                    TotalMileageView()
-                    SparepartDataView(sparepartData: sparepartData)
-                    TotalCostView()
-                    Spacer()
-                }
-                .tag(3)
+            
+            // Custom content view based on the selected tab
+            if selectedTab == 0 {
+                DataContentView(sparepartData: sparepartData)
+            } else if selectedTab == 1 {
+                DataContentView(sparepartData: sparepartData)
+            } else if selectedTab == 2 {
+                DataContentView(sparepartData: sparepartData)
+            } else if selectedTab == 3 {
+                DataContentView(sparepartData: sparepartData)
             }
+            
             
         }
         .padding()
     }
-    
 }
 
 #Preview {
@@ -83,7 +64,7 @@ struct TotalMileageView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.primary.shade100)
+                .fill(Color.primary.shade300)
                 .frame(maxWidth: .infinity, maxHeight: 107)
             HStack {
                 Image("street_car")
@@ -121,7 +102,7 @@ struct TotalCostView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.primary.shade100)
+                .fill(Color.primary.shade300)
                 .frame(maxWidth: .infinity, maxHeight: 107)
             HStack {
                 Image("cost_icon")
@@ -157,7 +138,7 @@ struct SparepartDataCard: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.primary.shade300)
+                .fill(Color.primary.tone300)
                 .overlay(
                     Image("filterudara_twotone"),
                     alignment: .bottomTrailing
@@ -195,7 +176,7 @@ struct SparepartDataView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.primary.shade100)
+                .fill(Color.primary.shade300)
                 .frame(maxWidth: .infinity, maxHeight: 321)
             VStack(alignment: .leading) {
                 Text("Komponen yang telah diganti")
@@ -246,5 +227,24 @@ extension DataSummaryView{
         .frame(height: 24)
         .background(isActive ? Color.primary.shade200 : .clear)
         .cornerRadius(8)
+    }
+}
+
+struct DataContentView: View {
+    var sparepartData: [Int]
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 12){
+                TotalMileageView()
+                SparepartDataView(sparepartData: sparepartData)
+                TotalCostView()
+                CustomButton(title: "Bagikan",  iconName: "share_icon", iconPosition: .left, buttonType: .primary,horizontalPadding: 0, verticalPadding: 0) {
+                    print("Tes")
+                }
+            }
+        }
+        
+        
     }
 }
