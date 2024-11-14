@@ -107,7 +107,8 @@ struct ContentView: View {
                                     ReminderView(locationManager: locationManager)
                                 case .GuideView:
                                     GuideView()
-                                
+                                case .DataSummaryView:
+                                    DataSummaryView()
                             }
                         }
                         .toolbar {
