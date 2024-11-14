@@ -129,6 +129,10 @@ struct DashboardView: View {
                     .cornerRadius(12)
                     .shadow(radius: 4, y: 2)
                 }.padding(.horizontal, 16).offset(y: -45)
+                
+                CustomButton(title: "rangkuman data") {
+                    routes.navigate(to: .DataSummaryView)
+                }
 
                 VStack {
                     if SwiftDataService.shared.fetchServices().isEmpty{

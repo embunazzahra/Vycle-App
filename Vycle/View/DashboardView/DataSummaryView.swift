@@ -53,6 +53,8 @@ struct DataSummaryView: View {
             
         }
         .padding()
+        .ignoresSafeArea(edges: .bottom)
+        
     }
 }
 
