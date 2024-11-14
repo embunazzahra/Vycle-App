@@ -8,30 +8,15 @@
 import SwiftUI
 
 struct DataSummaryView: View {
-    let cards = Array(1...9)
+    var sparepartData = Array(1...9)
+    @State private var selectedTab: Int = 0 // 0: YTD, 1: 3 Tahun, 2: 5 Tahun, 3: Seluruhnya
     
     var body: some View {
         VStack(spacing: 12){
             Text("Ringkasan servis kendaraanmu di VYCLE! Lihat semua riwayat servis dengan mudah di satu tempat")
                 .font(.subheadline)
             TotalMileageView()
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.primary.shade100)
-                    .frame(maxWidth: .infinity, maxHeight: 321)
-                VStack(alignment: .leading) {
-                    Text("Komponen yang telah diganti")
-                        .foregroundStyle(Color.neutral.tint300)
-                        .font(.footnote)
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
-                        ForEach(cards, id: \.self) { card in
-                            SparepartDataCard()
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-            }
+            SparepartDataView(sparepartData: sparepartData)
             TotalCostView()
         }
         .padding()
@@ -149,5 +134,29 @@ struct SparepartDataCard: View {
             .padding(8)
         }
         .frame(maxWidth: 108, maxHeight: 85)
+    }
+}
+
+struct SparepartDataView: View {
+    var sparepartData: [Int]
+    
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.primary.shade100)
+                .frame(maxWidth: .infinity, maxHeight: 321)
+            VStack(alignment: .leading) {
+                Text("Komponen yang telah diganti")
+                    .foregroundStyle(Color.neutral.tint300)
+                    .font(.footnote)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
+                    ForEach(sparepartData, id: \.self) { card in
+                        SparepartDataCard()
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+        }
     }
 }
