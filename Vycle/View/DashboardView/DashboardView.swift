@@ -46,6 +46,78 @@ struct DashboardView: View {
                         if SwiftDataService.shared.fetchServices().isEmpty {
                             Image("dashboard_empty")
                                 .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.orange)
+                                .frame(height: 40)
+                        } else {
+                            Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.orange)
+                                .frame(height: 40)
+                        }
+                        VStack(alignment: .leading, spacing: 4){
+                            Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
+                            if !locationHistory.isEmpty {
+                                let totalDistance = calculateTotalDistance() ?? 0
+                                Text("\(Int(totalDistance)) Kilometer")
+                                    .headline()
+                                    .foregroundStyle(.grayShade300)
+                            } else {
+                                Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
+                                    .headline()
+                                    .foregroundStyle(.grayShade300)
+                            }
+                            
+                            
+                        }.padding(.horizontal, 10)
+                        Spacer()
+                        
+                        VStack{
+                            Button(action: {
+                                // Action for editing
+                                _ = calculateTotalDistance()
+                                showOdoSheet.toggle()
+                                
+                            }) {
+                                Image(systemName: "pencil").foregroundStyle(Color.primary.shade100)
+                            }.frame(width: 28, height: 28).background(Color.white).overlay( // Add the border
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.primary.shade100, lineWidth: 1)
+                            ).sheet(isPresented: $showOdoSheet) {
+                                OdometerSheet(
+                                    showSheet: $showOdoSheet,
+                                    odometer: $odometer,
+                                    showOdoSheet: $showOdoSheet,
+                                    calculateTotalDistance: calculateTotalDistance // Pass the function here
+                                )
+                                
+                            }
+                            Text("Edit").caption2(.emphasized).foregroundStyle(Color.primary.shade100)
+                        }
+                    }
+                    .padding()
+                    .background(Color(.background))
+                    .cornerRadius(12)
+                    .shadow(radius: 4, y: 2)
+                }.padding(.horizontal, 16).offset(y: -45)
+                
+                CustomButton(title: "rangkuman data") {
+                    routes.navigate(to: .DataSummaryView)
+                }
+
+                VStack {
+                    if SwiftDataService.shared.fetchServices().isEmpty{
+                        HStack(alignment: .top){
+                            VStack(alignment: .leading){
+                                Text("Siap-siap servis berkala di \(getRoundedOdometer())!").headline().foregroundColor(.neutral.shade300)
+                                Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
+                            }
+                            Spacer()
+                        }.padding(.horizontal, 16).offset(y: -30)
+                        ZStack{
+//                            Color.green
+                            Image("dashboard_card").resizable()
                                 .scaledToFill()
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .clipped()
