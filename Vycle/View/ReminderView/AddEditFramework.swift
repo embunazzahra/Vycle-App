@@ -214,12 +214,13 @@ struct AddEditFramework: View {
                 NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
                 
                 HStack {
-                    Image(systemName: "info.circle.fill")
-                        .padding(.bottom, 10)
-
-                    Text(isKilometerChosen && isMonthYearChosen ? "Pengingat akan dijadwalkan setiap \(monthInterval) bulan atau \(selectedNumber) kilometer sekali" : "Pengingat akan dijadwalkan setiap 0 bulan atau 0 kilometer sekali")
+                    (Text("Catatan: ").bold() +
+                     Text(isKilometerChosen && isMonthYearChosen ?
+                          "Pengingat akan dijadwalkan setiap \(monthInterval) bulan atau \(selectedNumber) kilometer sekali" :
+                          "Pengingat akan dijadwalkan setiap 0 bulan atau 0 kilometer sekali"))
                         .footnote(.regular)
                         .foregroundColor(Color.neutral.shade300)
+
                     
                     Spacer()
                 }
@@ -269,7 +270,7 @@ struct AddEditFramework: View {
                             }
                         }
                         .padding(.bottom, 8)
-                        .padding(.top, 24)
+                        .padding(.top, 12)
                     }
                 }
                 
