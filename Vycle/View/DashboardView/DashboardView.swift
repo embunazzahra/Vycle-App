@@ -369,7 +369,7 @@ struct DataSummaryCardView : View {
                         )
                         .offset(y:-12)
                         .onTapGesture{
-                            routes.navigate(to: .GuideView)
+                            routes.navigate(to: .DataSummaryView)
                         }
                     ,
                     alignment: .bottom
