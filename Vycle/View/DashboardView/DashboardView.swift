@@ -26,6 +26,7 @@ struct DashboardView: View {
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
+    @State private var dummyReminder: Reminder = Reminder(date: Date(), sparepart: .airCoolant, reminderOdo: 123, kmInterval: 123, dueDate: Date(), timeInterval: 1, vehicle: Vehicle(vehicleID: UUID(), vehicleType: .car, brand: .car(.daihatsu)), isRepeat: true, isDraft: false, isHelperOn: false, reminderType: "hh", isUsingData: true)
     
     var totalDistance: Double {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
@@ -162,11 +163,21 @@ struct DashboardView: View {
                             
                         } else {
                             if !filteredReminders.isEmpty {
-                                HStack{
-                                    HaveReminderView().padding(.horizontal, 16)
+                                VStack {
+                                    HStack{
+                                        HaveReminderView().padding(.horizontal, 16)
+                                    }
+                                    SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                                    
+                                    SparepartReminderCard(reminder: $dummyReminder, currentKM: totalDistance)
+                                        .contentShape(Rectangle())
+                                    
+                                    
+                                    DataSummaryCardView()
+                                        
                                 }
-                                SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                                DataSummaryCardView()
+                                .offset(y:-30)
+                                
                                 
                             } else {
                                 DataSummaryCardView()
@@ -360,22 +371,8 @@ struct DataSummaryCardView : View {
                     ,
                     alignment: .bottom
                 )
-            
-            //                                HStack{
-            //                                    Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
-            //                                    Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
-            //                                }
-            //                                .padding(.horizontal, 16).padding(.vertical, 8)
-            //                                    .background(
-            //                                        RoundedRectangle(cornerRadius: 10)
-            //                                            .stroke(.blue, lineWidth: 1)
-            //                                    )
-            //                                    .offset(y: 60)
-            //                                    .onTapGesture{
-            //                                        routes.navigate(to: .GuideView)
-            //                                    }
         }
-        .padding(.bottom)
+//        .padding(.bottom)
         
     }
 }
