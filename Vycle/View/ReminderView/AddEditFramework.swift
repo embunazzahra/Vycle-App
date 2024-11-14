@@ -339,6 +339,9 @@ struct AddEditFramework: View {
                 if !isResetHidden {
                     Button(action: {
                         isCancelShowed = true
+                        if let reminderToEdit = reminderToEdit {
+                            deleteReminder(reminder: reminderToEdit)
+                        }
                     }) {
                         HStack {
                             Image("delete")

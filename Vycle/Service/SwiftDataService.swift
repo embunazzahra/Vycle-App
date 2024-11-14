@@ -616,6 +616,7 @@ extension SwiftDataService {
             modelContext.insert(newReminder)
             
         }
+
         
         do {
             try modelContext.save()
