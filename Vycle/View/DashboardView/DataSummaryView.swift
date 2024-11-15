@@ -14,7 +14,7 @@ enum SparepartCount: Hashable {
 
 
 struct DataSummaryView: View {
-    var sparepartData = Array(1...9)
+ 
     @State private var selectedTab: Int = 0 // 0: YTD, 1: 3 Tahun, 2: 5 Tahun, 3: Seluruhnya
     @Query private var allServices: [Servis]
     var ytdServices: [Servis] {
@@ -64,13 +64,13 @@ struct DataSummaryView: View {
             
             // Custom content view based on the selected tab
             if selectedTab == 0 {
-                DataContentView(sparepartData: sparepartData, services: ytdServices)
+                DataContentView(services: ytdServices)
             } else if selectedTab == 1 {
-                DataContentView(sparepartData: sparepartData, services: threeYearServices)
+                DataContentView(services: threeYearServices)
             } else if selectedTab == 2 {
-                DataContentView(sparepartData: sparepartData, services: fiveYearServices)
+                DataContentView(services: fiveYearServices)
             } else if selectedTab == 3 {
-                DataContentView(sparepartData: sparepartData, services: allServices)
+                DataContentView(services: allServices)
             }
             
             
@@ -210,10 +210,11 @@ struct SparepartDataCard: View {
                 )
             
             HStack{
-                VStack {
+                VStack(alignment: .leading){
                     Text(sparepart.rawValue)
                         .foregroundStyle(Color.neutral.tint300)
                         .font(.footnote)
+                    Spacer()
                     HStack(spacing: 3){
                         Text("\(count)")
                             .font(.title3)
@@ -236,7 +237,7 @@ struct SparepartDataCard: View {
 }
 
 struct SparepartDataView: View {
-    var sparepartData: [Int]
+    var uniqueSpareParts: Set<SparepartCount>
     
     var body: some View {
         ZStack {
@@ -248,8 +249,20 @@ struct SparepartDataView: View {
                     .foregroundStyle(Color.neutral.tint300)
                     .font(.footnote)
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
-                    ForEach(sparepartData, id: \.self) { card in
-                        SparepartDataCard(sparepart: .filterUdara, count: 5)
+                    // Loop through all Sparepart cases
+                    ForEach(Sparepart.allCases, id: \.self) { sparepart in
+                        // Get the count of the spare part from uniqueSpareParts, defaulting to 0 if not found
+                        let count = uniqueSpareParts
+                            .compactMap { sparepartCount -> Int? in
+                                // Match the .part case and check for the corresponding sparepart
+                                if case let .part(sp, c) = sparepartCount, sp == sparepart {
+                                    return c
+                                }
+                                return nil
+                            }
+                            .first ?? 0 // Default to 0 if no match is found
+                        
+                        SparepartDataCard(sparepart: sparepart, count: count)
                     }
                 }
             }
@@ -296,7 +309,6 @@ extension DataSummaryView{
 }
 
 struct DataContentView: View {
-    var sparepartData: [Int]
     var services: [Servis]
     
     var totalCost: Float {
@@ -317,13 +329,14 @@ struct DataContentView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 12){
                 TotalMileageView()
-                SparepartDataView(sparepartData: sparepartData)
+                SparepartDataView(uniqueSpareParts: uniqueSpareParts)
                 TotalCostView(totalCost: totalCost)
                 CustomButton(title: "Bagikan",  iconName: "share_icon", iconPosition: .left, buttonType: .primary,horizontalPadding: 0, verticalPadding: 0) {
                     print("Tes")
                 }
             }
         }
+        .padding(.vertical)
         
         
     }
