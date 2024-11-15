@@ -17,12 +17,23 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var isInsideBeaconRegion: Bool = false
     private var lastRequestTime: Date?
     //    @Published var locationHistory: [LocationHistory] = []
-    @AppStorage("vBeaconID") var vBeaconID: String = ""{
+    
+    
+//    @AppStorage("vBeaconID") var vBeaconID: String = ""{
+//        didSet {
+//            // Call the method to update the beacon region when vBeaconID changes
+//            updateBeaconRegion()
+//        }
+//    }
+    
+    var vBeaconID = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? "" {
         didSet {
             // Call the method to update the beacon region when vBeaconID changes
             updateBeaconRegion()
         }
     }
+    
+    
     @Query(sort: \LocationHistory.time, order: .reverse) var locationHistory: [LocationHistory]
     // ID: 4CC9
     private var beaconUUID: UUID {
@@ -33,7 +44,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let beaconMinor: CLBeaconMinorValue = 88
     private let identifier: String = "ALOHA"
     
-    let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
+    
     
     override init() {
         super.init()
@@ -276,7 +287,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             
             lastSavedLocation = CLLocation(latitude: latitude, longitude: longitude)
 //            print("bug in storelocation")
-            let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
+           
             SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date())
             
         } catch {

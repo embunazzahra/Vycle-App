@@ -7,7 +7,8 @@
 
 import SwiftUI
 struct BeaconConfigView: View {
-    @AppStorage("vBeaconID") private var vBeaconID: String = ""
+//    @AppStorage("vBeaconID") private var vBeaconID: String = ""
+    @State private var vBeaconID = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? ""
     @ObservedObject var locationManager: LocationManager
     @State private var isRangingVBeacon: Bool = false
     @State private var keyboardHeight: CGFloat = 0.0
@@ -25,7 +26,8 @@ struct BeaconConfigView: View {
                         isRangingVBeacon: $isRangingVBeacon,
                         onBoardingDataSaved: $onBoardingDataSaved,
                         keyboardHeight: $keyboardHeight,
-                        hideHeader: true
+                        hideHeader: true,
+                        addingNewVehicle: false
                     )
                     .transition(.move(edge: .trailing))
                 }

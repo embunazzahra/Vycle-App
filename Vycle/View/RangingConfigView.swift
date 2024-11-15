@@ -15,7 +15,8 @@ struct RangingConfigView: View {
     @State private var configurationFailed = false
     @State private var showConnectingView = true
     @State private var beaconDetected = false
-    @AppStorage("vBeaconID") private var vBeaconID: String = ""
+//    @AppStorage("vBeaconID") private var vBeaconID: String = ""
+    @State private var vBeaconID = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? ""
     var body: some View {
         ZStack {
             VStack(alignment: .center) {

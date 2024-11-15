@@ -36,21 +36,12 @@ class SwiftDataService {
 }
 
 extension SwiftDataService {
-    func insertTrip(){
-        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
-        modelContext.insert(testTrip)
-        
-        do {
-            try saveModelContext() // Save the context to persist the new trip
-        } catch {
-            print("Failed to save trip: \(error.localizedDescription)")
-        }
-    }
+
     
     func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
-        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
+//        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: self.getCurrentVehicle() ?)
         saveModelContext()
-        let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time, trip: testTrip)
+        let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time)
         modelContext.insert(locationHistory)
         
             do {
@@ -251,9 +242,9 @@ extension SwiftDataService {
 // MARK: OnBoarding
 
 extension SwiftDataService {
-    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
+    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil, vbeaconId: String? = "") {
         
-        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand, vbeaconId: vbeaconId ?? "")
         modelContext.insert(vehicleData)
         saveModelContext()
         self.setCurrentVehicle(vehicleData)
@@ -280,7 +271,7 @@ extension SwiftDataService {
                 
                 for sparepart in servicedSpareparts {
                     // Insert Reminder
-                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand).brand.intervalForSparepart(sparepart) else {
+                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand, vbeaconId: vbeaconId ?? "").brand.intervalForSparepart(sparepart) else {
                         continue
                     }
 

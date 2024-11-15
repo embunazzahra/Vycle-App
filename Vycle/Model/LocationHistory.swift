@@ -16,14 +16,12 @@ final class LocationHistory {
     var latitude: Double
     var longitude: Double
     var time: Date
-    @Relationship var trip: Trip
     
-    init(distance: Double? = nil, latitude: Double, longitude: Double, time: Date, trip: Trip) {
+    init(distance: Double? = nil, latitude: Double, longitude: Double, time: Date) {
         self.distance = distance
         self.latitude = latitude
         self.longitude = longitude
         self.time = time
-        self.trip = trip
     }
 }
 

@@ -93,12 +93,12 @@ struct ServiceDetailView: View {
     }
 }
 
-#Preview {
-    ServiceDetailView(service: Servis(
-        date: Date(),
-        servicedSparepart: [.minyakRem],
-        photo: nil,
-        odometer: 78250,
-        vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
-    ))
-}
+//#Preview {
+//    ServiceDetailView(service: Servis(
+//        date: Date(),
+//        servicedSparepart: [.minyakRem],
+//        photo: nil,
+//        odometer: 78250,
+//        vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
+//    ))
+//}

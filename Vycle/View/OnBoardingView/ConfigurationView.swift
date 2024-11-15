@@ -10,6 +10,7 @@ import SwiftUI
 struct ConfigurationView: View {
     @ObservedObject var locationManager: LocationManager
     @Binding var vBeaconID: String
+    @EnvironmentObject var routes: Routes
     @Binding var showGuide: Bool
     @Binding var isRangingVBeacon: Bool
     @Binding var onBoardingDataSaved: Bool
@@ -20,6 +21,8 @@ struct ConfigurationView: View {
     @State private var isButtonEnabled: Bool = false
     @State var hideHeader: Bool = false
     @State private var tempVBeaconID: String = ""
+    @State var addingNewVehicle: Bool
+    @AppStorage("isFinishedAdding") private var isFinishedAdding: Bool = false
     var body: some View {
         VStack (alignment: .leading) {
             if !hideHeader{
@@ -144,10 +147,15 @@ struct ConfigurationView: View {
                     ) {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         onBoardingDataSaved = true
+                        if addingNewVehicle{
+                            isFinishedAdding.toggle()
+                            routes.navigateToRoot()
+                        }
                     }
                     .padding(.top, -52)
                     .padding(.bottom, keyboardHeight/2 + 10)
                 }
+            
             }
         .animation(.smooth, value: keyboardHeight)
         .onAppear {

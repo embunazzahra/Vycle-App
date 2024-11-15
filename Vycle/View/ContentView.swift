@@ -33,7 +33,7 @@ struct ContentView: View {
         }
     }
     @AppStorage("onBoardingDataSaved") private var onBoardingDataSaved: Bool = false
-    
+    @State var isShowingFractionalModal = false
     
     init() {
         setupNavigationBarWithoutScroll()
@@ -49,7 +49,6 @@ struct ContentView: View {
                     OnBoardingView(
                         locationManager: locationManager,
                         odometer: $odometer,
-                        vBeaconID: $vBeaconID,
                         onBoardingDataSaved: $onBoardingDataSaved
                     )
                     .onAppear(){
@@ -57,7 +56,7 @@ struct ContentView: View {
                     }
                 } else {
                     TabView(selection: $selectedTab) {
-                        DashboardView(locationManager: locationManager).tabItem {
+                        DashboardView(locationManager: locationManager, isShowingFractionalModal: $isShowingFractionalModal).tabItem {
                             Image(selectedTab == .dashboard ? "dashboard_icon_blue" : "dashboard_icon")
                             Text("Dashboard")
                         }.tag(Tab.dashboard)
@@ -84,7 +83,7 @@ struct ContentView: View {
                                 case .ServisView:
                                     ServiceView()
                                 case .DashboardView:
-                                    DashboardView(locationManager: locationManager)
+                                DashboardView(locationManager: locationManager, isShowingFractionalModal: $isShowingFractionalModal)
                                 case .AddServiceView(let service):
                                     AddServiceView(service: service)
                                 case .NoServiceView:
@@ -105,24 +104,42 @@ struct ContentView: View {
                                     BeaconConfigView(locationManager: locationManager)
                                 case .GuideView:
                                     GuideView()
-                                
                                 case .ReminderView:
                                     ReminderView(locationManager: locationManager)
+                                case .AddVehicleView:
+                                    AddVehicleView(locationManager: locationManager, onBoardingDataSaved: $onBoardingDataSaved)
                             }
                         }
                         .toolbar {
                             ToolbarItem {
-                                Image(systemName: "plus.square.fill")
-                                    .foregroundColor(.white)
-                                    .onTapGesture {
-                                        if selectedTab == .pengingat {
-                                            routes.navigate(to: .AddReminderView)
-                                        } else if selectedTab == .servis {
-                                            routes.navigate(to: .AddServiceView(service: nil))
+                                switch selectedTab {
+                                    case .dashboard:
+                                    
+                                        HStack{
+                                            Text("Merk Kendaraan").footnote(.regular).foregroundStyle(Color.primary.shade100)
+                                            Image(systemName: "chevron.down").foregroundStyle(Color.primary.shade100).font(.system(size: 12))
+                                        }.padding(.horizontal, 16).padding(.vertical, 8)
+                                        .background(
+                                          RoundedRectangle(cornerRadius: 32)
+                                            .fill(Color.white)
+                                        ).onTapGesture{
+                                                isShowingFractionalModal.toggle()
                                         }
-                                    }
-                                    .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? 1 : 0)
-                                    .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? false : true)
+                                    default:
+                                        Image(systemName: "plus.square.fill")
+                                            .foregroundColor(.white)
+                                            .onTapGesture {
+                                                if selectedTab == .pengingat {
+                                                    routes.navigate(to: .AddReminderView)
+                                                } else if selectedTab == .servis {
+                                                    routes.navigate(to: .AddServiceView(service: nil))
+                                                }
+                                            }
+                                            .opacity((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? 1 : 0)
+                                            .disabled((selectedTab == .servis && !services.isEmpty) || (selectedTab == .pengingat && !fetchedReminders.isEmpty && uniqueSparePartCount < 9) ? false : true)
+                                }
+                            
+                                    
                             }
                         }
                 }

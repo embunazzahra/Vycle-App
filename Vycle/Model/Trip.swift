@@ -13,14 +13,12 @@ import Foundation
 final class Trip {
     var tripID: Int
     var isFinished: Bool
-    
-    @Relationship(deleteRule: .cascade, inverse: \LocationHistory.trip) var locationHistories: [LocationHistory] = []
+
     @Relationship var vehicle: Vehicle
     
-    init(tripID: Int, isFinished: Bool, locationHistories: [LocationHistory], vehicle: Vehicle) {
+    init(tripID: Int, isFinished: Bool, vehicle: Vehicle) {
         self.tripID = tripID
         self.isFinished = isFinished
-        self.locationHistories = locationHistories
         self.vehicle = vehicle
     }
 }

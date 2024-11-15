@@ -12,7 +12,8 @@ struct DashboardView: View {
     @EnvironmentObject var routes: Routes
     @ObservedObject var locationManager: LocationManager
     @Query var trips: [Trip]
-//    @Query var vehicles : [Vehicle]
+    //    @Query var vehicles : [Vehicle]
+    @State private var currentDetent : PresentationDetent = .height(300)
     
     @State private var showSettingsAlert = false
     @Query var reminders : [Reminder]
@@ -26,6 +27,7 @@ struct DashboardView: View {
     @Query(sort: \Odometer.date, order: .forward) var initialOdometer: [Odometer]
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
+    @Binding var isShowingFractionalModal: Bool
     
     var totalDistance: Double {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
@@ -57,8 +59,8 @@ struct DashboardView: View {
                     VStack{
                         HStack{
                             BTIndicator(locationManager: locationManager).onTapGesture {
-//                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
-//                                showBluetoothSheet.toggle()
+                                //                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
+                                //                                showBluetoothSheet.toggle()
                                 routes.navigate(to: .BeaconConfigView)
                             }
                             Spacer()
@@ -92,7 +94,8 @@ struct DashboardView: View {
                                     .headline()
                                     .foregroundStyle(.grayShade300)
                             } else {
-                                Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
+                                let totalDistance = calculateTotalDistance() ?? 0
+                                Text("\(Int(totalDistance)) Kilometer")
                                     .headline()
                                     .foregroundStyle(.grayShade300)
                             }
@@ -129,7 +132,7 @@ struct DashboardView: View {
                     .cornerRadius(12)
                     .shadow(radius: 4, y: 2)
                 }.padding(.horizontal, 16).offset(y: -45)
-
+                
                 VStack {
                     if SwiftDataService.shared.fetchServices().isEmpty{
                         HStack(alignment: .top){
@@ -140,20 +143,20 @@ struct DashboardView: View {
                             Spacer()
                         }.padding(.horizontal, 16).offset(y: -30)
                         ZStack{
-//                            Color.green
+                            //                            Color.green
                             Image("dashboard_card").resizable()
                                 .scaledToFill()
                                 .frame(width: 360, height: 200)
                                 .clipped()
                                 .offset(y: -25)
                             HStack{
-                                Text("Lihat suku cadang lebih detail").foregroundStyle(Color.accentColor)
-                                Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                                Text("Lihat suku cadang lebih detail").foregroundStyle(Color.primary.shade100)
+                                Image(systemName: "chevron.right").foregroundStyle(Color.primary.shade100)
                             }.padding(.horizontal, 16).padding(.vertical, 8)
-                            .background(
-                              RoundedRectangle(cornerRadius: 10)
-                                .stroke(.blue, lineWidth: 1)
-                            ).offset(y: 40)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(.blue, lineWidth: 1)
+                                ).offset(y: 40)
                                 .onTapGesture{
                                     routes.navigate(to: .GuideView)
                                 }
@@ -167,13 +170,21 @@ struct DashboardView: View {
                             SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                         } else {
                             NoReminderView()
-            
+                            
                         }
                     }
                     
                 }
                 Spacer()
-            }.onAppear {
+            }
+            .sheet(isPresented: $isShowingFractionalModal, content: {
+                ModalView(currentDetent: $currentDetent)
+//                    .presentationDetents([.fraction])
+                    .presentationDetents((SwiftDataService.shared.fetchVehicles().count > 1 ? [.fraction(0.4), .large] : [.fraction(0.3), .large]), selection: $currentDetent)
+                
+            })
+            
+            .onAppear {
                 updateFilteredReminders()
                 
                 if locationManager.checkAuthorizationStatus() != .authorizedAlways {
@@ -197,9 +208,9 @@ struct DashboardView: View {
             
         }}
     
-//    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
-//        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
-//    }
+    //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
+    //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
+    //    }
     
     private func getRoundedOdometer() -> Int {
         let totalDistance = calculateTotalDistance() ?? 0
@@ -225,17 +236,17 @@ struct DashboardView: View {
                     return !$0.isDraft
                 } else {
                     return getKilometerDifference(currentKilometer: currentKilometer, reminder: $0) <
-                           getKilometerDifference(currentKilometer: currentKilometer, reminder: $1)
+                        getKilometerDifference(currentKilometer: currentKilometer, reminder: $1)
                 }
             }
             .prefix(2)
         )
     }
-
-
+    
+    
     private func getUniqueReminders(_ reminders: [Reminder]) -> [Reminder] {
         var uniqueReminders: [String: Reminder] = [:]
-
+        
         for reminder in reminders {
             let sparepartKey = reminder.sparepart.rawValue
             
@@ -247,7 +258,7 @@ struct DashboardView: View {
                 uniqueReminders[sparepartKey] = reminder
             }
         }
-
+        
         return Array(uniqueReminders.values)
     }
     
@@ -262,12 +273,6 @@ struct DashboardView: View {
                 return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
             }
         }
-
-//        if reminder.isDraft == true {
-//            return 0.0
-//        }
-//        
-//        return ceil(Double(reminder.kmInterval) - (currentKilometer - Double(reminder.reminderOdo)))
     }
     
     func openAppSettings() {
@@ -281,7 +286,7 @@ struct DashboardView: View {
     }
     
     func calculateTotalDistance() -> Double? {
-        let initialOdoValue = initialOdometer.last?.currentKM ?? 0
+        let initialOdoValue = SwiftDataService.shared.getCurrentVehicle()?.odometers.last?.currentKM ?? 0
         if let firstLocation = locationHistory.first {
             let totalDistance = Double(initialOdoValue) + (firstLocation.distance ?? 0)
             // Update the odometer state here
@@ -328,53 +333,132 @@ struct HaveReminderView : View {
     }
 }
 
-struct BluetoothSheet: View {
-    @Binding var showBluetoothSheet: Bool
-    @AppStorage("vBeaconID") private var vBeaconID: String = ""
-    @ObservedObject var locationManager: LocationManager
-    @State private var isRangingVBeacon: Bool = false
-    @State private var keyboardHeight: CGFloat = 0.0
-    @State private var onBoardingDataSaved: Bool = false
-    @State private var showGuide: Bool = false
+struct ModalView: View {
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var routes: Routes
+    @Binding var currentDetent: PresentationDetent
     var body: some View {
-        ZStack{
-            VStack{
-                HStack{
-                    Button(action: {
-                        showBluetoothSheet.toggle()
-                    }) {
-                        Image(systemName: "xmark").foregroundColor(Color.neutral.tint300)
+        NavigationStack {
+            ZStack {
+                Color.background.ignoresSafeArea(edges: .all)
+                VStack{
+                    VStack(alignment: .leading){
+                        HStack(alignment: .top){
+                            Text("Merk kendaraan")
+                                .font(.headline)
+                                .foregroundStyle(Color.neutral.shade300)
+                            Spacer()
+                        }
+                        HStack(alignment: .top){
+                            Text("Satu merk kendaraan hanya berlaku satu VBeacon")
+                                .footnote(.regular)
+                                .foregroundStyle(Color.neutral.tone200)
+                            Spacer()
+                        }
+                        
+                    }.padding(.horizontal).padding(.top)
+                    
+                    VStack(alignment: .center){
+                        if currentDetent == .large {
+                            ForEach(SwiftDataService.shared.fetchVehicles().suffix(10)){vehicle in
+    //                            Text("\(vehicle.brand) \(vehicle.odometers.last?.currentKM)")
+                        
+                                VehicleCard(vehicle: vehicle).onTapGesture {
+                                    SwiftDataService.shared.setCurrentVehicle(vehicle)
+                                }
+                            }
+                        } else {
+                            ForEach(SwiftDataService.shared.fetchVehicles().suffix(2)){vehicle in
+    //                            Text("\(vehicle.brand) \(vehicle.odometers.last?.currentKM)")
+                        
+                                VehicleCard(vehicle: vehicle).onTapGesture {
+                                    SwiftDataService.shared.setCurrentVehicle(vehicle)
+                                }
+                            }
+                        }
+                       
+                        
+//                        VehicleCard()
+//                        VehicleCard()
+//                        Spacer()
+                        if currentDetent == .large {
+                            Spacer()
+                        }
+                        AddVehicleButton().onTapGesture {
+                            routes.navigate(to: .AddVehicleView)
+                        }
                     }
                     
-                    Spacer()
-                }.padding(.horizontal, 24).padding(.vertical, 24).background(Color.primary.tone100)
-                
-                Spacer()
+                }
             }
-            VStack{
-                HStack{
-                    Spacer()
-                    Text("Ubah VBeacon").title3(.emphasized).foregroundColor(Color.neutral.tint300)
-                    
-                    Spacer()
-                }.padding(.horizontal, 24).padding(.top, 20)
-                Spacer()
-            }
-            VStack(alignment: .center){
-                ConfigurationView(
-                    locationManager: locationManager,
-                    vBeaconID: $vBeaconID,
-                    showGuide: $showGuide,
-                    isRangingVBeacon: $isRangingVBeacon,
-                    onBoardingDataSaved: $onBoardingDataSaved,
-                    keyboardHeight: $keyboardHeight,
-                    hideHeader: true
-                )
-                .transition(.move(edge: .trailing))
-            }
+            //            .navigationBarTitleDisplayMode(.inline)
+            //            .toolbar {
+            //                ToolbarItem(placement: .topBarTrailing) {
+            //                    Button("Close", systemImage: "xmark") {
+            //                        dismiss()
+            //                    }
+            //                    .tint(.white)
+            //                }
+            //            }
         }
     }
 }
+
+struct VehicleCard: View {
+    @State var vehicle: Vehicle
+    var body: some View{
+        HStack{
+            HStack{
+                Image("\(vehicle.brand.stringValue)").resizable()
+                    .scaledToFill()
+                    .frame(width: 40, height: 40)
+                VStack(alignment: .leading){
+                    HStack(alignment: .top){
+                        Text("\(vehicle.brand.stringValue ?? "")")
+                            .font(.headline)
+                            .foregroundStyle(Color.neutral.shade300)
+                        Spacer()
+                        Text("2017")
+                            .body(.regular)
+                            .foregroundStyle(Color.neutral.shade300)
+                    }
+                    HStack(alignment: .top){
+                        Text("\((Int(vehicle.odometers.last?.currentKM ?? 0)))")
+                            .footnote(.regular)
+                            .foregroundStyle(Color.neutral.shade300)
+                        Spacer()
+                    }
+                }
+            }.padding().background(
+                RoundedRectangle(cornerRadius: 10).fill(Color.neutral.tint200)
+                    
+            )
+        }.padding(.horizontal)
+    }
+}
+
+struct AddVehicleButton: View {
+    var body: some View{
+        HStack{
+            HStack{
+                Image(systemName: "plus.square.fill").font(.system(size: 30)).foregroundStyle(Color.blueLoyaltyTone100)
+                VStack(alignment: .leading){
+                    HStack(alignment: .center){
+                        Text("Tambahkan mobil lainnya")
+                            .font(.headline)
+                            .foregroundStyle(Color.blueLoyaltyTone100)
+                        Spacer()
+                    }
+                }
+            }.padding().background(
+                RoundedRectangle(cornerRadius: 10).fill(Color.neutral.tint200)
+                   
+            )
+        }.padding(.horizontal)
+    }
+}
+
+
 struct OdometerSheet: View {
     @Binding var showSheet: Bool
     @Binding var odometer: Float?
@@ -419,12 +503,12 @@ struct OdometerSheet: View {
             VStack{
                 Spacer()
                 CustomButton(title: "Simpan Perubahan"){
-//                    SwiftDataService.shared.insertOnBoarding(
-//                        vehicleType: .car,
-//                        vehicleBrand: .car(.honda),
-//                        odometer: odometer ?? 0,
-//                        serviceHistory: []
-//                    )
+                    //                    SwiftDataService.shared.insertOnBoarding(
+                    //                        vehicleType: .car,
+                    //                        vehicleBrand: .car(.honda),
+                    //                        odometer: odometer ?? 0,
+                    //                        serviceHistory: []
+                    //                    )
                     SwiftDataService.shared.insertOdometerData(odometer: odometer ?? 0)
                     SwiftDataService.shared.insertLocationHistory(distance: nil, latitude: 0, longitude: 0, time: Date())
                     showOdoSheet.toggle()

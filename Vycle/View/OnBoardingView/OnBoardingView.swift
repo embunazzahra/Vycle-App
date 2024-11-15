@@ -9,13 +9,15 @@ import SwiftUI
 
 struct OnBoardingView: View {
     @ObservedObject var locationManager: LocationManager
+    
     @State private var currentPage: Int = 1
     @State private var vehicleType: VehicleType = .car
     @State private var vehicleBrand: VehicleBrand? = nil
     @State private var otherBrandsList: [String] = []
+    @State private var vBeaconID = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? ""
     @Binding var odometer: Float?
 //    @State private var serviceHistory: [ServiceHistory] = []
-    @Binding var vBeaconID: String
+//    @Binding var vBeaconID: String
     @State private var showGuide: Bool = false
     @Binding var onBoardingDataSaved: Bool
     @State private var isRangingVBeacon: Bool = false
@@ -97,7 +99,8 @@ struct OnBoardingView: View {
                                     isRangingVBeacon: $isRangingVBeacon,
                                     onBoardingDataSaved: $onBoardingDataSaved,
                                     keyboardHeight: $keyboardHeight,
-                                    hideHeader: false
+                                    hideHeader: false,
+                                    addingNewVehicle: false
                                 )
                                 .transition(.opacity)
                             } else {
