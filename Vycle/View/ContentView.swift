@@ -103,10 +103,10 @@ struct ContentView: View {
                                     PhotoReviewView(imageData: imageData)
                                 case .BeaconConfigView:
                                     BeaconConfigView(locationManager: locationManager)
-                                case .ReminderView:
-                                    ReminderView(locationManager: locationManager)
                                 case .GuideView:
                                     GuideView()
+                                case .ReminderView:
+                                    ReminderView(locationManager: locationManager)
                                 case .DataSummaryView:
                                     DataSummaryView()
                             }

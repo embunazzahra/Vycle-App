@@ -25,8 +25,8 @@ import SwiftUI
         case EditReminderView(reminder: Reminder)
         case PhotoReviewView(imageData: Data)
         case BeaconConfigView
-        case ReminderView
         case GuideView
+        case ReminderView
         case DataSummaryView
     }
 
