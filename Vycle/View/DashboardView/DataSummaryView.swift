@@ -6,10 +6,33 @@
 //
 
 import SwiftUI
+import SwiftData
+
+enum SparepartCount: Hashable {
+    case part(Sparepart, count: Int)
+}
+
 
 struct DataSummaryView: View {
     var sparepartData = Array(1...9)
     @State private var selectedTab: Int = 0 // 0: YTD, 1: 3 Tahun, 2: 5 Tahun, 3: Seluruhnya
+    @Query private var allServices: [Servis]
+    var ytdServices: [Servis] {
+        let startDate = Calendar.current.date(from: Calendar.current.dateComponents([.year], from: Date()))!
+        return allServices.filter { $0.date >= startDate }
+    }
+    
+    var threeYearServices: [Servis] {
+        let startDate = Calendar.current.date(byAdding: .year, value: -3, to: Date())!
+        return allServices.filter { $0.date >= startDate }
+    }
+    
+    var fiveYearServices: [Servis] {
+        let startDate = Calendar.current.date(byAdding: .year, value: -5, to: Date())!
+        return allServices.filter { $0.date >= startDate }
+    }
+    
+    
     
     var body: some View {
         
@@ -41,19 +64,20 @@ struct DataSummaryView: View {
             
             // Custom content view based on the selected tab
             if selectedTab == 0 {
-                DataContentView(sparepartData: sparepartData)
+                DataContentView(sparepartData: sparepartData, services: ytdServices)
             } else if selectedTab == 1 {
-                DataContentView(sparepartData: sparepartData)
+                DataContentView(sparepartData: sparepartData, services: threeYearServices)
             } else if selectedTab == 2 {
-                DataContentView(sparepartData: sparepartData)
+                DataContentView(sparepartData: sparepartData, services: fiveYearServices)
             } else if selectedTab == 3 {
-                DataContentView(sparepartData: sparepartData)
+                DataContentView(sparepartData: sparepartData, services: allServices)
             }
             
             
         }
         .padding()
         .ignoresSafeArea(edges: .bottom)
+        .navigationTitle("Ringkasan Data")
         
     }
 }
@@ -101,6 +125,8 @@ struct TotalMileageView: View {
 }
 
 struct TotalCostView: View {
+    var totalCost: Float
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
@@ -121,7 +147,7 @@ struct TotalCostView: View {
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.neutral.tint300)
                         .padding(.top,5)
-                    Text("15.000")
+                    Text("\(totalCost.formatted())")
                         .font(.title3)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.neutral.tint300)
@@ -271,13 +297,28 @@ extension DataSummaryView{
 
 struct DataContentView: View {
     var sparepartData: [Int]
+    var services: [Servis]
+    
+    var totalCost: Float {
+        services.reduce(0) { $0 + $1.totalPrice }
+    }
+    
+    var uniqueSpareParts: Set<SparepartCount> {
+        let sparePartCounts = services.flatMap { $0.servicedSparepart }
+            .reduce(into: [:]) { counts, sparePart in
+                counts[sparePart, default: 0] += 1
+            }
+        
+        return Set(sparePartCounts.map { SparepartCount.part($0.key, count: $0.value) })
+    }
+    
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(spacing: 12){
                 TotalMileageView()
                 SparepartDataView(sparepartData: sparepartData)
-                TotalCostView()
+                TotalCostView(totalCost: totalCost)
                 CustomButton(title: "Bagikan",  iconName: "share_icon", iconPosition: .left, buttonType: .primary,horizontalPadding: 0, verticalPadding: 0) {
                     print("Tes")
                 }
