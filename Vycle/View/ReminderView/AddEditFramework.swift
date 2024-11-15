@@ -328,7 +328,8 @@ struct AddEditFramework: View {
                                 isDraft: false,
                                 isHelperOn: false,
                                 reminderType: "Edited Reminder",
-                                isEdited: true
+                                isEdited: true,
+                                date: Date()
                                 )
                         }
 

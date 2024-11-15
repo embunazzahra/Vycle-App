@@ -396,7 +396,7 @@ extension SwiftDataService {
         reminder.dueDate = dueDate
         reminder.timeInterval = timeInterval
         reminder.isRepeat = isRepeat
-        reminder.isDraft = isDraft
+        reminder.isDraft = false
         reminder.isHelperOn = isHelperOn
         reminder.reminderType = "Edited Reminder"
         reminder.isEdited = true
