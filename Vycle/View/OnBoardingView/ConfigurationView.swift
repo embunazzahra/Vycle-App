@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ConfigurationView: View {
     @ObservedObject var locationManager: LocationManager
-    @Binding var vBeaconID: String
+//    @Binding var vBeaconID: String
     @EnvironmentObject var routes: Routes
     @Binding var showGuide: Bool
     @Binding var isRangingVBeacon: Bool
@@ -20,7 +20,7 @@ struct ConfigurationView: View {
     @State var deviceNotFound: Bool = false
     @State private var isButtonEnabled: Bool = false
     @State var hideHeader: Bool = false
-    @State private var tempVBeaconID: String = ""
+    @Binding var tempVBeaconID: String
     @State var addingNewVehicle: Bool
     @AppStorage("isFinishedAdding") private var isFinishedAdding: Bool = false
     var body: some View {
@@ -68,7 +68,7 @@ struct ConfigurationView: View {
                         isButtonEnabled = tempVBeaconID.count == 4
                     }
                     .onAppear() {
-                        tempVBeaconID = vBeaconID
+//                        tempVBeaconID = vBeaconID
                         isButtonEnabled = tempVBeaconID.count == 4
                     }
                     .toolbar {
@@ -129,7 +129,7 @@ struct ConfigurationView: View {
                             incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: tempVBeaconID)
                             
                             if !incorrectIDFormat {
-                                vBeaconID = tempVBeaconID
+//                                vBeaconID = tempVBeaconID
                                 isRangingVBeacon = true
                                 locationManager.vBeaconID = tempVBeaconID
                                 locationManager.startTracking()

@@ -15,13 +15,11 @@ struct RangingConfigView: View {
     @State private var configurationFailed = false
     @State private var showConnectingView = true
     @State private var beaconDetected = false
-//    @AppStorage("vBeaconID") private var vBeaconID: String = ""
-    @State private var vBeaconID = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? ""
+    @State private var vbeaconID = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? ""
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
                 if locationManager.isInsideBeaconRegion && beaconDetected {
-                
                         ConfigurationStatusView(isSuccess: true)
                             .onAppear() {
                                 resetConfiguration()
@@ -30,10 +28,9 @@ struct RangingConfigView: View {
                     
                 }
                 else if configurationFailed{
-                    
                     ConfigurationStatusView(isSuccess: false)
                         .onAppear() {
-                            vBeaconID = ""
+                            locationManager.vBeaconID = vbeaconID
                             resetConfiguration()
                             showConnectingView = false
                         }

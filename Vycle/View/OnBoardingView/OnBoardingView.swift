@@ -94,12 +94,12 @@ struct OnBoardingView: View {
                             if !isRangingVBeacon {
                                 ConfigurationView(
                                     locationManager: locationManager,
-                                    vBeaconID: $vBeaconID,
                                     showGuide: $showGuide,
                                     isRangingVBeacon: $isRangingVBeacon,
                                     onBoardingDataSaved: $onBoardingDataSaved,
                                     keyboardHeight: $keyboardHeight,
                                     hideHeader: false,
+                                    tempVBeaconID: $vBeaconID,
                                     addingNewVehicle: false
                                 )
                                 .transition(.opacity)
@@ -121,7 +121,9 @@ struct OnBoardingView: View {
                             SwiftDataService.shared.insertOnBoarding(
                                 vehicleType: vehicleType,
                                 vehicleBrand: vehicleBrand ?? .car(.honda),
-                                odometer: odometer ?? 0
+                                odometer: odometer ?? 0,
+                                vbeaconId: vBeaconID
+                                
 //                                serviceHistory: serviceHistory
                             )
                         }

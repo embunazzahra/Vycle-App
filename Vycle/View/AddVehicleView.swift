@@ -93,18 +93,18 @@ struct AddVehicleView: View {
                                 .transition(.opacity)
                             case 3:
                             if !isRangingVBeacon {
-                                ConfigurationView(
-                                    locationManager: locationManager,
-                                    vBeaconID: $vBeaconID,
-                                    showGuide: $showGuide,
-                                    isRangingVBeacon: $isRangingVBeacon,
-                                    onBoardingDataSaved: $onBoardingDataSaved,
-                                    keyboardHeight: $keyboardHeight,
-                                    hideHeader: false,
-                                    addingNewVehicle: true
-                                )
-                                .navigationBarBackButtonHidden()
-                                .transition(.opacity)
+//                                ConfigurationView(
+//                                    locationManager: locationManager,
+//                                    vBeaconID: $vBeaconID,
+//                                    showGuide: $showGuide,
+//                                    isRangingVBeacon: $isRangingVBeacon,
+//                                    onBoardingDataSaved: $onBoardingDataSaved,
+//                                    keyboardHeight: $keyboardHeight,
+//                                    hideHeader: false,
+//                                    addingNewVehicle: true
+//                                )
+//                                .navigationBarBackButtonHidden()
+//                                .transition(.opacity)
                             } else {
                                 RangingVBeaconView(
                                     locationManager: locationManager,

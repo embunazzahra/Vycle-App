@@ -9,24 +9,25 @@ import SwiftUI
 struct BeaconConfigView: View {
 //    @AppStorage("vBeaconID") private var vBeaconID: String = ""
     @State private var vBeaconID = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? ""
+    
     @ObservedObject var locationManager: LocationManager
     @State private var isRangingVBeacon: Bool = false
     @State private var keyboardHeight: CGFloat = 0.0
     @State private var onBoardingDataSaved: Bool = false
     @State private var showGuide: Bool = false
-    
+    @State private var tempVbeacon: String = SwiftDataService.shared.getCurrentVehicle()?.vBeaconId ?? ""
     var body: some View {
         if !isRangingVBeacon {
             ZStack {
                 VStack(alignment: .center) {
                     ConfigurationView(
                         locationManager: locationManager,
-                        vBeaconID: $vBeaconID,
                         showGuide: $showGuide,
                         isRangingVBeacon: $isRangingVBeacon,
                         onBoardingDataSaved: $onBoardingDataSaved,
                         keyboardHeight: $keyboardHeight,
                         hideHeader: true,
+                        tempVBeaconID: $tempVbeacon,
                         addingNewVehicle: false
                     )
                     .transition(.move(edge: .trailing))
@@ -55,6 +56,7 @@ struct BeaconConfigView: View {
                 locationManager: locationManager,
                 isRangingVBeacon: $isRangingVBeacon,
                 onBoardingDataSaved: $onBoardingDataSaved
+                
             )
             .transition(.opacity)
         }

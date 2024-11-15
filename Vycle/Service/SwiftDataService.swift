@@ -242,6 +242,10 @@ extension SwiftDataService {
 // MARK: OnBoarding
 
 extension SwiftDataService {
+    func insertNewBeaconId(vbeaconID: String, vehicle: Vehicle){
+        vehicle.vBeaconId = vbeaconID
+        saveModelContext()
+    }
     func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil, vbeaconId: String? = "") {
         
         let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand, vbeaconId: vbeaconId ?? "")
