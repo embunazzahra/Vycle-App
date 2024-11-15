@@ -44,7 +44,7 @@ struct GuideView: View {
             }
             Spacer()
         }
-        .navigationTitle("Servis Berkala").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Servis Berkala")
         .padding()
     }
     

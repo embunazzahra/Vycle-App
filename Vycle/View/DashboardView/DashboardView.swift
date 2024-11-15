@@ -13,7 +13,7 @@ struct DashboardView: View {
     @ObservedObject var locationManager: LocationManager
     @Query var trips: [Trip]
     //    @Query var vehicles : [Vehicle]
-    
+    @Binding var tabReminder: Bool
     @State private var showSettingsAlert = false
     @Query var reminders : [Reminder]
     @State private var showingAlert = false
@@ -38,7 +38,7 @@ struct DashboardView: View {
     }
     
     var body: some View {
-        NavigationView {
+    
             ScrollView {
                 VStack{
                     ZStack {
@@ -136,7 +136,7 @@ struct DashboardView: View {
                                     routes.navigate(to: .BeaconConfigView)
                                 }
                                 Spacer()
-                            }.padding(.leading, 16).padding(.top, 16)
+                            }.padding(.leading, 16).padding(.top, 24)
                             Spacer()
                             
                             Spacer()
@@ -221,8 +221,8 @@ struct DashboardView: View {
                                     .clipped()
                                     .offset(y: -25)
                                 HStack{
-                                    Text("Lihat suku cadang lebih detail").foregroundStyle(Color.accentColor)
-                                    Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                                    Text("Lihat suku cadang lebih detail").foregroundStyle(Color.blueLoyaltyTone100)
+                                    Image(systemName: "chevron.right").foregroundStyle(Color.blueLoyaltyTone100)
                                 }.padding(.horizontal, 16).padding(.vertical, 8)
                                     .background(
                                         RoundedRectangle(cornerRadius: 10)
@@ -237,7 +237,7 @@ struct DashboardView: View {
                             if !filteredReminders.isEmpty {
                                 VStack {
                                     HStack{
-                                        HaveReminderView().padding(.horizontal, 16)
+                                        HaveReminderView(tabReminder: $tabReminder).padding(.horizontal, 16)
                                     }
                                     SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                                     
@@ -269,8 +269,6 @@ struct DashboardView: View {
                     
                 }
             }
-            
-            
             .onAppear {
                 updateFilteredReminders()
                 
@@ -293,7 +291,7 @@ struct DashboardView: View {
                 )
             }
             
-        }}
+        }
     
     //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
     //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
@@ -395,9 +393,9 @@ struct DashboardView: View {
     
 }
 
-#Preview {
-    DashboardView(locationManager: LocationManager())
-}
+//#Preview {
+//    DashboardView(locationManager: LocationManager())
+//}
 
 
 struct NoReminderView : View {
@@ -430,8 +428,8 @@ struct DataSummaryCardView : View {
                 .clipped()
                 .overlay (
                     HStack{
-                        Text("Mau lihat ringkasannya").foregroundStyle(Color.accentColor)
-                        Image(systemName: "chevron.right").foregroundStyle(Color.accentColor)
+                        Text("Mau lihat ringkasannya").foregroundStyle(Color.blueLoyaltyTone100)
+                        Image(systemName: "chevron.right").foregroundStyle(Color.blueLoyaltyTone100)
                     }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 6)
@@ -453,6 +451,7 @@ struct DataSummaryCardView : View {
 }
 
 struct HaveReminderView : View {
+    @Binding var tabReminder: Bool
     var body: some View {
         HStack{
             VStack(alignment: .leading){
@@ -461,7 +460,7 @@ struct HaveReminderView : View {
             }
             Spacer()
             Button(action: {
-                //
+                tabReminder.toggle()
             }){
                 ZStack{
                     Color.primary.base
