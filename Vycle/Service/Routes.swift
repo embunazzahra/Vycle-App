@@ -28,6 +28,7 @@ import SwiftUI
         case GuideView
         case ReminderView
         case DataSummaryView
+        case ShareSummaryView(totalMileage: Float, uniqueSpareParts: Set<SparepartCount>, totalCost: Float)
     }
 
     func navigate(to destination: Destination) {

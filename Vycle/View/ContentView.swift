@@ -110,6 +110,12 @@ struct ContentView: View {
                                     ReminderView(locationManager: locationManager)
                                 case .DataSummaryView:
                                     DataSummaryView()
+                                case .ShareSummaryView(let totalMileage,
+                                                   let uniqueSpareParts,
+                                                   let totalCost):
+                                    ShareSummaryView(totalMileage: totalMileage,
+                                                 uniqueSpareParts: uniqueSpareParts,
+                                                 totalCost: totalCost)
                             }
                         }
                         .toolbar {

@@ -10,6 +10,8 @@ import SwiftUI
 import SwiftData
 
 struct DataContentView: View {
+    @EnvironmentObject var routes: Routes
+    
     var services: [Servis]
     var odometer: Float
     
@@ -34,7 +36,7 @@ struct DataContentView: View {
                 SparepartDataView(uniqueSpareParts: uniqueSpareParts)
                 TotalCostView(totalCost: totalCost)
                 CustomButton(title: "Bagikan",  iconName: "share_icon", iconPosition: .left, buttonType: .primary,horizontalPadding: 0, verticalPadding: 0) {
-                    print("Tes")
+                    routes.navigate(to: .ShareSummaryView(totalMileage: odometer, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost))
                 }
             }
         }
