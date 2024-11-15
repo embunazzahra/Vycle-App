@@ -14,9 +14,11 @@ enum SparepartCount: Hashable {
 
 
 struct DataSummaryView: View {
- 
+    
     @State private var selectedTab: Int = 0 // 0: YTD, 1: 3 Tahun, 2: 5 Tahun, 3: Seluruhnya
     @Query private var allServices: [Servis]
+    @Query private var allOdometers: [Odometer]
+    
     var ytdServices: [Servis] {
         let startDate = Calendar.current.date(from: Calendar.current.dateComponents([.year], from: Date()))!
         return allServices.filter { $0.date >= startDate }
@@ -32,7 +34,50 @@ struct DataSummaryView: View {
         return allServices.filter { $0.date >= startDate }
     }
     
+    var latestOdometer: Odometer? {
+        return allOdometers.sorted(by: { $0.date > $1.date }).first
+    }
     
+    // For each time period (YTD, 3 years, 5 years, all)
+    var latestOdometerYTD: Float {
+        return odometerDifference(for: 1)
+    }
+
+    var latestOdometer3Years: Float {
+        return odometerDifference(for: 3)
+    }
+
+    var latestOdometer5Years: Float {
+        return odometerDifference(for: 5)
+    }
+
+    var latestOdometerAllTime: Float {
+        guard let latestReading = latestOdometer else {
+            return 0 // No odometer readings available
+        }
+        return latestReading.currentKM // Return the latest odometer reading if it's all-time
+    }
+    
+    func odometerDifference(for years: Int) -> Float {
+        let endDate = Date() // Current date
+        let startDate = Calendar.current.date(byAdding: .year, value: -years, to: endDate)!
+
+        // Get the latest odometer reading
+        guard let latestReading = latestOdometer else {
+            return 0 // No odometer readings available
+        }
+
+        // Get the earliest odometer reading in the given period (before the start date)
+        guard let earliestReadingInPeriod = allOdometers
+            .filter({ $0.date >= startDate && $0.date <= endDate })
+            .sorted(by: { $0.date < $1.date })
+            .first else {
+                return latestReading.currentKM // If there's no previous reading, return just the latest reading
+        }
+
+        // Return the difference between the latest reading and the earliest reading within the given period
+        return latestReading.currentKM - earliestReadingInPeriod.currentKM
+    }
     
     var body: some View {
         
@@ -64,13 +109,13 @@ struct DataSummaryView: View {
             
             // Custom content view based on the selected tab
             if selectedTab == 0 {
-                DataContentView(services: ytdServices)
+                DataContentView(services: ytdServices, odometer: latestOdometerYTD)
             } else if selectedTab == 1 {
-                DataContentView(services: threeYearServices)
+                DataContentView(services: threeYearServices, odometer: latestOdometer3Years)
             } else if selectedTab == 2 {
-                DataContentView(services: fiveYearServices)
+                DataContentView(services: fiveYearServices, odometer: latestOdometer5Years)
             } else if selectedTab == 3 {
-                DataContentView(services: allServices)
+                DataContentView(services: allServices, odometer: latestOdometerAllTime)
             }
             
             
@@ -87,6 +132,8 @@ struct DataSummaryView: View {
 }
 
 struct TotalMileageView: View {
+    var totalMileage: Float
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
@@ -104,7 +151,7 @@ struct TotalMileageView: View {
                     .foregroundStyle(Color.neutral.tint300)
                     .font(.footnote)
                 HStack(spacing: 3){
-                    Text("15.000")
+                    Text("\(totalMileage.formatted())")
                         .font(.title3)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.neutral.tint300)
@@ -310,6 +357,7 @@ extension DataSummaryView{
 
 struct DataContentView: View {
     var services: [Servis]
+    var odometer: Float
     
     var totalCost: Float {
         services.reduce(0) { $0 + $1.totalPrice }
@@ -328,7 +376,7 @@ struct DataContentView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 12){
-                TotalMileageView()
+                TotalMileageView(totalMileage: odometer)
                 SparepartDataView(uniqueSpareParts: uniqueSpareParts)
                 TotalCostView(totalCost: totalCost)
                 CustomButton(title: "Bagikan",  iconName: "share_icon", iconPosition: .left, buttonType: .primary,horizontalPadding: 0, verticalPadding: 0) {
