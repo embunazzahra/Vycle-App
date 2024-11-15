@@ -98,6 +98,11 @@ struct AddEditFramework: View {
             self.isPartChosen = true
             self.isMonthYearChosen = true
             self.isKilometerChosen = true
+        } else if let reminder = reminderToEdit, reminder.isDraft {
+            self._selectedDate = State(initialValue: selectedDate)
+            self._selectedNumber = State(initialValue: selectedNumber)
+            self._selectedSparepart = State(initialValue: reminder.sparepart)
+            self.isPartChosen = true
         } else {
             self._selectedDate = State(initialValue: selectedDate)
             self._selectedNumber = State(initialValue: selectedNumber)
@@ -105,7 +110,6 @@ struct AddEditFramework: View {
         }
 
         self.isDataUsed = false
-        
     }
 
     @State private var resetTrigger = false
@@ -127,16 +131,6 @@ struct AddEditFramework: View {
             print("Reset to default: isDataUsed:", isDataUsed)
         }
     }
-    
-//    func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
-//        guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
-//            return nil
-//        }
-//        
-//        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: Date()) ?? Date()
-//        
-//        return (interval, dueDate)
-//    }
     
     func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
         guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
@@ -195,30 +189,26 @@ struct AddEditFramework: View {
                                 formatter.dateFormat = "MM/dd/yyyy"
                                 return formatter
                             }()
-
-                            if reminders.contains(where: { $0.reminderType == "Service Reminder" }) {
+                            
+                            if reminderToEdit.reminderType == "Service Reminder" || reminderToEdit.reminderType == "Draft Reminder" {
                                 Text("Pengingat berasal dari servis pada \(dateFormatter.string(from: reminderToEdit.date))")
                                     .caption1(.regular)
                                     .foregroundColor(Color.neutral.tone300)
-                            } else if reminders.contains(where: { $0.reminderType == "Manual Reminder" }) {
-                                Text("Pengingat dibuat secara manual pada \(dateFormatter.string(from: reminderToEdit.date))")
-                                    .caption1(.regular)
-                                    .foregroundColor(Color.neutral.tone300)
-                            } else if reminders.contains(where: { $0.reminderType == "Edited Reminder" }) {
+                            } else if reminderToEdit.reminderType == "Manual Reminder" || reminderToEdit.reminderType == "Edited Reminder" {
                                 Text("Pengingat dibuat secara manual pada \(dateFormatter.string(from: reminderToEdit.date))")
                                     .caption1(.regular)
                                     .foregroundColor(Color.neutral.tone300)
                             }
                             
                             Spacer()
-                        } .padding(.leading, 10)
+                        }
+                        .padding(.leading, 10)
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
                     .padding(.bottom, -16)
-
                 }
-                
+
                 SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
 
                 NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)

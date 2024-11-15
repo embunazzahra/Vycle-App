@@ -568,63 +568,96 @@ extension SwiftDataService {
                 print("Canceled notification for existing reminder: \(reminder.sparepart)")
             }
             
-            guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
-                continue
-            }
+            let reminderOdo = odometer
             
-            let latestReminder = existingReminders.sorted { $0.date > $1.date }.first
-            
-            let kmInterval: Float
-            let timeInterval: Int
-            let dueDate: Date
-            
-            if let latestReminder = latestReminder {
-                print("Latest dueDate: \(latestReminder.dueDate)")
-
-                print("Latest timeInterval: \(latestReminder.timeInterval)")
-
-                print("Latest kmInterval: \(latestReminder.kmInterval)")
-
-                print("in latestReminder")
-                kmInterval = latestReminder.kmInterval
-                timeInterval = latestReminder.timeInterval
-                dueDate = latestReminder.dueDate
+            // Check if an interval exists or if the latest reminder was edited
+            if let interval = vehicle.brand.intervalForSparepart(sparepart) {
+                let latestReminder = existingReminders.sorted { $0.date > $1.date }.first
+                
+                let kmInterval: Float
+                let timeInterval: Int
+                let dueDate: Date
+                
+                if let latestReminder = latestReminder, latestReminder.isEdited {
+                    print("Using latest edited reminder values.")
+                    kmInterval = latestReminder.kmInterval
+                    timeInterval = latestReminder.timeInterval
+                    dueDate = Calendar.current.date(byAdding: .month, value: timeInterval, to: service.date) ?? Date()
+                } else {
+                    print("No previous edited reminder found. Using default interval values.")
+                    kmInterval = Float(interval.kilometer)
+                    timeInterval = interval.month
+                    dueDate = Calendar.current.date(byAdding: .month, value: timeInterval, to: service.date) ?? Date()
+                }
+                
+                let newReminder = Reminder(
+                    date: service.date,
+                    sparepart: sparepart,
+                    reminderOdo: reminderOdo,
+                    kmInterval: kmInterval,
+                    dueDate: dueDate,
+                    timeInterval: timeInterval,
+                    vehicle: service.vehicle,
+                    isRepeat: true,
+                    isDraft: false,
+                    service: service,
+                    isHelperOn: true,
+                    reminderType: "Service Reminder",
+                    isEdited: false
+                )
+                
+                NotificationManager.shared.scheduleNotification(for: newReminder)
+                modelContext.insert(newReminder)
+            } else if let latestReminder = existingReminders.sorted(by: { $0.date > $1.date }).first, latestReminder.reminderType != "Draft Reminder" {
+                print("No interval, but latest reminder was edited. Using latest edited reminder values.")
+                
+                let newReminder = Reminder(
+                    date: service.date,
+                    sparepart: sparepart,
+                    reminderOdo: reminderOdo,
+                    kmInterval: latestReminder.kmInterval,
+                    dueDate: latestReminder.dueDate,
+                    timeInterval: latestReminder.timeInterval,
+                    vehicle: service.vehicle,
+                    isRepeat: true,
+                    isDraft: false,
+                    service: service,
+                    isHelperOn: true,
+                    reminderType: "Service Reminder",
+                    isEdited: false
+                )
+                
+                NotificationManager.shared.scheduleNotification(for: newReminder)
+                modelContext.insert(newReminder)
             } else {
-                print("else latestReminder")
-                kmInterval = Float(interval.kilometer)
-                timeInterval = interval.month
-                dueDate = Calendar.current.date(byAdding: .month, value: timeInterval, to: service.date) ?? Date()
+                let newReminder = Reminder(
+                    date: service.date,
+                    sparepart: sparepart,
+                    reminderOdo: reminderOdo,
+                    kmInterval: 123, // will be ignored because it is still a draft
+                    dueDate: Date(), // will be ignored because it is still a draft
+                    timeInterval: 99, // will be ignored because it is still a draft
+                    vehicle: service.vehicle,
+                    isRepeat: true,
+                    isDraft: true,
+                    service: service,
+                    isHelperOn: true,
+                    reminderType: "Draft Reminder",
+                    isEdited: false
+                )
+                
+                modelContext.insert(newReminder)
             }
-            let newReminder = Reminder(
-                date: service.date,
-                sparepart: sparepart,
-                reminderOdo: odometer,
-                kmInterval: kmInterval,
-                dueDate: dueDate,
-                timeInterval: timeInterval,
-                vehicle: service.vehicle,
-                isRepeat: true,
-                isDraft: false,
-                service: service,
-                isHelperOn: true,
-                reminderType: "Service Reminder",
-                isEdited: false
-            )
             
-            NotificationManager.shared.scheduleNotification(for: newReminder)
-            
-            modelContext.insert(newReminder)
-            
-        }
-
-        
-        do {
-            try modelContext.save()
-            print("Reminders saved successfully!")
-        } catch {
-            print("Failed to save reminder: \(error)")
+            do {
+                try modelContext.save()
+                print("Reminders saved successfully!")
+            } catch {
+                print("Failed to save reminder: \(error)")
+            }
         }
     }
+
 }
 
 

@@ -169,21 +169,22 @@ struct ReminderView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         formatter.locale = Locale(identifier: "id_ID")
-
+        
         let uniqueReminders = latestReminders(from: reminders)
         let sortedReminders = uniqueReminders.filter { !$0.isDraft }.sorted { $0.dueDate < $1.dueDate }
-
+        
         var optionCountMap: [String: Int] = [:]
-
+        
         for reminder in sortedReminders {
             let option = formatter.string(from: reminder.dueDate)
             optionCountMap[option, default: 0] += 1
         }
-
-        if reminders.contains(where: { $0.isDraft }) {
-            optionCountMap["Drafts"] = reminders.filter { $0.isDraft }.count
+        
+        let draftCount = uniqueReminders.filter { $0.isDraft }.count
+        if draftCount > 0 {
+            optionCountMap["Drafts"] = draftCount
         }
-
+        
         availableOptions = optionCountMap.keys.sorted {
             if $0 == "Drafts" { return true }
             if $1 == "Drafts" { return false }
@@ -191,6 +192,7 @@ struct ReminderView: View {
         }
         remindersCountByOption = optionCountMap
     }
+
 
 
     private func getDateFrom(option: String) -> Date? {
