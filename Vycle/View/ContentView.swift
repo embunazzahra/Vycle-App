@@ -105,7 +105,6 @@ struct ContentView: View {
                                     BeaconConfigView(locationManager: locationManager)
                                 case .GuideView:
                                     GuideView()
-                                
                                 case .ReminderView:
                                     ReminderView(locationManager: locationManager)
                                 case .DataSummaryView:
