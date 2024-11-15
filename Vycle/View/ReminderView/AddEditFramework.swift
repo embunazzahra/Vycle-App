@@ -226,51 +226,53 @@ struct AddEditFramework: View {
                 }
                 .padding(.horizontal, 16)
                 
-                if !isResetHidden {
-                    if isDataUsed == false {
-                        VStack(alignment: .leading) {
-                            Text("Setelan awal")
-                                .font(.headline)
-                                .padding(.horizontal, 16)
-                                .padding(.bottom, -4)
-                            
-                            ZStack {
-                                Rectangle()
-                                    .frame(height: 56)
-                                    .cornerRadius(12)
-                                    .foregroundColor(Color.neutral.tint300)
+                if let reminderToEdit = reminderToEdit {
+                    if reminderToEdit.isDraft == false {
+                        if isDataUsed == false {
+                            VStack(alignment: .leading) {
+                                Text("Setelan awal")
+                                    .font(.headline)
                                     .padding(.horizontal, 16)
+                                    .padding(.bottom, -4)
                                 
-                                HStack {
-                                    HStack {
-                                        Image("question_mark")
-                                            .padding(.bottom, 12)
-                                        Text("Ingin mengikuti rekomendasi pengingat suku cadang?")
-                                            .caption1(.regular)
-                                    }
-                                    .padding(.leading, 24)
-                                    Spacer()
+                                ZStack {
+                                    Rectangle()
+                                        .frame(height: 56)
+                                        .cornerRadius(12)
+                                        .foregroundColor(Color.neutral.tint300)
+                                        .padding(.horizontal, 16)
                                     
-                                    Button(action: {
-                                        if reminders.contains(where: {$0.isDraft == true}) {
-                                            resetToDefault()
-                                        } else {
-                                            resetToData()
-                                        }
-                                    }) {
+                                    HStack {
                                         HStack {
-                                            Image("reset")
-                                            Text("Atur ulang")
+                                            Image("question_mark")
+                                                .padding(.bottom, 12)
+                                            Text("Ingin mengikuti rekomendasi pengingat suku cadang?")
+                                                .caption1(.regular)
                                         }
-                                        .foregroundColor(Color.primary.base)
-                                        .padding(.trailing, 24)
+                                        .padding(.leading, 24)
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            if reminders.contains(where: {$0.isDraft == true}) {
+                                                resetToDefault()
+                                            } else {
+                                                resetToData()
+                                            }
+                                        }) {
+                                            HStack {
+                                                Image("reset")
+                                                Text("Atur ulang")
+                                            }
+                                            .foregroundColor(Color.primary.base)
+                                            .padding(.trailing, 24)
+                                        }
                                     }
+                                    .padding(.horizontal, 8)
                                 }
-                                .padding(.horizontal, 8)
                             }
+                            .padding(.bottom, 8)
+                            .padding(.top, 12)
                         }
-                        .padding(.bottom, 8)
-                        .padding(.top, 12)
                     }
                 }
                 
@@ -292,7 +294,8 @@ struct AddEditFramework: View {
                                 isDraft: false,
                                 isHelperOn: true,
                                 reminderType: "Edited Reminder",
-                                isEdited: true
+                                isEdited: true,
+                                date: Date()
                                 )
                         } else {
                             swiftDataService.editReminder(
@@ -394,6 +397,7 @@ struct AddEditFramework: View {
                         .padding(.top, 10)
                         
                         Button(action: {
+                            
                             if let reminderToEdit = reminderToEdit {
                                 deleteReminder(reminder: reminderToEdit)
                             }

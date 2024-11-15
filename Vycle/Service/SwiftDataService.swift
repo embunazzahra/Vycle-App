@@ -406,7 +406,7 @@ extension SwiftDataService {
         let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
         
         let remindersForSparePart = activeReminders.filter { $0.sparepart.rawValue == reminder.sparepart.rawValue }
-        let sortedReminders = remindersForSparePart.sorted { $0.dueDate > $1.dueDate }
+        let sortedReminders = remindersForSparePart.sorted { $0.date > $1.date }
         
         if let latestReminder = sortedReminders.first {
             if latestReminder.id == reminder.id {
@@ -421,23 +421,24 @@ extension SwiftDataService {
         print("Reminder edited successfully!")
     }
     
-    func editDraft(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, reminderType: String, isEdited: Bool) {
+    func editDraft(reminder: Reminder, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, isRepeat: Bool, isDraft: Bool, isHelperOn: Bool, reminderType: String, isEdited: Bool, date: Date) {
         reminder.sparepart = sparepart
         reminder.reminderOdo = reminderOdo
         reminder.kmInterval = kmInterval
         reminder.dueDate = dueDate
         reminder.timeInterval = timeInterval
         reminder.isRepeat = isRepeat
-        reminder.isDraft = isDraft
+        reminder.isDraft = false
         reminder.isHelperOn = isHelperOn
-        reminder.reminderType = reminderType
+        reminder.reminderType = "Edited Reminder"
         reminder.isEdited = true
+        reminder.date = Date()
         saveModelContext()
         
-        let activeReminders = fetchRemindersForNotif().filter { !$0.isDraft }
+        let activeReminders = fetchRemindersForNotif()
         
         let remindersForSparePart = activeReminders.filter { $0.sparepart.rawValue == reminder.sparepart.rawValue }
-        let sortedReminders = remindersForSparePart.sorted { $0.dueDate > $1.dueDate }
+        let sortedReminders = remindersForSparePart.sorted { $0.date > $1.date }
         
         if let latestReminder = sortedReminders.first {
             if latestReminder.id == reminder.id {
@@ -609,14 +610,17 @@ extension SwiftDataService {
                 NotificationManager.shared.scheduleNotification(for: newReminder)
                 modelContext.insert(newReminder)
             } else if let latestReminder = existingReminders.sorted(by: { $0.date > $1.date }).first, latestReminder.reminderType != "Draft Reminder" {
-                print("No interval, but latest reminder was edited. Using latest edited reminder values.")
+                print("No interval (draft), but latest reminder was edited. Using latest edited reminder values.")
+                
+                let timeInterval = latestReminder.timeInterval
+                let dueDate = Calendar.current.date(byAdding: .month, value: timeInterval, to: service.date) ?? Date()
                 
                 let newReminder = Reminder(
                     date: service.date,
                     sparepart: sparepart,
                     reminderOdo: reminderOdo,
                     kmInterval: latestReminder.kmInterval,
-                    dueDate: latestReminder.dueDate,
+                    dueDate: dueDate,
                     timeInterval: latestReminder.timeInterval,
                     vehicle: service.vehicle,
                     isRepeat: true,
