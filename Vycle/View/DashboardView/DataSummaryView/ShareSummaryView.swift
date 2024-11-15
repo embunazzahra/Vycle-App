@@ -13,39 +13,41 @@ struct ShareSummaryView: View {
     let totalCost: Float
     @Environment(\.displayScale) var displayScale
     
-    @State private var isLoading: Bool = false
-    @State private var sheetPresented: Bool = false
+    @State private var isLoading: Bool = true
     @State private var generatedImage: UIImage? = nil
-    
+    @State private var sheetPresented: Bool = false
+
     var body: some View {
         VStack(spacing: 16) {
-//            if isLoading {
-//                ProgressView("Generating Image...")
-//                    .padding()
-//            } else {
-                TotalMileageView(totalMileage: totalMileage)
-                SparepartDataView(uniqueSpareParts: uniqueSpareParts)
-                TotalCostView(totalCost: totalCost)
-//            }
-            
-            Button(action: {
-                withAnimation {
-                    isLoading = true
-                    Task {
-                        generatedImage = await renderAsImage()
-                        isLoading = false
-                        sheetPresented = true
-                    }
+            if isLoading {
+                ProgressView("Generating Image...")
+                    .padding()
+            } else if let image = generatedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .padding()
+
+                Button(action: {
+                    sheetPresented = true
+                }) {
+                    Text("Share")
+                        .padding()
+                        .foregroundStyle(.black)
+                        .background(Color.blue)
+                        .cornerRadius(8)
                 }
-            }) {
-                Text("Generate & Share")
-                    .foregroundStyle(.black)
             }
-            .padding()
         }
         .padding()
         .navigationTitle("Bagikan Data")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            Task {
+                generatedImage = await renderAsImage()
+                isLoading = false
+            }
+        }
         .sheet(isPresented: $sheetPresented) {
             if let image = generatedImage {
                 ShareViewController(activityItems: [image])
@@ -54,10 +56,25 @@ struct ShareSummaryView: View {
     }
 }
 
+struct ShareContentView: View {
+    let totalMileage: Float
+    let uniqueSpareParts: Set<SparepartCount>
+    let totalCost: Float
+
+    var body: some View {
+        VStack(spacing: 16) {
+            TotalMileageView(totalMileage: totalMileage)
+            SparepartDataView(uniqueSpareParts: uniqueSpareParts)
+            TotalCostView(totalCost: totalCost)
+        }
+        .padding()
+    }
+}
+
 extension ShareSummaryView {
     @MainActor
     func renderAsImage() async -> UIImage? {
-        let renderer = ImageRenderer(content: self)
+        let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost))
         renderer.scale = displayScale
         return renderer.uiImage
     }
