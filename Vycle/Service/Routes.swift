@@ -27,6 +27,7 @@ import SwiftUI
         case BeaconConfigView
         case GuideView
         case ReminderView
+        case DataSummaryView
     }
 
     func navigate(to destination: Destination) {
