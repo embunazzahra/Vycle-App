@@ -28,7 +28,7 @@ struct DashboardView: View {
     @State private var odometer: Float?
     @State private var filteredReminders: [Reminder] = []
     @Binding var isShowingFractionalModal: Bool
-    
+    @State private var isVehicleChanged: Bool = false
     var totalDistance: Double {
         let initialOdoValue = initialOdometer.last?.currentKM ?? 0
         if let firstLocation = locationHistory.first {
@@ -80,11 +80,15 @@ struct DashboardView: View {
                                 .foregroundColor(.orange)
                                 .frame(height: 40)
                         } else {
-                            Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
+                            var currentVehicle = SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? ""
+                            Image(currentVehicle)
                                 .resizable()
                                 .scaledToFit()
                                 .foregroundColor(.orange)
                                 .frame(height: 40)
+                                .onChange(of: isVehicleChanged){
+                                    currentVehicle = SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? ""
+                                }
                         }
                         VStack(alignment: .leading, spacing: 4){
                             Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
@@ -178,7 +182,7 @@ struct DashboardView: View {
                 Spacer()
             }
             .sheet(isPresented: $isShowingFractionalModal, content: {
-                ModalView(currentDetent: $currentDetent)
+                ModalView(currentDetent: $currentDetent, isVehicleChanged: $isVehicleChanged)
 //                    .presentationDetents([.fraction])
                     .presentationDetents((SwiftDataService.shared.fetchVehicles().count > 1 ? [.fraction(0.4), .large] : [.fraction(0.3), .large]), selection: $currentDetent)
                 
@@ -337,6 +341,7 @@ struct ModalView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var routes: Routes
     @Binding var currentDetent: PresentationDetent
+    @Binding var isVehicleChanged: Bool
     var body: some View {
         NavigationStack {
             ZStack {
@@ -365,6 +370,8 @@ struct ModalView: View {
                         
                                 VehicleCard(vehicle: vehicle).onTapGesture {
                                     SwiftDataService.shared.setCurrentVehicle(vehicle)
+                                    dismiss()
+                                    isVehicleChanged.toggle()
                                 }
                             }
                         } else {
@@ -373,6 +380,8 @@ struct ModalView: View {
                         
                                 VehicleCard(vehicle: vehicle).onTapGesture {
                                     SwiftDataService.shared.setCurrentVehicle(vehicle)
+                                    dismiss()
+                                    isVehicleChanged.toggle()
                                 }
                             }
                         }
@@ -381,25 +390,16 @@ struct ModalView: View {
 //                        VehicleCard()
 //                        VehicleCard()
 //                        Spacer()
-                        if currentDetent == .large {
-                            Spacer()
-                        }
+                      
                         AddVehicleButton().onTapGesture {
+                            dismiss()
                             routes.navigate(to: .AddVehicleView)
                         }
+                        Spacer()
                     }
                     
                 }
             }
-            //            .navigationBarTitleDisplayMode(.inline)
-            //            .toolbar {
-            //                ToolbarItem(placement: .topBarTrailing) {
-            //                    Button("Close", systemImage: "xmark") {
-            //                        dismiss()
-            //                    }
-            //                    .tint(.white)
-            //                }
-            //            }
         }
     }
 }
