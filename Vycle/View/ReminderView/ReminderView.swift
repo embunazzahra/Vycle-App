@@ -260,8 +260,3 @@ struct CustomScrollPickerWithDraft: View {
         }
     }
 }
-
-
-
-
-
