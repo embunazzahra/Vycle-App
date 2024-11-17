@@ -38,7 +38,7 @@ struct VycleApp: App {
                 ContentView()
                     .environmentObject(routes)
                     .environmentObject(popUpControl)
-                    .modelContainer(sharedModelContainer)
+                    .modelContainer(SwiftDataService.shared.modelContainer)
                     .preferredColorScheme(.light)
                 
                 if popUpControl.showPopUp {
