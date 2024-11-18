@@ -63,6 +63,8 @@ struct CustomButton: View {
     var buttonType: ButtonStyleType = .primary
     var horizontalPadding: CGFloat = 16
     var verticalPadding: CGFloat = 24
+    var width: CGFloat = 361
+    var height: CGFloat = 60
 //    var isNavigating: Bool
     @EnvironmentObject var routes: Routes
 //    var destination: Routes.Destination
@@ -96,7 +98,7 @@ struct CustomButton: View {
                         .foregroundColor(buttonType.foregroundColor())
                 }
             }
-            .frame(width: 361, height: 60)
+            .frame(width: width, height: height)
             .background(buttonType.backgroundColor())
             .cornerRadius(12)
             .overlay(
