@@ -23,8 +23,7 @@ struct ShareSummaryView: View {
     var body: some View {
         VStack(spacing: 16) {
             if isLoading {
-                ProgressView("Generating Image...")
-                    .padding()
+                LoadingView(isShowLoading: $isLoading)
             } else if let image = generatedImage {
                 Image(uiImage: image)
                     .resizable()
@@ -51,7 +50,10 @@ struct ShareSummaryView: View {
         .onAppear {
             Task {
                 generatedImage = await renderAsImage()
-                isLoading = false
+                // Wait for at least 1 second before hiding the loading screen
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    isLoading = false
+                }
             }
         }
         .sheet(isPresented: $sheetPresented) {
