@@ -74,7 +74,7 @@ struct ConfigurationGuide: View {
                             .padding(.bottom, 4)
                             .padding(.horizontal, 0)
                             .onTapGesture {
-                                openURL(URL(string: "https://www.apple.com")!)
+                                openURL(URL(string: "https://airtable.com/appAoF5iKsULXOF91/pagQZU8B5QnvyleA6/form")!)
                             }
                     }
                     Text("2. Atau dapat menghubungi email ")
