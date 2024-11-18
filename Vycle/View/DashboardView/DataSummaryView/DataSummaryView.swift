@@ -14,6 +14,7 @@ enum SparepartCount: Hashable {
 
 
 struct DataSummaryView: View {
+    @EnvironmentObject var routes: Routes
     
     @State private var selectedTab: Int = 0 // 0: YTD, 1: 3 Tahun, 2: 5 Tahun, 3: Seluruhnya
     @Query private var allServices: [Servis]

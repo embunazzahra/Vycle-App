@@ -56,20 +56,7 @@ struct ShareSummaryView: View {
     }
 }
 
-struct ShareContentView: View {
-    let totalMileage: Float
-    let uniqueSpareParts: Set<SparepartCount>
-    let totalCost: Float
 
-    var body: some View {
-        VStack(spacing: 16) {
-            TotalMileageView(totalMileage: totalMileage)
-            SparepartDataView(uniqueSpareParts: uniqueSpareParts)
-            TotalCostView(totalCost: totalCost)
-        }
-        .padding()
-    }
-}
 
 extension ShareSummaryView {
     @MainActor
