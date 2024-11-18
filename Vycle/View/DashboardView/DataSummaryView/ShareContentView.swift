@@ -14,16 +14,17 @@ struct ShareContentView: View {
     let totalCost: Float
     
     var body: some View {
+        
         VStack {
             ZStack {
                 Image("data_summary_background")
                     .resizable()
-                    .frame(width: 341, height: 645 )
+                //                    .frame(width: 341, height: 645 )
                 //                .frame()
                 VStack(spacing: 16) {
                     HStack {
                         Image("logo_vycle_square")
-                            
+                        
                         Spacer()
                         
                         ZStack {
@@ -37,11 +38,11 @@ struct ShareContentView: View {
                                     .clipShape(Circle())
                                     .overlay(Circle().stroke(Color.gray, lineWidth: 1))
                                 
-                            
+                                
                                 Divider()
                                     .frame(width: 1, height: 20)
                                     .overlay(.white)
-                                    
+                                
                                 
                                 Text("2024")
                                     .foregroundStyle(Color.neutral.tint300)
@@ -60,7 +61,7 @@ struct ShareContentView: View {
                     TotalCostView(totalCost: totalCost)
                 }
                 .padding()
-    //            .padding(.horizontal,38)
+                //            .padding(.horizontal,38)
             }
         }
         .frame(width: 341, height: 645 )

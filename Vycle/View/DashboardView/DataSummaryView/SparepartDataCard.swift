@@ -52,7 +52,10 @@ struct SparepartDataCard: View {
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color.primary.tone300)
                 .overlay(
-                    Image(imageName),
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 43,maxHeight: 44, alignment: .bottomTrailing),
                     alignment: .bottomTrailing
                 )
             
@@ -81,4 +84,8 @@ struct SparepartDataCard: View {
         }
         .frame(maxWidth: 108, maxHeight: 85)
     }
+}
+
+#Preview {
+    SparepartDataCard(sparepart: .minyakRem, count: 10)
 }

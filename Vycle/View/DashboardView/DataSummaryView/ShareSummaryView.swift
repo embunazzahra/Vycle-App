@@ -27,16 +27,16 @@ struct ShareSummaryView: View {
                     .resizable()
                     .scaledToFit()
                     .padding()
-
-                Button(action: {
-                    sheetPresented = true
-                }) {
-                    Text("Share")
-                        .padding()
-                        .foregroundStyle(.black)
-                        .background(Color.blue)
-                        .cornerRadius(8)
+                
+                HStack {
+                    CustomButton(title: "Bagikan", iconName: "share_icon_2",buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0) {
+                        sheetPresented = true
+                    }
+                    CustomButton(title: "Unduh Gambar", iconName: "save_icon",buttonType: .primary, horizontalPadding: 0, verticalPadding: 0) {
+                        sheetPresented = true
+                    }
                 }
+                
             }
         }
         .padding()
@@ -62,7 +62,7 @@ extension ShareSummaryView {
     @MainActor
     func renderAsImage() async -> UIImage? {
         let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost))
-        renderer.scale = displayScale
+        renderer.scale = displayScale * 2
         return renderer.uiImage
     }
 }
