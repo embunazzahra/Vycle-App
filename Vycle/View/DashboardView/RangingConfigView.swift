@@ -20,7 +20,6 @@ struct RangingConfigView: View {
         ZStack {
             VStack(alignment: .center) {
                 if locationManager.isInsideBeaconRegion && beaconDetected {
-                
                         ConfigurationStatusView(isSuccess: true)
                             .onAppear() {
                                 resetConfiguration()
@@ -29,7 +28,6 @@ struct RangingConfigView: View {
                     
                 }
                 else if configurationFailed{
-                    
                     ConfigurationStatusView(isSuccess: false)
                         .onAppear() {
                             vBeaconID = ""

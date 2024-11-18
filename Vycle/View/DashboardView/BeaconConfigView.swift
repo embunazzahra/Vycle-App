@@ -48,6 +48,8 @@ struct BeaconConfigView: View {
                     }
                 }
             }
+            .navigationBarBackButtonHidden(false)
+            .navigationBarHidden(showGuide)
         } else {
             RangingConfigView(
                 locationManager: locationManager,
