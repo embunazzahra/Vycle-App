@@ -110,13 +110,13 @@ struct DataSummaryView: View {
             
             // Custom content view based on the selected tab
             if selectedTab == 0 {
-                DataContentView(services: ytdServices, odometer: latestOdometerYTD)
+                DataContentView(services: ytdServices, odometer: latestOdometerYTD, dateRange: dateRange(for: selectedTab))
             } else if selectedTab == 1 {
-                DataContentView(services: threeYearServices, odometer: latestOdometer3Years)
+                DataContentView(services: threeYearServices, odometer: latestOdometer3Years, dateRange: dateRange(for: selectedTab))
             } else if selectedTab == 2 {
-                DataContentView(services: fiveYearServices, odometer: latestOdometer5Years)
+                DataContentView(services: fiveYearServices, odometer: latestOdometer5Years, dateRange: dateRange(for: selectedTab))
             } else if selectedTab == 3 {
-                DataContentView(services: allServices, odometer: latestOdometerAllTime)
+                DataContentView(services: allServices, odometer: latestOdometerAllTime, dateRange: dateRange(for: selectedTab))
             }
             
             
@@ -165,6 +165,36 @@ extension DataSummaryView{
         .frame(height: 24)
         .background(isActive ? Color.primary.shade200 : .clear)
         .cornerRadius(8)
+    }
+}
+
+extension DataSummaryView {
+    func dateRange(for tab: Int) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM yyyy"
+        dateFormatter.locale = Locale(identifier: "id_ID") // Set to Indonesian for "Januari", etc.
+        
+        let endDate = Date()
+        let startDate: Date
+        
+        switch tab {
+        case 0: // YTD (Year to Date)
+            startDate = Calendar.current.date(from: Calendar.current.dateComponents([.year], from: endDate))!
+        case 1: // 3 Tahun (3 years ago)
+            startDate = Calendar.current.date(byAdding: .year, value: -3, to: endDate)!
+        case 2: // 5 Tahun (5 years ago)
+            startDate = Calendar.current.date(byAdding: .year, value: -5, to: endDate)!
+        case 3: // Seluruhnya (All time)
+            startDate = allServices.min(by: { $0.date < $1.date })?.date ?? endDate
+        default:
+            startDate = endDate
+        }
+        
+        // Format start and end date to display as month year
+        let startDateString = dateFormatter.string(from: startDate)
+        let endDateString = dateFormatter.string(from: endDate)
+        
+        return "\(startDateString) - \(endDateString)"
     }
 }
 

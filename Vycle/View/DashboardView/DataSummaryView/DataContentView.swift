@@ -28,6 +28,8 @@ struct DataContentView: View {
         return Set(sparePartCounts.map { SparepartCount.part($0.key, count: $0.value) })
     }
     
+    var dateRange: String
+    
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -36,7 +38,7 @@ struct DataContentView: View {
                 SparepartDataView(uniqueSpareParts: uniqueSpareParts)
                 TotalCostView(totalCost: totalCost)
                 CustomButton(title: "Bagikan",  iconName: "share_icon", iconPosition: .left, buttonType: .primary,horizontalPadding: 0, verticalPadding: 0) {
-                    routes.navigate(to: .ShareSummaryView(totalMileage: odometer, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost))
+                    routes.navigate(to: .ShareSummaryView(totalMileage: odometer, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost, dateRange: dateRange))
                 }
             }
         }

@@ -112,10 +112,10 @@ struct ContentView: View {
                                     DataSummaryView()
                                 case .ShareSummaryView(let totalMileage,
                                                    let uniqueSpareParts,
-                                                   let totalCost):
+                                                   let totalCost, let dateRange):
                                     ShareSummaryView(totalMileage: totalMileage,
                                                  uniqueSpareParts: uniqueSpareParts,
-                                                 totalCost: totalCost)
+                                                     totalCost: totalCost, dateRange: dateRange)
                             }
                         }
                         .toolbar {

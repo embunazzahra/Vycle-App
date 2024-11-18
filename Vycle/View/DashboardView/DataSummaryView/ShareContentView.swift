@@ -14,6 +14,7 @@ struct ShareContentView: View {
     let totalCost: Float
     let vehicleIcon: String
     let vehicleYear: Int
+    let dateRange: String
     
     var body: some View {
         
@@ -22,41 +23,52 @@ struct ShareContentView: View {
                 Image("data_summary_background")
                     .resizable()
                 
-                VStack(spacing: 16) {
-                    HStack {
-                        Image("logo_vycle_square")
-                        
-                        Spacer()
-                        
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.primary.shade300)
-                            HStack {
-                                Image(vehicleIcon)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 32, height: 32)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.gray, lineWidth: 1))
-                                
-                                
-                                Divider()
-                                    .frame(width: 1, height: 20)
-                                    .overlay(.white)
-                                
-                                
-                                Text("\(String(vehicleYear))")
-                                    .foregroundStyle(Color.neutral.tint300)
-                                    .font(.footnote)
-                                    .fontWeight(.semibold)
-                            }
-                            .padding(.horizontal,8)
-                            .padding(.vertical,4)
+                VStack {
+                    VStack(alignment: .leading){
+                        HStack {
+                            Image("logo_vycle_square")
                             
-                        }.frame(width: 100)
+                            Spacer()
+                            
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.primary.shade300)
+                                HStack {
+                                    Image(vehicleIcon)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 32, height: 32)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.gray, lineWidth: 1))
+                                    
+                                    
+                                    Divider()
+                                        .frame(width: 1, height: 20)
+                                        .overlay(.white)
+                                    
+                                    
+                                    Text("\(String(vehicleYear))")
+                                        .foregroundStyle(Color.neutral.tint300)
+                                        .font(.footnote)
+                                        .fontWeight(.semibold)
+                                }
+                                .padding(.horizontal,8)
+                                .padding(.vertical,4)
+                                
+                            }.frame(width: 100)
+                            
+                        }
+                        .frame(height: 40)
+                        HStack {
+                            Text("Periode:")
+                                .font(.footnote)
+                            Text(dateRange)
+                                .font(.footnote)
+                                .fontWeight(.semibold)
+                        }
                         
                     }
-                    .frame(height: 40)
+                    
                     TotalMileageView(totalMileage: totalMileage)
                     SparepartDataView(uniqueSpareParts: uniqueSpareParts)
                     TotalCostView(totalCost: totalCost)
@@ -79,7 +91,8 @@ struct ShareContentView: View {
         ]),
         totalCost: 200000,
         vehicleIcon: "Toyota",
-        vehicleYear: 2024
+        vehicleYear: 2024,
+        dateRange: "Januari 2020 - Januari 2024"
     )
 }
 

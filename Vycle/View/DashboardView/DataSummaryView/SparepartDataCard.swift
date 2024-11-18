@@ -55,7 +55,7 @@ struct SparepartDataCard: View {
                     Image(imageName)
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: 43,maxHeight: 44, alignment: .bottomTrailing),
+                        .frame(maxWidth: 40,maxHeight: 44, alignment: .bottomTrailing),
                     alignment: .bottomTrailing
                 )
             

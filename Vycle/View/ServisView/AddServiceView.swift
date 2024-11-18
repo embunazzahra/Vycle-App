@@ -140,6 +140,7 @@ struct AddServiceView: View {
             }
             hasNewNotification = true
             popUpHelper.showPopUp = true
+            focusedField = false
         }
         .frame(maxWidth: .infinity)
         .background(Color.neutral.tint300)

@@ -11,6 +11,7 @@ struct ShareSummaryView: View {
     let totalMileage: Float
     let uniqueSpareParts: Set<SparepartCount>
     let totalCost: Float
+    let dateRange: String
     @Environment(\.displayScale) var displayScale
     
     @State private var isLoading: Bool = true
@@ -94,7 +95,7 @@ struct ShareSummaryView: View {
 extension ShareSummaryView {
     @MainActor
     func renderAsImage() async -> UIImage? {
-        let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost, vehicleIcon: vehicleBrandString, vehicleYear: 2024))
+        let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost, vehicleIcon: vehicleBrandString, vehicleYear: 2024, dateRange: dateRange))
         renderer.scale = displayScale * 2
         return renderer.uiImage
     }
