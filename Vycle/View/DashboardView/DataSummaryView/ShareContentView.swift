@@ -12,6 +12,8 @@ struct ShareContentView: View {
     let totalMileage: Float
     let uniqueSpareParts: Set<SparepartCount>
     let totalCost: Float
+    let vehicleIcon: String
+    let vehicleYear: Int
     
     var body: some View {
         
@@ -19,8 +21,7 @@ struct ShareContentView: View {
             ZStack {
                 Image("data_summary_background")
                     .resizable()
-                //                    .frame(width: 341, height: 645 )
-                //                .frame()
+                
                 VStack(spacing: 16) {
                     HStack {
                         Image("logo_vycle_square")
@@ -31,7 +32,7 @@ struct ShareContentView: View {
                             RoundedRectangle(cornerRadius: 8)
                                 .fill(Color.primary.shade300)
                             HStack {
-                                Image("Toyota")
+                                Image(vehicleIcon)
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 32, height: 32)
@@ -44,7 +45,7 @@ struct ShareContentView: View {
                                     .overlay(.white)
                                 
                                 
-                                Text("2024")
+                                Text("\(String(vehicleYear))")
                                     .foregroundStyle(Color.neutral.tint300)
                                     .font(.footnote)
                                     .fontWeight(.semibold)
@@ -76,7 +77,9 @@ struct ShareContentView: View {
             SparepartCount.part(.filterUdara, count: 4),
             SparepartCount.part(.filterOli, count: 2)
         ]),
-        totalCost: 200000
+        totalCost: 200000,
+        vehicleIcon: "Toyota",
+        vehicleYear: 2024
     )
 }
 

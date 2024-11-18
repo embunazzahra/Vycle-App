@@ -19,6 +19,16 @@ struct ShareSummaryView: View {
     
     @State private var showAlert: Bool = false
     @State private var alertMessage: String = ""
+    
+    var vehicleBrandString: String {
+        guard let currentVehicle = SwiftDataService.shared.getCurrentVehicle() else {
+            return "custom" // Fallback when vehicle is nil
+        }
+        
+        // Since brand is non-optional, no need to use optional binding here
+        return currentVehicle.brand.isCustomBrand ? "custom" : currentVehicle.brand.stringValue
+    }
+
 
     var body: some View {
         VStack(spacing: 16) {
@@ -84,7 +94,7 @@ struct ShareSummaryView: View {
 extension ShareSummaryView {
     @MainActor
     func renderAsImage() async -> UIImage? {
-        let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost))
+        let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost, vehicleIcon: vehicleBrandString, vehicleYear: 2024))
         renderer.scale = displayScale * 2
         return renderer.uiImage
     }
