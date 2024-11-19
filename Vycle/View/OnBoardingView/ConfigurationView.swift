@@ -36,7 +36,7 @@ struct ConfigurationView: View {
                             showGuide = true
                         }
                     }) {
-                        Image("help_center")
+                        Image(systemName: "info.square.fill").foregroundColor(.blueLoyaltyTone100).font(.system(size: 20))
                     }
                 }
                 .padding(.horizontal,16)

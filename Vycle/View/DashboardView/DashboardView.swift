@@ -102,7 +102,7 @@ struct DashboardView: View {
                                         .headline()
                                         .foregroundStyle(.grayShade300)
                                 } else {
-                                    Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
+                                    Text("\(Int(initialOdometer.last?.currentKM ?? 12)) Kilometer")
                                         .headline()
                                         .foregroundStyle(.grayShade300)
                                 }
@@ -221,8 +221,8 @@ struct DashboardView: View {
             }
             .alert(isPresented: $showSettingsAlert) {
                 Alert(
-                    title: Text("We does not Have the Access to Your Location While in the Background"),
-                    message: Text("Tap Settings > Location and Select Always"),
+                    title: Text("Kami tidak memiliki akses ke lokasi Anda saat berada di latar belakang"),
+                    message: Text("Buka Pengaturan > Lokasi dan pilih Selalu"),
                     primaryButton: .default(Text("Settings"), action: openAppSettings),
                     secondaryButton: .cancel()
                 )
