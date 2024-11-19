@@ -97,7 +97,7 @@ struct DashboardView: View {
                             VStack(alignment: .leading, spacing: 4){
                                 Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                                 if !locationHistory.isEmpty {
-                                    let totalDistance = calculateTotalDistance() ?? 0
+//                                    let totalDistance = calculateTotalDistance() ?? 0
                                     Text("\(Int(totalDistance)) Kilometer")
                                         .headline()
                                         .foregroundStyle(.grayShade300)

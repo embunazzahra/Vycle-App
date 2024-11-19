@@ -54,31 +54,57 @@ struct DataSummaryView: View {
 
     var latestOdometerAllTime: Float {
         guard let latestReading = latestOdometer else {
-            return 0 // No odometer readings available
+            return 0 // Tidak ada pembacaan odometer terkini
         }
-        return latestReading.currentKM // Return the latest odometer reading if it's all-time
+
+        // Urutkan odometer berdasarkan tanggal (lama ke baru)
+        let sortedOdometers = allOdometers.sorted(by: { $0.date < $1.date })
+
+        // Cari pembacaan odometer paling awal yang valid
+        guard let earliestReading = findEarliestOdometer(before: latestReading.currentKM, in: sortedOdometers) else {
+            return 0 // Jika tidak ada pembacaan valid, kembalikan 0
+        }
+
+        // Hitung selisih odometer
+        let difference = latestReading.currentKM - earliestReading.currentKM
+
+        // Pastikan hasil tidak negatif
+        return max(0, difference)
     }
+
     
     func odometerDifference(for years: Int) -> Float {
-        let endDate = Date() // Current date
+        let endDate = Date() // Tanggal saat ini
         let startDate = Calendar.current.date(byAdding: .year, value: -years, to: endDate)!
 
-        // Get the latest odometer reading
+        // Mendapatkan pembacaan odometer terkini
         guard let latestReading = latestOdometer else {
-            return 0 // No odometer readings available
+            return 0 // Tidak ada data odometer terkini
         }
 
-        // Get the earliest odometer reading in the given period (before the start date)
-        guard let earliestReadingInPeriod = allOdometers
-            .filter({ $0.date >= startDate && $0.date <= endDate })
-            .sorted(by: { $0.date < $1.date })
-            .first else {
-                return latestReading.currentKM // If there's no previous reading, return just the latest reading
+        // Menyaring pembacaan odometer dalam periode waktu tertentu
+        let filteredOdometers = allOdometers
+            .filter { $0.date >= startDate && $0.date <= endDate }
+            .sorted(by: { $0.date < $1.date }) // Urutkan berdasarkan tanggal (lama ke baru)
+
+        // Mencari odometer awal untuk perhitungan
+        guard let earliestReading = findEarliestOdometer(before: latestReading.currentKM, in: filteredOdometers) else {
+            return latestReading.currentKM // Jika tidak ada data yang memenuhi, kembalikan nilai terkini
         }
 
-        // Return the difference between the latest reading and the earliest reading within the given period
-        return latestReading.currentKM - earliestReadingInPeriod.currentKM
+        // Mengembalikan selisih antara odometer terkini dan odometer awal
+        return latestReading.currentKM - earliestReading.currentKM
     }
+
+    // Fungsi untuk mencari odometer paling lama yang lebih kecil dari nilai sekarang
+    private func findEarliestOdometer(before currentKM: Float, in odometers: [Odometer]) -> Odometer? {
+        // Filter odometer yang nilainya lebih kecil dari odometer sekarang
+        let validOdometers = odometers.filter { $0.currentKM <= currentKM }
+
+        // Kembalikan odometer paling lama dari yang valid
+        return validOdometers.first
+    }
+
     
     var body: some View {
         
