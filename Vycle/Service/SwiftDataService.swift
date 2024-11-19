@@ -232,51 +232,51 @@ extension SwiftDataService {
         modelContext.insert(odometerData)
         
         
-        // Check if serviceHistory is not nil and not empty
-        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
-                
-            let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
-            
-            for (date, historyForDate) in groupedServiceHistory {
-                // Insert Service History
-                let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
-                let serviceData = Servis(
-                    date: date,
-                    servicedSparepart: servicedSpareparts,
-                    vehicle: self.getCurrentVehicle()!,
-                    totalPrice: 0
-                )
-                modelContext.insert(serviceData)
-                
-                for sparepart in servicedSpareparts {
-                    // Insert Reminder
-                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand).brand.intervalForSparepart(sparepart) else {
-                        continue
-                    }
-
-//                    let targetKM = odometer + Float(interval.kilometer)
-//                    let reminderOdo = odometer
-//                    print("target km : \(reminderOdo)")
-                    let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
-                    let reminderData = Reminder(
-                        date: date,
-                        sparepart: sparepart,
-                        reminderOdo: 0,
-                        kmInterval: Float(interval.kilometer),
-                        dueDate: dueDate,
-                        timeInterval: interval.month,
-                        vehicle: self.getCurrentVehicle()!,
-                        isRepeat: true, // Set true if you want reminders to repeat
-                        isDraft: true,
-                        isHelperOn: false,
-                        reminderType: "Service Reminder",
-//                        isUsingData: true,
-                        isEdited: false
-                    )
-                    modelContext.insert(reminderData)
-                }
-            }
-        }
+//        // Check if serviceHistory is not nil and not empty
+//        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
+//                
+//            let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
+//            
+//            for (date, historyForDate) in groupedServiceHistory {
+//                // Insert Service History
+//                let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
+//                let serviceData = Servis(
+//                    date: date,
+//                    servicedSparepart: servicedSpareparts,
+//                    vehicle: self.getCurrentVehicle()!,
+//                    totalPrice: 0
+//                )
+//                modelContext.insert(serviceData)
+//                
+//                for sparepart in servicedSpareparts {
+//                    // Insert Reminder
+//                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand, year: 2024).brand.intervalForSparepart(sparepart) else {
+//                        continue
+//                    }
+//
+////                    let targetKM = odometer + Float(interval.kilometer)
+////                    let reminderOdo = odometer
+////                    print("target km : \(reminderOdo)")
+//                    let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
+//                    let reminderData = Reminder(
+//                        date: date,
+//                        sparepart: sparepart,
+//                        reminderOdo: 0,
+//                        kmInterval: Float(interval.kilometer),
+//                        dueDate: dueDate,
+//                        timeInterval: interval.month,
+//                        vehicle: self.getCurrentVehicle()!,
+//                        isRepeat: true, // Set true if you want reminders to repeat
+//                        isDraft: true,
+//                        isHelperOn: false,
+//                        reminderType: "Service Reminder",
+////                        isUsingData: true,
+//                        isEdited: false
+//                    )
+//                    modelContext.insert(reminderData)
+//                }
+//            }
+//        }
 
         
         saveModelContext()
