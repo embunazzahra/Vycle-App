@@ -102,7 +102,7 @@ struct DashboardView: View {
                                         .headline()
                                         .foregroundStyle(.grayShade300)
                                 } else {
-                                    Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
+                                    Text("\(Int(initialOdometer.last?.currentKM ?? 12)) Kilometer")
                                         .headline()
                                         .foregroundStyle(.grayShade300)
                                 }
