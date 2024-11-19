@@ -26,7 +26,6 @@ struct RangingVBeaconView: View {
                 }
                 else if configurationFailed {
                     ConfigurationStatusView(isSuccess: false)
-                    
                         .onAppear() {
                             resetConfiguration()
                             showConnectingView = false
@@ -64,7 +63,11 @@ struct RangingVBeaconView: View {
     
     private func startConfigurationTimer() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            configurationFailed = true
+            if locationManager.isInsideBeaconRegion {
+                configurationFailed = false
+            } else {
+                configurationFailed = true
+            }
         }
     }
 }

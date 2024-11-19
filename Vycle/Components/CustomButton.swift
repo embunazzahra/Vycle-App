@@ -12,6 +12,7 @@ enum ButtonStyleType {
     case secondary
     case tertiary
     case disabled
+    case destructive
     case clear
     
     func backgroundColor() -> Color {
@@ -24,6 +25,8 @@ enum ButtonStyleType {
             return Color.clear
         case .disabled:
             return Color.neutral.base
+        case .destructive:
+            return Color.clear
         case .clear:
             return Color.clear
         }
@@ -36,6 +39,8 @@ enum ButtonStyleType {
             return Color.neutral.tint300
         case .secondary, .tertiary:
             return Color.primary.base
+        case .destructive:
+            return Color.persianRed500
         case .clear:
             return Color.clear
         }
@@ -58,6 +63,8 @@ struct CustomButton: View {
     var buttonType: ButtonStyleType = .primary
     var horizontalPadding: CGFloat = 16
     var verticalPadding: CGFloat = 24
+    var width: CGFloat = 361
+    var height: CGFloat = 60
 //    var isNavigating: Bool
     @EnvironmentObject var routes: Routes
 //    var destination: Routes.Destination
@@ -91,7 +98,7 @@ struct CustomButton: View {
                         .foregroundColor(buttonType.foregroundColor())
                 }
             }
-            .frame(width: 361, height: 60)
+            .frame(width: width, height: height)
             .background(buttonType.backgroundColor())
             .cornerRadius(12)
             .overlay(
@@ -116,6 +123,9 @@ struct CustomButtonExample: View {
                     print("Tes")
                 }
                 CustomButton(title: "Secondary", iconName: "tambahkan", iconPosition: .left, buttonType: .secondary) {
+                    print("Tes")
+                }
+                CustomButton(title: "Hapus Servis", iconName: "trash_icon", iconPosition: .left, buttonType: .destructive) {
                     print("Tes")
                 }
             }

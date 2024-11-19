@@ -118,12 +118,23 @@ struct SparepartReminderListView: View {
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                         .listSectionSeparator(.hidden)
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                if let index = reminders.firstIndex(of: reminder) {
+                                    deleteReminder(at: IndexSet(integer: index))
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .tint(.red)
+                        }
+                        .background(Color.clear)
                     }
-                    .onDelete(perform: deleteReminder)
                 }
                 .listStyle(PlainListStyle())
                 .listRowSeparator(.hidden)
                 .listSectionSeparator(.hidden)
+
             }
         }
         .onChange(of: totalDistance) { newValue in
@@ -160,9 +171,20 @@ struct SparepartReminderListView: View {
 
             try context.save()
             print("Context successfully saved.")
+            
+            refreshReminders()
 
         } catch {
             print("Failed to fetch or save context: \(error.localizedDescription)")
+        }
+    }
+    
+    private func refreshReminders() {
+        let fetchDescriptor = FetchDescriptor<Reminder>()
+        do {
+            reminders = try context.fetch(fetchDescriptor)
+        } catch {
+            print("Failed to fetch reminders: \(error.localizedDescription)")
         }
     }
 

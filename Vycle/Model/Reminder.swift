@@ -23,8 +23,11 @@ class Reminder {
     var isDraft: Bool
     @Relationship var service: Servis?
     var isHelperOn: Bool
+    var reminderType: String
+//    var isUsingData: Bool
+    var isEdited: Bool
     
-    init(date: Date, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, service: Servis? = nil, isHelperOn: Bool) {
+    init(date: Date, sparepart: Sparepart, reminderOdo: Float, kmInterval: Float, dueDate: Date, timeInterval: Int, vehicle: Vehicle, isRepeat: Bool, isDraft: Bool, service: Servis? = nil, isHelperOn: Bool, reminderType: String, isEdited: Bool) {
         self.date = date
         self.sparepart = sparepart
         self.reminderOdo = reminderOdo
@@ -36,6 +39,9 @@ class Reminder {
         self.isDraft = isDraft
         self.service = service
         self.isHelperOn = isHelperOn
+        self.reminderType = reminderType
+//        self.isUsingData = isUsingData
+        self.isEdited = isEdited
     }
 }
 

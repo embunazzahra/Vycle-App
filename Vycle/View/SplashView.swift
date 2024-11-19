@@ -6,16 +6,20 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct SplashView: View {
+    @Binding var isShowSplash: Bool
+    
     var body: some View {
-        ZStack{
-            Color.background.ignoresSafeArea()
-            Image("logo")
+        ZStack {
+            Color.backgroundColor
+            LottieView(animation: .named("Splash-Screen.json"))
+                .playbackMode(.playing(.toProgress(1, loopMode: .playOnce)))
+                .animationDidFinish { completed in
+                    isShowSplash = false
+                }
+                .ignoresSafeArea()
         }
     }
-}
-
-#Preview {
-    SplashView()
 }

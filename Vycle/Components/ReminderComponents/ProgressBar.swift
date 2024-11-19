@@ -23,7 +23,7 @@ struct ProgressBar: View {
     }
 
     var kilometerDifference: Float {
-        if reminder.dueDate <= Date() {
+        if reminder.dueDate <= Date() && reminder.isDraft == false{
             return 0.0
         } else {
             if reminder.isDraft == true {
@@ -36,7 +36,7 @@ struct ProgressBar: View {
     }
 
     var progress: Float {
-        if reminder.dueDate <= Date() {
+        if reminder.dueDate <= Date() && reminder.isDraft == false{
             return 1.0
         } else {
             if reminder.isDraft == true {
@@ -52,7 +52,7 @@ struct ProgressBar: View {
         VStack(alignment: .leading) {
             if reminder.isDraft == false {
                 if kilometerDifference <= 500 {
-                    Text("Sudah tiba bulannya nih!")
+                    Text("Bulan ini sudah saatnya ganti!")
 //                    Text("\(Int(kilometerDifference)) Kilometer lagi")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)

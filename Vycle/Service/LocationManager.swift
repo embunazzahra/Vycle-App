@@ -33,7 +33,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let beaconMinor: CLBeaconMinorValue = 88
     private let identifier: String = "ALOHA"
     
-    let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
+    let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota), year: 2024))
     
     override init() {
         super.init()
@@ -276,7 +276,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             
             lastSavedLocation = CLLocation(latitude: latitude, longitude: longitude)
 //            print("bug in storelocation")
-            let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota))))
+            let newLocation = LocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date(), trip: Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota), year: 2024)))
             SwiftDataService.shared.insertLocationHistory(distance: distanceFromLastLocation, latitude: latitude, longitude: longitude, time: Date())
             
         } catch {
@@ -311,7 +311,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     // Send notification when beacon status changes
     private func sendNotification() {
         let content = UNMutableNotificationContent()
-        content.title = "✨Beep Beep! IoT berhasil terhubung"
+        content.title = "✨Beep Beep! VBeacon berhasil terhubung"
         content.body = """
                     Perjalanan Anda Kini Tercatat Secara Otomatis dengan IoT!
                 """
@@ -328,7 +328,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     private func sendExitNotification() {
         let content = UNMutableNotificationContent()
-        content.title = "🔌Szzt...! IoT terputus!"
+        content.title = "🔌Szzt...! VBeacon terputus!"
         content.body = """
                     Kami mendeteksi bahwa koneksi Anda tidak terhubung
                 """

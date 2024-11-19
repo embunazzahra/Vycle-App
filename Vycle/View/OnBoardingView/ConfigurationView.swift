@@ -36,7 +36,7 @@ struct ConfigurationView: View {
                             showGuide = true
                         }
                     }) {
-                        Image("help")
+                        Image("help_center")
                     }
                 }
                 .padding(.horizontal,16)
@@ -113,42 +113,42 @@ struct ConfigurationView: View {
             
             Spacer()
             
-                VStack {
-                    CustomButton(
-                        title: "Cek Perangkat",
-                        iconName: "bluetooth_searching",
-                        iconPosition: .right,
-                        buttonType: isButtonEnabled ? .primary : .disabled,
-                        verticalPadding: 0
-                    ) {
-                        if isButtonEnabled {
-                            let pattern = "^[A-Fa-f0-9]{4}$"
-                            incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: tempVBeaconID)
-                            
-                            if !incorrectIDFormat {
-                                vBeaconID = tempVBeaconID
-                                isRangingVBeacon = true
-                                locationManager.vBeaconID = tempVBeaconID
-                                locationManager.startTracking()
-                            }
+            VStack {
+                CustomButton(
+                    title: "Hubungkan Perangkat",
+                    iconName: "bluetooth_searching",
+                    iconPosition: .right,
+                    buttonType: isButtonEnabled ? .primary : .disabled,
+                    verticalPadding: 0
+                ) {
+                    if isButtonEnabled {
+                        let pattern = "^[A-Fa-f0-9]{4}$"
+                        incorrectIDFormat = !NSPredicate(format: "SELF MATCHES %@", pattern).evaluate(with: tempVBeaconID)
+                        
+                        if !incorrectIDFormat {
+                            vBeaconID = tempVBeaconID
+                            isRangingVBeacon = true
+                            locationManager.vBeaconID = tempVBeaconID
+                            locationManager.startTracking()
                         }
                     }
                 }
-                .padding(.top, 8)
-                .padding(.bottom, 24)
-                
-                if !hideHeader {
-                    CustomButton(
-                        title: "Lewati",
-                        buttonType: .tertiary
-                    ) {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        onBoardingDataSaved = true
-                    }
-                    .padding(.top, -52)
-                    .padding(.bottom, keyboardHeight/2 + 10)
-                }
             }
+            .padding(.top, 8)
+            .padding(.bottom, 24)
+            
+            if !hideHeader {
+                CustomButton(
+                    title: "Lewati",
+                    buttonType: .tertiary
+                ) {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    onBoardingDataSaved = true
+                }
+                .padding(.top, -52)
+                .padding(.bottom, keyboardHeight/2 + 10)
+            }
+        }
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
             NotificationCenter.default.addObserver(

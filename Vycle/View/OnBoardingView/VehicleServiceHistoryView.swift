@@ -10,7 +10,6 @@ import SwiftUI
 struct VehicleServiceHistoryView: View {
     @Binding var serviceHistory: [ServiceHistory]
     @Binding var currentPage: Int
-    @Binding var isMovingForward: Bool
     
     var isButtonEnabled: Bool {
         serviceHistory.allSatisfy { $0.isPartChosen && $0.isMonthYearChosen }
@@ -41,7 +40,6 @@ struct VehicleServiceHistoryView: View {
                 verticalPadding: 0
             ) {
                 if isButtonEnabled {
-                    isMovingForward = true
                     currentPage += 1
                 }
             }

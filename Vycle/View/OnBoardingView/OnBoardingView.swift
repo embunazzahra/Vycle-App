@@ -10,14 +10,12 @@ import SwiftUI
 struct OnBoardingView: View {
     @ObservedObject var locationManager: LocationManager
     @State private var currentPage: Int = 1
-    @State private var previousPage: Int = 1
-    @State private var previousPreviousPage: Int = 1
-    @State private var isMovingForward: Bool = true
     @State private var vehicleType: VehicleType = .car
     @State private var vehicleBrand: VehicleBrand? = nil
     @State private var otherBrandsList: [String] = []
+    @Binding var year: Int?
     @Binding var odometer: Float?
-    @State private var serviceHistory: [ServiceHistory] = []
+//    @State private var serviceHistory: [ServiceHistory] = []
     @Binding var vBeaconID: String
     @State private var showGuide: Bool = false
     @Binding var onBoardingDataSaved: Bool
@@ -30,8 +28,6 @@ struct OnBoardingView: View {
             return "Merk"
         case 3:
             return "Odometer"
-        case 4:
-            return "Histori"
         default:
             return "Back"
         }
@@ -55,7 +51,6 @@ struct OnBoardingView: View {
                         .padding(.horizontal)
                         .onTapGesture {
                             if currentPage > 1 {
-                                isMovingForward = false
                                 currentPage -= 1
                                 isRangingVBeacon = false
                             }
@@ -84,26 +79,18 @@ struct OnBoardingView: View {
                                     vehicleType: $vehicleType,
                                     vehicleBrand: $vehicleBrand,
                                     otherBrandsList: $otherBrandsList,
-                                    currentPage: $currentPage,
-                                    isMovingForward: $isMovingForward
+                                    year: $year,
+                                    currentPage: $currentPage
                                 )
                                 .transition(.opacity)
                             case 2:
                                 VehicleOdometerView(
                                     odometer: $odometer,
                                     currentPage: $currentPage,
-                                    isMovingForward: $isMovingForward,
                                     keyboardHeight: $keyboardHeight
                                 )
                                 .transition(.opacity)
                             case 3:
-                                VehicleServiceHistoryView(
-                                    serviceHistory: $serviceHistory,
-                                    currentPage: $currentPage,
-                                    isMovingForward: $isMovingForward
-                                )
-                                .transition(.opacity)
-                            case 4:
                             if !isRangingVBeacon {
                                 ConfigurationView(
                                     locationManager: locationManager,
@@ -133,8 +120,9 @@ struct OnBoardingView: View {
                             SwiftDataService.shared.insertOnBoarding(
                                 vehicleType: vehicleType,
                                 vehicleBrand: vehicleBrand ?? .car(.honda),
-                                odometer: odometer ?? 0,
-                                serviceHistory: serviceHistory
+                                year: year ?? 2024,
+                                odometer: odometer ?? 0
+//                                serviceHistory: serviceHistory
                             )
                         }
                     }
