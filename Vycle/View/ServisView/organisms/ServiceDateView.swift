@@ -13,7 +13,7 @@ struct ServiceDateView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Tanggal servis")
+            Text("Tanggal Servis")
                 .font(.headline)
             
             Button(action: {

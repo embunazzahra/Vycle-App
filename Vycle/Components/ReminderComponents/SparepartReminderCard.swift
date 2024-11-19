@@ -118,12 +118,23 @@ struct SparepartReminderListView: View {
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                         .listSectionSeparator(.hidden)
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                if let index = reminders.firstIndex(of: reminder) {
+                                    deleteReminder(at: IndexSet(integer: index))
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .tint(.red)
+                        }
+                        .background(Color.clear)
                     }
-                    .onDelete(perform: deleteReminder)
                 }
                 .listStyle(PlainListStyle())
                 .listRowSeparator(.hidden)
                 .listSectionSeparator(.hidden)
+
             }
         }
         .onChange(of: totalDistance) { newValue in

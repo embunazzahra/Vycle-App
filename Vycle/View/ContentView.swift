@@ -34,7 +34,7 @@ struct ContentView: View {
         }
     }
     @AppStorage("onBoardingDataSaved") private var onBoardingDataSaved: Bool = false
-    
+    @State private var tabReminder : Bool = false
     
     init() {
         setupNavigationBarWithoutScroll()
@@ -59,7 +59,7 @@ struct ContentView: View {
                     }
                 } else {
                     TabView(selection: $selectedTab) {
-                        DashboardView(locationManager: locationManager).tabItem {
+                        DashboardView(locationManager: locationManager, tabReminder: $tabReminder).tabItem {
                             Image(selectedTab == .dashboard ? "dashboard_icon_blue" : "dashboard_icon")
                             Text("Dashboard")
                         }.tag(Tab.dashboard)
@@ -86,7 +86,7 @@ struct ContentView: View {
                                 case .ServisView:
                                     ServiceView()
                                 case .DashboardView:
-                                    DashboardView(locationManager: locationManager)
+                                DashboardView(locationManager: locationManager, tabReminder: $tabReminder)
                                 case .AddServiceView(let service):
                                     AddServiceView(service: service)
                                 case .NoServiceView:
@@ -105,8 +105,18 @@ struct ContentView: View {
                                     PhotoReviewView(imageData: imageData)
                                 case .BeaconConfigView:
                                     BeaconConfigView(locationManager: locationManager)
+                                case .GuideView:
+                                    GuideView()
                                 case .ReminderView:
                                     ReminderView(locationManager: locationManager)
+                                case .DataSummaryView:
+                                    DataSummaryView()
+                                case .ShareSummaryView(let totalMileage,
+                                                   let uniqueSpareParts,
+                                                   let totalCost, let dateRange):
+                                    ShareSummaryView(totalMileage: totalMileage,
+                                                 uniqueSpareParts: uniqueSpareParts,
+                                                     totalCost: totalCost, dateRange: dateRange)
                             }
                         }
                         .toolbar {
@@ -136,6 +146,9 @@ struct ContentView: View {
             locationManager.startTracking()
             fetchAndCountUniqueSpareParts()
             
+        }
+        .onChange(of: tabReminder){
+            selectedTab = .pengingat
         }
         .onChange(of: fetchedReminders) {
             fetchAndCountUniqueSpareParts()

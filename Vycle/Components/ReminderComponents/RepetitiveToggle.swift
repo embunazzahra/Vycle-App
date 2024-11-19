@@ -16,7 +16,7 @@ struct RepetitiveToggle: View {
 //    
     
     var body: some View {
-        VStack (alignment: .leading) {
+        VStack {
 //            Toggle(isOn: $isToggleOn) {
 //                Text("Pengingat berulang")
 //                    .font(.headline)
@@ -58,7 +58,74 @@ struct RepetitiveToggle: View {
                 }
                 .padding(.horizontal, 16)
             }
+
             
+            ZStack {
+                Rectangle()
+                    .cornerRadius(8)
+                    .frame(height: 36)
+                    .foregroundColor(Color.neutral.tint100)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.neutral.tone300, lineWidth: 1)
+                    )
+
+                HStack {
+                    Image("event")
+                    Text("Pengingat berasal dari servis pada 17/08/2024")
+                        .caption1(.regular)
+                        .foregroundColor(Color.neutral.tone300)
+                    Spacer()
+                } .padding(.leading, 10)
+            }
+            .padding(.horizontal, 16)
+            
+            ZStack {
+                Rectangle()
+                    .frame(width: 261, height: 300)
+                    .cornerRadius(12)
+                    .foregroundStyle(Color.neutral.tint300)
+                
+                VStack {
+                    Spacer()
+                    Image("cancel icon")
+                    Text("Yakin Nih?")
+                        .title2(.emphasized)
+                        .foregroundColor(Color.neutral.tone300)
+                        .padding(.bottom, 2)
+                    Text("Pengingat suku cadang ini tidak akan muncul di daftar pengingat lhoo")
+                        .callout(.regular)
+                        .foregroundColor(Color.neutral.tone100)
+                        .frame(width: 200)
+                        .multilineTextAlignment(.center)
+                      
+                    Button(action: {
+                        
+                    }) {
+                        ZStack {
+                            Rectangle()
+                                .frame(width: 128, height: 40)
+                                .cornerRadius(12)
+                            Text("Tetap simpan")
+                                .body(.regular)
+                                .foregroundColor(Color.neutral.tint300)
+                        }
+                    }
+                    .padding(.top, 10)
+                    
+                    Button(action: {
+                        
+                    }) {
+                       Text("Lanjutkan hapus")
+                            .body(.regular)
+                            .foregroundColor(Color.persianRed500)
+                    }
+                    .padding(1)
+
+                    Spacer()
+                }
+            }
+                    
         }
     }
 }

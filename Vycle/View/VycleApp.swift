@@ -13,7 +13,7 @@ struct VycleApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     @StateObject var routes = Routes()
-//    @StateObject var locationManager: LocationManager = .init()
+    @StateObject var popUpControl: PopUpHelper = PopUpHelper()
     
     var sharedModelContainer: ModelContainer = {
          let schema = Schema([
@@ -34,11 +34,25 @@ struct VycleApp: App {
      }()
     var body: some Scene {
         WindowGroup {
-            ContentView()
-//                .environmentObject(locationManager)
-                .environmentObject(routes)
-                .modelContainer(sharedModelContainer)
-                .preferredColorScheme(.light)
+            ZStack {
+                ContentView()
+                    .environmentObject(routes)
+                    .environmentObject(popUpControl)
+                    .modelContainer(SwiftDataService.shared.modelContainer)
+                    .preferredColorScheme(.light)
+                
+                if popUpControl.showPopUp {
+                    Color.black.opacity(0.6)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .ignoresSafeArea()
+                    PopUpMessage(
+                        type: popUpControl.popUpType,
+                        isShowingPopUp: $popUpControl.showPopUp,
+                        action: popUpControl.popUpAction
+                    )
+                    .transition(.opacity)
+                }
+            }
         }
     }
 }

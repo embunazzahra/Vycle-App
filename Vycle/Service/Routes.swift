@@ -25,7 +25,10 @@ import SwiftUI
         case EditReminderView(reminder: Reminder)
         case PhotoReviewView(imageData: Data)
         case BeaconConfigView
+        case GuideView
         case ReminderView
+        case DataSummaryView
+        case ShareSummaryView(totalMileage: Float, uniqueSpareParts: Set<SparepartCount>, totalCost: Float, dateRange: String)
     }
 
     func navigate(to destination: Destination) {

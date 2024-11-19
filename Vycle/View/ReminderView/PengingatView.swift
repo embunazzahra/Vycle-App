@@ -111,7 +111,6 @@ struct PengingatView: View {
             }
     }
 
-
     private func getUniqueReminders(_ reminders: [Reminder]) -> [Reminder] {
         var uniqueReminders: [String: Reminder] = [:]
 
