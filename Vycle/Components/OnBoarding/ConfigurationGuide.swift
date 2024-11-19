@@ -54,6 +54,7 @@ struct ConfigurationGuide: View {
                         .body(.regular)
                         .foregroundStyle(Color.neutral.shade300)
                 }
+                .padding(.bottom, 16)
                 
                 Text("Panduan Membeli VBeacon")
                     .headline()
@@ -81,9 +82,9 @@ struct ConfigurationGuide: View {
                         .body(.regular)
                         .foregroundStyle(Color.neutral.shade300)
                         .padding(.horizontal, 0)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, -4)
                     
-                    Text(verbatim: "   vycle.help@gmail.com")
+                    Text(verbatim: "    vycle.help@gmail.com")
                         .body(.regular)
                         .underline()
                         .foregroundStyle(Color.blueLoyaltyTone100)

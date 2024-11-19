@@ -13,6 +13,7 @@ struct OnBoardingView: View {
     @State private var vehicleType: VehicleType = .car
     @State private var vehicleBrand: VehicleBrand? = nil
     @State private var otherBrandsList: [String] = []
+    @Binding var year: Int?
     @Binding var odometer: Float?
 //    @State private var serviceHistory: [ServiceHistory] = []
     @Binding var vBeaconID: String
@@ -78,6 +79,7 @@ struct OnBoardingView: View {
                                     vehicleType: $vehicleType,
                                     vehicleBrand: $vehicleBrand,
                                     otherBrandsList: $otherBrandsList,
+                                    year: $year,
                                     currentPage: $currentPage
                                 )
                                 .transition(.opacity)
@@ -118,6 +120,7 @@ struct OnBoardingView: View {
                             SwiftDataService.shared.insertOnBoarding(
                                 vehicleType: vehicleType,
                                 vehicleBrand: vehicleBrand ?? .car(.honda),
+                                year: year ?? 2024,
                                 odometer: odometer ?? 0
 //                                serviceHistory: serviceHistory
                             )

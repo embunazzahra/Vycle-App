@@ -21,6 +21,7 @@ struct ContentView: View {
     }
     @State private var selectedTab: Tab = .dashboard
     @Query(sort: \Vehicle.vehicleID) var vehicleData: [Vehicle]
+    @State private var year: Int? = nil
     @State private var odometer: Float? = nil
     @State private var reminders: [Reminder] = []
     @Query var services : [Servis]
@@ -48,6 +49,7 @@ struct ContentView: View {
                 if !onBoardingDataSaved {
                     OnBoardingView(
                         locationManager: locationManager,
+                        year: $year,
                         odometer: $odometer,
                         vBeaconID: $vBeaconID,
                         onBoardingDataSaved: $onBoardingDataSaved

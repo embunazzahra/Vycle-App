@@ -73,18 +73,26 @@ struct DashboardView: View {
                     
                     VStack{
                         HStack(alignment: .center) {
-                            if SwiftDataService.shared.getCurrentVehicle()?.brand.isCustomBrand == true {
-                                Image("merk_kendaraan")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundColor(.orange)
-                                    .frame(height: 40)
-                            } else {
-                                Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundColor(.orange)
-                                    .frame(height: 40)
+                            VStack {
+                                if SwiftDataService.shared.getCurrentVehicle()?.brand.isCustomBrand == true {
+                                    Image("merk_kendaraan")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(.orange)
+                                        .frame(height: 28)
+                                } else {
+                                    Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(.orange)
+                                        .frame(height: 28)
+                                }
+                                
+                                if let year = SwiftDataService.shared.getCurrentVehicle()?.year {
+                                    Text(String(year))
+                                        .caption2(.regular)
+                                        .foregroundStyle(Color.neutral.shade300)
+                                }
                             }
                             VStack(alignment: .leading, spacing: 4){
                                 Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
@@ -101,6 +109,7 @@ struct DashboardView: View {
                                 
                                 
                             }.padding(.horizontal, 10)
+                            
                             Spacer()
                             
                             VStack{

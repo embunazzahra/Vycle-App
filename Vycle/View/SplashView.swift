@@ -12,11 +12,14 @@ struct SplashView: View {
     @Binding var isShowSplash: Bool
     
     var body: some View {
-        LottieView(animation: .named("Splash-Screen.json"))
-            .playbackMode(.playing(.toProgress(1, loopMode: .playOnce)))
-            .animationDidFinish { completed in
-                isShowSplash = false
-            }
-            .ignoresSafeArea()
+        ZStack {
+            Color.backgroundColor
+            LottieView(animation: .named("Splash-Screen.json"))
+                .playbackMode(.playing(.toProgress(1, loopMode: .playOnce)))
+                .animationDidFinish { completed in
+                    isShowSplash = false
+                }
+                .ignoresSafeArea()
+        }
     }
 }

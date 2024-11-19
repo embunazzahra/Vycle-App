@@ -37,8 +37,8 @@ class SwiftDataService {
 
 extension SwiftDataService {
     func insertTrip(){
-        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
-        modelContext.insert(testTrip)
+//        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.toyota)))
+//        modelContext.insert(testTrip)
         
         do {
             try saveModelContext() // Save the context to persist the new trip
@@ -48,10 +48,10 @@ extension SwiftDataService {
     }
     
     func insertLocationHistory(distance: Double?, latitude: Double, longitude: Double, time: Date){
-        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
-        saveModelContext()
-        let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time, trip: testTrip)
-        modelContext.insert(locationHistory)
+//        let testTrip = Trip(tripID: 1, isFinished: false, locationHistories: [], vehicle: Vehicle(vehicleType: .car, brand: .car(.honda)))
+//        saveModelContext()
+//        let locationHistory = LocationHistory(distance: distance, latitude: latitude, longitude: longitude, time: time, trip: testTrip)
+//        modelContext.insert(locationHistory)
         
             do {
                 try saveModelContext() // Save the context to persist the new trip
@@ -220,63 +220,63 @@ extension SwiftDataService {
 // MARK: OnBoarding
 
 extension SwiftDataService {
-    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, odometer: Float, serviceHistory: [ServiceHistory]? = nil) {
-        
-        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand)
+    func insertOnBoarding(vehicleType: VehicleType, vehicleBrand: VehicleBrand, year: Int, odometer: Float) {
+        // Insert Vehicle Data
+        let vehicleData = Vehicle(vehicleType: vehicleType, brand: vehicleBrand, year: year)
         modelContext.insert(vehicleData)
         saveModelContext()
         self.setCurrentVehicle(vehicleData)
         // Insert Odometer
         let odometerData = Odometer(date: Date(), currentKM: odometer, vehicle: vehicleData)
-        print(" odometer number: \(odometer)")
+        print("Odometer number: \(odometer)")
         modelContext.insert(odometerData)
         
         
-        // Check if serviceHistory is not nil and not empty
-        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
-                
-            let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
-            
-            for (date, historyForDate) in groupedServiceHistory {
-                // Insert Service History
-                let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
-                let serviceData = Servis(
-                    date: date,
-                    servicedSparepart: servicedSpareparts,
-                    vehicle: self.getCurrentVehicle()!,
-                    totalPrice: 0
-                )
-                modelContext.insert(serviceData)
-                
-                for sparepart in servicedSpareparts {
-                    // Insert Reminder
-                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand).brand.intervalForSparepart(sparepart) else {
-                        continue
-                    }
-
-//                    let targetKM = odometer + Float(interval.kilometer)
-//                    let reminderOdo = odometer
-//                    print("target km : \(reminderOdo)")
-                    let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
-                    let reminderData = Reminder(
-                        date: date,
-                        sparepart: sparepart,
-                        reminderOdo: 0,
-                        kmInterval: Float(interval.kilometer),
-                        dueDate: dueDate,
-                        timeInterval: interval.month,
-                        vehicle: self.getCurrentVehicle()!,
-                        isRepeat: true, // Set true if you want reminders to repeat
-                        isDraft: true,
-                        isHelperOn: false,
-                        reminderType: "Service Reminder",
-//                        isUsingData: true,
-                        isEdited: false
-                    )
-                    modelContext.insert(reminderData)
-                }
-            }
-        }
+//        // Check if serviceHistory is not nil and not empty
+//        if let serviceHistory = serviceHistory, !serviceHistory.isEmpty {
+//                
+//            let groupedServiceHistory = Dictionary(grouping: serviceHistory, by: { $0.date })
+//            
+//            for (date, historyForDate) in groupedServiceHistory {
+//                // Insert Service History
+//                let servicedSpareparts = historyForDate.compactMap { $0.sparepart }
+//                let serviceData = Servis(
+//                    date: date,
+//                    servicedSparepart: servicedSpareparts,
+//                    vehicle: self.getCurrentVehicle()!,
+//                    totalPrice: 0
+//                )
+//                modelContext.insert(serviceData)
+//                
+//                for sparepart in servicedSpareparts {
+//                    // Insert Reminder
+//                    guard let interval = Vehicle(vehicleType: vehicleType, brand: vehicleBrand, year: 2024).brand.intervalForSparepart(sparepart) else {
+//                        continue
+//                    }
+//
+////                    let targetKM = odometer + Float(interval.kilometer)
+////                    let reminderOdo = odometer
+////                    print("target km : \(reminderOdo)")
+//                    let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: date) ?? Date()
+//                    let reminderData = Reminder(
+//                        date: date,
+//                        sparepart: sparepart,
+//                        reminderOdo: 0,
+//                        kmInterval: Float(interval.kilometer),
+//                        dueDate: dueDate,
+//                        timeInterval: interval.month,
+//                        vehicle: self.getCurrentVehicle()!,
+//                        isRepeat: true, // Set true if you want reminders to repeat
+//                        isDraft: true,
+//                        isHelperOn: false,
+//                        reminderType: "Service Reminder",
+////                        isUsingData: true,
+//                        isEdited: false
+//                    )
+//                    modelContext.insert(reminderData)
+//                }
+//            }
+//        }
 
         
         saveModelContext()
@@ -327,11 +327,10 @@ extension SwiftDataService {
         let vehicles = fetchVehicles()
         let odometers = fetchOdometers()
         let services = fetchServices()
-        let reminders = fetchReminders()
 
         print("Vehicles:")
         for vehicle in vehicles {
-            print("ID: \(vehicle.vehicleID), Type: \(vehicle.vehicleType), Brand: \(vehicle.brand)")
+            print("ID: \(vehicle.vehicleID), Type: \(vehicle.vehicleType), Brand: \(vehicle.brand), Year: \(vehicle.year)")
         }
         
         print("\nServices:")
