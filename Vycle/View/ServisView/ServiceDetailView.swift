@@ -99,6 +99,6 @@ struct ServiceDetailView: View {
         servicedSparepart: [.minyakRem],
         photo: nil,
         odometer: 78250,
-        vehicle: Vehicle(vehicleType: .car, brand: .car(.honda))
+        vehicle: Vehicle(vehicleType: .car, brand: .car(.honda), year: 2024)
     ))
 }

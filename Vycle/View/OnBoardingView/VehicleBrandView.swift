@@ -11,14 +11,17 @@ struct VehicleBrandView: View {
     @Binding var vehicleType: VehicleType
     @Binding var vehicleBrand: VehicleBrand?
     @Binding var otherBrandsList: [String]
+    @Binding var year: Int?
     @Binding var currentPage: Int
+    @State var chosenVehicleBrand: VehicleBrand?
+    @State var showBrandTextField: Bool = true
     @State private var showAddBrandSheet: Bool = false
     
     var isButtonEnabled: Bool {
         vehicleBrand != nil
     }
 
-    var brandsList: [VehicleBrand] {
+    var allBrandsList: [VehicleBrand] {
         let predefinedBrands: [VehicleBrand] = Car.allCases.map { VehicleBrand.car($0) }
         
 //        switch vehicleType {
@@ -39,13 +42,20 @@ struct VehicleBrandView: View {
         ForEach(brands, id: \.self) { brand in
             VehicleBrandButton(
                 brand: brand,
+                year: year,
                 isSelected: vehicleBrand == brand
             ) {
-                vehicleBrand = brand
+                chosenVehicleBrand = brand
+                showBrandTextField = false
+                showAddBrandSheet = true
             }
         }
     }
     
+//    init() {
+//        _chosenVehicleBrand = State(initialValue: vehicleBrand.wrappedValue)
+//    }
+//    
     var body: some View {
         
         VStack (alignment: .leading) {
@@ -56,13 +66,14 @@ struct VehicleBrandView: View {
                 .padding(.vertical, 24)
             
             ScrollView {
-                vehicleBrandButtons(from: brandsList)
+                vehicleBrandButtons(from: allBrandsList)
                 
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .frame(width: 361, height: 64)
-                        .foregroundStyle(Color.neutral.tint200)
+                        .foregroundStyle(Color.neutral.tint100)
+                        .opacity(0.5)
                         .padding(.horizontal, 12)
                     
                     HStack {
@@ -77,16 +88,20 @@ struct VehicleBrandView: View {
                             .padding(.leading, 4)
                     }
                 }.onTapGesture {
+                    showBrandTextField = true
                     showAddBrandSheet = true
                 }
-                .sheet(isPresented: $showAddBrandSheet) {
-                    AddBrandSheet(
-                        vehicleBrand: $vehicleBrand,
-                        otherBrandsList: $otherBrandsList,
-                        brandsList: brandsList,
-                        currentPage: $currentPage
-                    )
-                }
+            }
+            .sheet(isPresented: $showAddBrandSheet) {
+                AddBrandSheet(
+                    vehicleBrand: $vehicleBrand,
+                    chosenVehicleBrand: $chosenVehicleBrand,
+                    otherBrandsList: $otherBrandsList,
+                    year: $year,
+                    showBrandTextField: $showBrandTextField,
+                    allBrandsList: allBrandsList,
+                    currentPage: $currentPage
+                )
             }
             
             Spacer()
@@ -105,6 +120,9 @@ struct VehicleBrandView: View {
             .padding(.top, 8)
             .padding(.bottom, 24)
         }
+        .onAppear() {
+            chosenVehicleBrand = vehicleBrand
+        }
     }
 }
 
@@ -112,10 +130,15 @@ struct VehicleBrandView: View {
 struct AddBrandSheet: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var vehicleBrand: VehicleBrand?
+    @Binding var chosenVehicleBrand: VehicleBrand?
     @Binding var otherBrandsList: [String]
-    @State var otherBrand: String = ""
-    @State var showError: Bool = false
-    var brandsList: [VehicleBrand]
+    @Binding var year: Int?
+    @State var otherBrandText: String = ""
+    @State var yearText: String = ""
+    @State var showErrorBrand: Bool = false
+    @State var showErrorYear: Bool = false
+    @Binding var showBrandTextField: Bool
+    var allBrandsList: [VehicleBrand]
     @Binding var currentPage: Int
     
     var body: some View {
@@ -126,36 +149,89 @@ struct AddBrandSheet: View {
                 Image("close")
             }.padding(16)
             
-            Text("Merk kendaraanmu")
+            if showBrandTextField {
+                Text("Merk kendaraanmu")
+                    .headline()
+                    .foregroundColor(Color.neutral.shade300)
+                    .padding(.horizontal, 16)
+                
+                HStack {
+                    Image("merk_kendaraan")
+                        .foregroundColor(Color.neutral.tone200)
+                    TextField("", text: $otherBrandText)
+                        .foregroundColor(Color.neutral.shade300)
+                        .placeholder(when: otherBrandText.isEmpty) {
+                            Text("Masukkan merk kendaraan")
+                                .body(.regular)
+                                .foregroundColor(Color.neutral.tone100)
+                        }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(showErrorBrand ? Color.persianRed.red500 : Color.neutral.tone100, lineWidth: 1)
+                )
+                .padding(.horizontal, 16)
+                
+                if showErrorBrand {
+                    HStack {
+                        Image("warning")
+                        Text("Merk kendaraan sudah tersedia di pilihan")
+                            .footnote(.regular)
+                            .foregroundColor(Color.persianRed.red500)
+                            .padding(.top, 2)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 20)
+                } else {
+                    Rectangle()
+                        .foregroundStyle(.clear)
+                        .frame(height: 8)
+                }
+            }
+            
+            Text("Tahun Pembuatan Kendaraan")
                 .headline()
                 .foregroundColor(Color.neutral.shade300)
                 .padding(.horizontal, 16)
-
-            HStack {
-                Image("merk_kendaraan")
-                    .foregroundColor(Color.neutral.tone200)
-                TextField("", text: $otherBrand)
-                    .foregroundColor(Color.neutral.shade300)
-                    .placeholder(when: otherBrand.isEmpty) {
-                        Text("Masukkan merk kendaraan").foregroundColor(Color.neutral.tone100)
+        
+            TextField("", text: $yearText)
+                .keyboardType(.numberPad)
+                .onChange(of: yearText) {
+                    if yearText.count > 4 {
+                        yearText = String(yearText.prefix(4))
+                    }
+                    yearText = yearText.filter { $0.isNumber }
                 }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
-            .overlay(
-              RoundedRectangle(cornerRadius: 8)
-                .stroke(showError ? Color.persianRed.red500 : Color.neutral.tone100, lineWidth: 1)
-            )
-            .padding(.horizontal, 16)
+                .foregroundColor(Color.neutral.shade300)
+                .placeholder(when: yearText.isEmpty) {
+                    Text("Contoh: 2000")
+                        .body(.regular)
+                        .foregroundColor(Color.neutral.tone100)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
+                .overlay(
+                  RoundedRectangle(cornerRadius: 8)
+                    .stroke(showErrorYear ? Color.persianRed.red500 : Color.neutral.tone100, lineWidth: 1)
+                )
+                .padding(.horizontal, 16)
             
-            if showError {
+            if showErrorYear {
                 HStack {
                     Image("warning")
-                    Text("Merk kendaraan sudah tersedia di pilihan!")
+                    Text("Tahun kendaraanmu melebihi tahun sekarang")
                         .footnote(.regular)
                         .foregroundColor(Color.persianRed.red500)
                         .padding(.top, 2)
                 }.padding(.horizontal, 16)
+            } else {
+                Text("Masukkan tahun manufaktur dari kendaraanmu")
+                    .footnote(.regular)
+                    .foregroundColor(Color.neutral.tone100)
+                    .padding(.top, 2)
+                    .padding(.horizontal, 16)
             }
        
             Spacer()
@@ -163,26 +239,69 @@ struct AddBrandSheet: View {
             CustomButton(
                 title: "Lanjutkan",
                 iconName: "lanjutkan",
-                buttonType: otherBrand.isEmpty ? .disabled : .primary
+                buttonType: ((!otherBrandText.isEmpty || !showBrandTextField) && yearText.count == 4) ? .primary : .disabled
             ) {
-                if !otherBrand.isEmpty {
-                    if !isBrandDuplicate(otherBrand) {
-                        otherBrandsList.append(otherBrand)
-                        vehicleBrand = .custom(otherBrand)
-                        presentationMode.wrappedValue.dismiss()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            currentPage += 1
-                        }
-                    } else {
-                        showError = true
-                    }
+                if showBrandTextField {
+                    handleBrandAndYearInput()
+                } else {
+                    handleYearInputOnly()
                 }
+                
+                
             }
         }.background(Color.background)
     }
     
     private func isBrandDuplicate(_ brand: String) -> Bool {
-        return brandsList.contains { $0.stringValue.lowercased() == brand.lowercased() }
+        return allBrandsList.contains { $0.stringValue.lowercased() == brand.lowercased() }
+    }
+    
+    private func isYearFuture(_ year: String) -> Bool {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        if let yearInt = Int(year) {
+            return yearInt > currentYear
+        }
+        return false
+    }
+    
+    private func handleBrandAndYearInput() {
+        guard !otherBrandText.isEmpty, yearText.count == 4 else { return }
+
+        let isDuplicate = isBrandDuplicate(otherBrandText)
+        let isFutureYear = isYearFuture(yearText)
+        
+        showErrorBrand = isDuplicate
+        showErrorYear = isFutureYear
+
+        if isDuplicate || isFutureYear {
+            return
+        }
+
+        // Valid inputs: proceed with the action
+        otherBrandsList.append(otherBrandText)
+        vehicleBrand = .custom(otherBrandText)
+        year = Int(yearText)
+        moveToNextPage()
+    }
+
+    private func handleYearInputOnly() {
+        guard yearText.count == 4 else { return }
+
+        if isYearFuture(yearText) {
+            showErrorYear = true
+            return
+        }
+        // Valid input: proceed with the action
+        year = Int(yearText)
+        vehicleBrand = chosenVehicleBrand
+        moveToNextPage()
+    }
+
+    private func moveToNextPage() {
+        presentationMode.wrappedValue.dismiss()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            currentPage += 1
+        }
     }
 }
 
