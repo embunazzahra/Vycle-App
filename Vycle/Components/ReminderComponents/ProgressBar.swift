@@ -23,14 +23,16 @@ struct ProgressBar: View {
     }
 
     var kilometerDifference: Float {
-        if reminder.dueDate <= Date() && reminder.isDraft == false{
+        let difference = ceil(targetKM - (Float(currentKM) - Float(reminder.reminderOdo)))
+        
+        if reminder.dueDate <= Date() && reminder.isDraft == false && difference >= 0{
             return 0.0
         } else {
             if reminder.isDraft == true {
                 return 0.0
             }
             else {
-                return ceil(targetKM - (Float(currentKM) - Float(reminder.reminderOdo)))
+                return difference
             }
         }
     }
@@ -51,9 +53,13 @@ struct ProgressBar: View {
     var body: some View {
         VStack(alignment: .leading) {
             if reminder.isDraft == false {
-                if kilometerDifference <= 500 {
+                if kilometerDifference <= 500 && kilometerDifference >= 0{
                     Text("Bulan ini sudah saatnya ganti!")
 //                    Text("\(Int(kilometerDifference)) Kilometer lagi")
+                        .footnote(.emphasized)
+                        .foregroundColor(Color.persianRed600)
+                } else if kilometerDifference < 0{
+                    Text("Kilometernya lewat nih, saatnya ganti!")
                         .footnote(.emphasized)
                         .foregroundColor(Color.persianRed600)
                 } else {
@@ -69,7 +75,7 @@ struct ProgressBar: View {
                 }
             } else {
                 // Display message when the reminder is a draft
-                Text("Belum ada data kilometer")
+                Text("Belum ada data kilometer dan tanggal")
                     .footnote(.emphasized)
                     .foregroundColor(Color.neutral.tone200)
             }
