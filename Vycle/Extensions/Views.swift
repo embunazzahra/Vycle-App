@@ -42,3 +42,29 @@ extension View {
     }
 
 }
+
+extension View {
+    func formatAndValidate<T: Numeric, F: ParseableFormatStyle>(
+        _ numberStore: NumberStore<T, F>,
+        errorCondition: @escaping (T) -> Bool
+    ) -> some View {
+        onChange(of: numberStore.text) { text in
+            numberStore.error = false
+            if let value = numberStore.getValue(), !errorCondition(value) {
+                numberStore.error = false
+            } else if text.isEmpty || text == numberStore.minusCharacter {
+                numberStore.error = false
+            } else {
+                numberStore.error = true
+            }
+        }
+        .foregroundColor(numberStore.error ? .red : .black)
+        .disableAutocorrection(true)
+        .autocapitalization(.none)
+        .onSubmit {
+            if numberStore.text.count > 1 && numberStore.text.suffix(1) == numberStore.decimalSeparator {
+                numberStore.text.removeLast()
+            }
+        }
+    }
+}

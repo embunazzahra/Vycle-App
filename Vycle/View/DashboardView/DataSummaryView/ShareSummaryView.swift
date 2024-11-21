@@ -39,7 +39,9 @@ struct ShareSummaryView: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .padding()
+//                    .padding()
+                
+                Spacer()
                 
                 HStack {
                     CustomButton(title: "Bagikan", iconName: "share_icon_2",buttonType: .secondary, horizontalPadding: 0, verticalPadding: 0, width: 175, height: 40) {
@@ -55,7 +57,7 @@ struct ShareSummaryView: View {
                 
             }
         }
-        .padding()
+        .padding(.horizontal)
         .navigationTitle("Bagikan Data")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -89,6 +91,8 @@ struct ShareSummaryView: View {
         }
     }
 }
+
+
 
 
 
