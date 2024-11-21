@@ -23,22 +23,20 @@ struct ServiceDetailView: View {
     var body: some View {
         ZStack {
                 ScrollView (showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 20) {
-                        VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("Tanggal Servis")
                                 .font(.headline)
                             Text(service.date.formattedDate())
-                                .padding(.vertical, 9)
-                                .padding(.horizontal,12)
+                                .padding(.vertical, 4)
                         }
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("Kilometer Kendaraan")
                                 .font(.headline)
                             Text("\(userOdometer.formatted()) Kilometer")
-                                .padding(.vertical, 9)
-                                .padding(.horizontal,12)
+                                .padding(.vertical, 4)
                         }
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("Suku Cadang")
                                 .font(.headline)
                             WrappingHStack(models: service.servicedSparepart, viewGenerator: { part in
@@ -50,14 +48,13 @@ struct ServiceDetailView: View {
                                     )
                             }, horizontalSpacing: 4, verticalSpacing: 4)
                         }
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("Total Biaya Servis")
                                 .font(.headline)
                             Text("Rp \(service.totalPrice.formatted())")
-                                .padding(.vertical, 9)
-                                .padding(.horizontal,12)
+                                .padding(.vertical, 4)
                         }
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("Bukti Pembayaran")
                                 .font(.headline)
                             if service.photo != nil {
