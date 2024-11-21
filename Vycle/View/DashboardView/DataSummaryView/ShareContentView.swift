@@ -37,7 +37,7 @@ struct ShareContentView: View {
                                     Image(vehicleIcon)
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(width: 32, height: 32)
+                                        .frame(width: 24, height: 24)
                                         .clipShape(Circle())
                                         .overlay(Circle().stroke(Color.gray, lineWidth: 1))
                                     
