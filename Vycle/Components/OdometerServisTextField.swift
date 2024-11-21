@@ -14,6 +14,15 @@ struct OdometerServisTextField: View {
     @FocusState var isInputActive: Bool
     @Binding var isOverLimit: Bool
     
+    @StateObject var intStore = NumberStore(
+        text: "",
+        type: .int,
+        maxLength: 5,
+        allowNegative: false,
+        formatter: IntegerFormatStyle<Int>()
+            .grouping(.automatic)
+    )
+    
     
     var body: some View {
         HStack(spacing: 0){
@@ -23,7 +32,19 @@ struct OdometerServisTextField: View {
                 .frame(width: 22, height: 22) // Set your desired frame
                 .padding(.leading,12)
                 .padding(.trailing,9)
-            TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
+            //            TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
+            //                .keyboardType(.numberPad)
+            //                .tint(.grayShade300)
+            //                .focused($isInputActive)
+            //                .disabled(!enable) // Disables the TextField
+            //                .foregroundColor(.grayShade300)
+            //                .background(
+            //                    RoundedRectangle(cornerRadius: 12)
+            //                        .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
+            //
+            //                )
+            TextField("", text: $intStore.text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
+                .formatAndValidate(intStore) { _ in isOverLimit }
                 .keyboardType(.numberPad)
                 .tint(.grayShade300)
                 .focused($isInputActive)
@@ -34,6 +55,13 @@ struct OdometerServisTextField: View {
                         .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
                     
                 )
+                .onChange(of: intStore.text) { newValue in
+                    // Sync the raw value (without delimiters) back to the parent view
+                    let rawValue = newValue.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
+                    text = rawValue
+                }
+            
+            
             Image("KM_text_logo")
                 .resizable()
                 .scaledToFit()
