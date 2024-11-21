@@ -33,7 +33,7 @@ struct ServiceDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Kilometer Kendaraan")
                                 .font(.headline)
-                            Text("\(userOdometer.formatted()) Kilometer")
+                            Text("\(Int(service.odometer ?? 0).formattedWithSeparator()) Kilometer")
                                 .padding(.vertical, 4)
                         }
                         VStack(alignment: .leading, spacing: 4) {

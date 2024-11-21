@@ -13,15 +13,8 @@ struct OdometerServisTextField: View {
     var enable: Bool = true
     @FocusState var isInputActive: Bool
     @Binding var isOverLimit: Bool
-    
-    @StateObject var intStore = NumberStore(
-        text: "",
-        type: .int,
-        maxLength: 5,
-        allowNegative: false,
-        formatter: IntegerFormatStyle<Int>()
-            .grouping(.automatic)
-    )
+    @State private var valueWithSeparator: String = ""
+
     
     
     var body: some View {
@@ -33,8 +26,7 @@ struct OdometerServisTextField: View {
                 .padding(.leading,12)
                 .padding(.trailing,9)
 
-            TextField("", text: $intStore.text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
-                .formatAndValidate(intStore) { _ in isOverLimit }
+            TextField("", text: $valueWithSeparator, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
                 .keyboardType(.numberPad)
                 .tint(.grayShade300)
                 .focused($isInputActive)
@@ -45,10 +37,11 @@ struct OdometerServisTextField: View {
                         .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
                     
                 )
-                .onChange(of: intStore.text) { newValue in
-                    // Sync the raw value (without delimiters) back to the parent view
+                .onChange(of: valueWithSeparator) { newValue in
+                    // Remove non-numeric characters to get the raw value
                     let rawValue = newValue.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
-                    text = rawValue
+                    text = rawValue  // Update the raw value without the separator
+                    valueWithSeparator = rawValue.thousandSeparatorFormatting()
                 }
             
             
@@ -66,6 +59,10 @@ struct OdometerServisTextField: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(isOverLimit ? Color.persianRed500 : (enable ? Color.neutral.tone100 : Color.neutral.tint200), lineWidth: 1)
         )
+        .onAppear {
+            // Initialize the valueWithSeparator with the formatted value from `value`
+            valueWithSeparator = text.thousandSeparatorFormatting()
+        }
         
     }
 }

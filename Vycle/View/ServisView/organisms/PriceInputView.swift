@@ -18,7 +18,7 @@ struct PriceInputView: View {
                 .font(.headline)
             
             HStack(spacing: 0){
-                Image("Rp_icon")
+                Image("money")
                     .resizable()            .scaledToFit()
                     .frame(width: 22, height: 22)
                     .padding(.leading,12)
@@ -55,6 +55,10 @@ struct PriceInputView: View {
                     .stroke( Color.neutral.tone100, lineWidth: 1)
             )
                 
+        }
+        .onAppear {
+            // Initialize the valueWithSeparator with the formatted value from `value`
+            valueWithSeparator = value.thousandSeparatorFormatting()
         }
     }
 }

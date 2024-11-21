@@ -21,7 +21,7 @@ struct LoadingView: View {
             VStack(spacing: 4){
                 Text("Tunggu sebentar...")
                     .font(.headline)
-                Text("Data spesialnya lagi disiapin ni🤤")
+                Text("Data spesialnya lagi disiapin ni😉")
                     .font(.body)
                     .foregroundStyle(Color.neutral.tone200)
                 
