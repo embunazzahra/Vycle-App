@@ -54,6 +54,7 @@ struct ServiceHistoryView: View {
                 List {
                     ForEach(currentYearServiceHistories) { history in
                         ServiceHistoryCard(service: history) {
+                            print("tapped")
                             routes.navigate(to: .ServiceDetailView(service: history))
                         }
                         .swipeActions {

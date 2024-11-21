@@ -81,9 +81,9 @@ struct Triangle: Shape {
 extension View {
     func negativeHighlight(enabled: Bool, tooltipText: String, onTap: @escaping () -> Void) -> some View {
         self
-            .overlay(
+            .overlay(enabled ?
                 ZStack {
-                    if enabled {
+                     
                         // Dimmed background
                         Color.black.opacity(0.5)
                             .reverseMask {
@@ -110,8 +110,8 @@ extension View {
                             .onTapGesture {
                                 onTap()
                             }
-                    }
-                }
+                    
+            } : nil
             )
             .ignoresSafeArea()
             .zIndex(enabled ? 1 : 0)

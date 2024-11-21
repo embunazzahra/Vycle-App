@@ -68,9 +68,7 @@ struct ContentView: View {
                         ServiceView(onBoardingDataSaved: $onBoardingDataSaved, isShowSplash: $isShowSplash).tabItem {
                             Image(selectedTab == .servis ? "service_icon_blue" : "service_icon")
                             Text("Servis")
-                        }.tag(Tab.servis).onTapGesture{
-                            showTutorial = false
-                        }
+                        }.tag(Tab.servis)
                         ReminderView(locationManager: locationManager).tabItem {
                             Image(
                                 selectedTab == .pengingat
