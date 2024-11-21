@@ -11,6 +11,8 @@ import SwiftData
 struct ServiceView: View {
     @EnvironmentObject var routes: Routes
     @Query var services : [Servis]
+    @Binding var onBoardingDataSaved: Bool
+    @Binding var isShowSplash: Bool
     
     var body: some View {
         
@@ -18,7 +20,7 @@ struct ServiceView: View {
             ServiceHistoryView()
         }
         else {
-            NoServiceView()
+            NoServiceView(onBoardingDataSaved: $onBoardingDataSaved, isShowSplash: $isShowSplash)
         }
         
     }
@@ -26,6 +28,6 @@ struct ServiceView: View {
 
 
 
-#Preview {
-    ServiceView()
-}
+//#Preview {
+//    ServiceView()
+//}

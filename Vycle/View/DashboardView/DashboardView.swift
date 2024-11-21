@@ -176,7 +176,7 @@ struct DashboardView: View {
                             if !filteredReminders.isEmpty {
                                 VStack {
                                     HStack{
-                                        HaveReminderView(tabReminder: $tabReminder).padding(.horizontal, 16)
+                                        HaveReminderView(tabReminder: $tabReminder).padding(.horizontal, 18)
                                     }
                                     SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                                     
@@ -189,7 +189,7 @@ struct DashboardView: View {
                                     
                                     DataSummaryCardView(scrollTop: $scrollTop)
                                     
-                                }
+                                }.padding(.horizontal, 2)
                                 .offset(y:-30)
                                 
                                 
@@ -208,10 +208,13 @@ struct DashboardView: View {
                     
                 }
             }
+            .navigationBarTitleDisplayMode(.large)
             .onChange(of: scrollTop) {
                 print("berubah kok")
                 
-                reader.scrollTo("topScrollPoint", anchor: .top)
+                withAnimation{
+                    reader.scrollTo("topScrollPoint", anchor: .top)
+                }
                 
             }
             .onAppear {
@@ -236,7 +239,7 @@ struct DashboardView: View {
                     secondaryButton: .cancel()
                 )
             }
-        }
+        }.navigationBarTitleDisplayMode(.large)
     }
     
     //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
@@ -467,6 +470,7 @@ struct BluetoothSheet: View {
         }
     }
 }
+
 struct OdometerSheet: View {
     @Binding var showSheet: Bool
     @Binding var odometer: Float?

@@ -9,9 +9,11 @@ import SwiftUI
 import UIKit
 
 struct NoServiceView: View {
-
-    @EnvironmentObject var routes: Routes
     
+    @EnvironmentObject var routes: Routes
+    @State private var showTutorial: Bool = true
+    @Binding var onBoardingDataSaved: Bool
+    @Binding var isShowSplash: Bool
     var body: some View {
         VStack {
             Image("service_empty_state_icon")
@@ -29,14 +31,110 @@ struct NoServiceView: View {
             }
             
         }
+        
+        
         .padding(.bottom,60)
         .navigationTitle("Servis")
     }
 }
 
-#Preview {
-    NoServiceView()
+//#Preview {
+//    NoServiceView()
+//}
+
+struct ChatBubbleTooltip: View {
+    let text: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Triangle()
+                .fill(Color.primary.tint300)
+                .frame(width: 20, height: 10)
+                .rotationEffect(.degrees(0))
+                .offset(x: 20)// Point the tail downward
+            Text(text)
+                .footnote(.emphasized)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.neutral.shade300)
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.primary.tint300)
+                )
+            
+            // Tail of the bubbl
+        }.padding()
+    }
 }
+
+// Simple triangular shape for the chat bubble tail
+struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY)) // Bottom-left
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.minY)) // Top-center
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY)) // Bottom-right
+        path.closeSubpath()
+        return path
+    }
+}
+extension View {
+    func negativeHighlight(enabled: Bool, tooltipText: String, onTap: @escaping () -> Void) -> some View {
+        self
+            .overlay(
+                ZStack {
+                    if enabled {
+                        // Dimmed background
+                        Color.black.opacity(0.5)
+                            .reverseMask {
+                                Rectangle()
+                                    .fill(.red)
+                                    .frame(width: .infinity, height: 380)
+                                    .ignoresSafeArea()
+                            }
+                            .ignoresSafeArea()
+
+                        // Chat bubble tooltip
+                        VStack {
+                            Spacer()
+                            ChatBubbleTooltip(text: tooltipText)
+                                .offset(y: 200) // Add space between the tooltip and highlighted section
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Align to top of highlighted area
+                         // Adjust position to match the highlighted section
+
+                        // Tap gesture to dismiss
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                onTap()
+                            }
+                    }
+                }
+            )
+            .ignoresSafeArea()
+            .zIndex(enabled ? 1 : 0)
+    }
+
+    @inlinable func reverseMask<Mask: View>(
+        alignment: Alignment = .center,
+        @ViewBuilder _ mask: () -> Mask
+    ) -> some View {
+        self.mask(
+            ZStack {
+                Rectangle()
+                mask()
+                    .blendMode(.destinationOut)
+            }
+            .ignoresSafeArea()
+        )
+    }
+}
+
+
+
+
 
 // Custom Button definition
 struct CustomButtonAlternative: View {
@@ -63,3 +161,4 @@ struct CustomButtonAlternative: View {
         .padding(.horizontal, 16)
     }
 }
+

@@ -28,6 +28,8 @@ struct ContentView: View {
     @Query var fetchedReminders: [Reminder]
     @State private var uniqueSparePartCount: Int = 0
     @State private var vBeaconID: String = ""
+//    @State private var showTutorial: Bool = true
+    @AppStorage("showTutorial") var showTutorial: Bool = true
     @AppStorage("hasNewNotification") var hasNewNotification: Bool = false{
         didSet {
             print("notif in contentview\(hasNewNotification)")
@@ -35,7 +37,7 @@ struct ContentView: View {
     }
     @AppStorage("onBoardingDataSaved") private var onBoardingDataSaved: Bool = false
     @State private var tabReminder : Bool = false
-    
+//    @State public var showTutorial: Bool = true
     init() {
         setupNavigationBarWithoutScroll()
         setupTabBarBorderLine()
@@ -61,12 +63,14 @@ struct ContentView: View {
                     TabView(selection: $selectedTab) {
                         DashboardView(locationManager: locationManager, tabReminder: $tabReminder).tabItem {
                             Image(selectedTab == .dashboard ? "dashboard_icon_blue" : "dashboard_icon")
-                            Text("Dashboard")
+                            Text("Dashboard").navigationBarTitleDisplayMode(.large)
                         }.tag(Tab.dashboard)
-                        ServiceView().tabItem {
+                        ServiceView(onBoardingDataSaved: $onBoardingDataSaved, isShowSplash: $isShowSplash).tabItem {
                             Image(selectedTab == .servis ? "service_icon_blue" : "service_icon")
                             Text("Servis")
-                        }.tag(Tab.servis)
+                        }.tag(Tab.servis).onTapGesture{
+                            showTutorial = false
+                        }
                         ReminderView(locationManager: locationManager).tabItem {
                             Image(
                                 selectedTab == .pengingat
@@ -76,21 +80,22 @@ struct ContentView: View {
                             Text("Pengingat")
                         }.tag(Tab.pengingat)
                         
-                        
-                    }.tint(Color.primary.shade200)
+                    }
+                    .tint(Color.primary.shade200)
                         .navigationTitle(selectedTab.rawValue)
+                        .navigationBarTitleDisplayMode(.large)
                         .navigationDestination(for: Routes.Destination.self) { destination in
                             switch destination {
                                 case .PengingatView:
                                     PengingatView(locationManager: locationManager)
                                 case .ServisView:
-                                    ServiceView()
+                                    ServiceView(onBoardingDataSaved: $onBoardingDataSaved, isShowSplash: $isShowSplash)
                                 case .DashboardView:
-                                DashboardView(locationManager: locationManager, tabReminder: $tabReminder)
+                                    DashboardView(locationManager: locationManager, tabReminder: $tabReminder)
                                 case .AddServiceView(let service):
                                     AddServiceView(service: service)
                                 case .NoServiceView:
-                                    NoServiceView()
+                                    NoServiceView(onBoardingDataSaved: $onBoardingDataSaved, isShowSplash: $isShowSplash)
                                 case .AllServiceHistoryView:
                                     AllServiceHistoryView()
                                 case .ServiceDetailView(let service):
@@ -138,6 +143,14 @@ struct ContentView: View {
                 
             }
         }
+        .negativeHighlight(
+            enabled: (onBoardingDataSaved && !isShowSplash) && showTutorial,
+            tooltipText: "Yuk isi dulu catatan servis terakhirmu biar gak ada kekosongan catatan di aplikasi ini 💔",
+            onTap: {
+                // Close the tutorial on tap
+                showTutorial = false
+            }
+        )
         .transition(.backslide)
         .animation(.easeInOut, value: onBoardingDataSaved)
         .tint(.white)
