@@ -10,6 +10,7 @@ import SwiftUI
 struct PriceInputView: View {
     @Binding var value: String
     @FocusState var isInputActive: Bool
+    @State private var valueWithSeparator: String = ""
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -22,7 +23,7 @@ struct PriceInputView: View {
                     .frame(width: 22, height: 22)
                     .padding(.leading,12)
                     .padding(.trailing,9)
-                TextField("", text: $value, prompt: Text("10.000").foregroundStyle(Color.neutral.tone100))
+                TextField("", text: $valueWithSeparator, prompt: Text("10.000").foregroundStyle(Color.neutral.tone100))
                     .keyboardType(.numberPad)
                     .tint(.grayShade300)
                     .focused($isInputActive)
@@ -32,6 +33,12 @@ struct PriceInputView: View {
                             .fill( Color.white ) // Gray background
                         
                     )
+                    .onChange(of: valueWithSeparator) { newValue in
+                        // Remove non-numeric characters to get the raw value
+                        let rawValue = newValue.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
+                        value = rawValue  // Update the raw value without the separator
+                        valueWithSeparator = rawValue.thousandSeparatorFormatting()
+                    }
                 Image("KM_text_logo")
                     .resizable()
                     .scaledToFit()

@@ -32,17 +32,7 @@ struct OdometerServisTextField: View {
                 .frame(width: 22, height: 22) // Set your desired frame
                 .padding(.leading,12)
                 .padding(.trailing,9)
-            //            TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
-            //                .keyboardType(.numberPad)
-            //                .tint(.grayShade300)
-            //                .focused($isInputActive)
-            //                .disabled(!enable) // Disables the TextField
-            //                .foregroundColor(.grayShade300)
-            //                .background(
-            //                    RoundedRectangle(cornerRadius: 12)
-            //                        .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
-            //
-            //                )
+
             TextField("", text: $intStore.text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
                 .formatAndValidate(intStore) { _ in isOverLimit }
                 .keyboardType(.numberPad)
