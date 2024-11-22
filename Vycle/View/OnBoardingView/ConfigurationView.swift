@@ -22,38 +22,39 @@ struct ConfigurationView: View {
     @State private var tempVBeaconID: String = ""
     var body: some View {
         VStack (alignment: .leading) {
-            HStack {
-                Text("Hubungkan VBeacon")
-                    .title1(.emphasized)
-                    .foregroundStyle(Color.neutral.shade300)
-                
-                Spacer()
-                
-                Button(action: {
-                    withAnimation {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        showGuide = true
+            if !hideHeader{
+                HStack {
+                    Text("Hubungkan VBeacon")
+                        .title1(.emphasized)
+                        .foregroundStyle(Color.neutral.shade300)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        withAnimation {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            showGuide = true
+                        }
+                    }) {
+                        Image(systemName: "info.square.fill").foregroundColor(.blueLoyaltyTone100).font(.system(size: 20))
                     }
-                }) {
-                    Image(systemName: "info.square.fill").foregroundColor(.blueLoyaltyTone100).font(.system(size: 24))
                 }
+                .padding(.horizontal,16)
+                .padding(.top, 24)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 24)
-            .padding(.bottom, 4)
             
             Text("ID Perangkat")
                 .headline()
                 .foregroundColor(Color.neutral.shade300)
                 .padding(.horizontal,16)
-                .padding(.top, 20)
+                .padding(.top, hideHeader ? 16 : 0)
             
             HStack {
                 Image("device")
                     .foregroundColor(Color.neutral.tone200)
                 TextField("", text: $tempVBeaconID)
-                    .foregroundColor(Color.neutral.shade300)
                     .tint(Color.neutral.shade300)
+                    .foregroundColor(Color.neutral.shade300)
                     .focused($fieldFocusState)
                     .placeholder(when: tempVBeaconID.isEmpty) {
                         Text("XXXX").foregroundColor(Color.neutral.tone100)
@@ -111,9 +112,8 @@ struct ConfigurationView: View {
                         .padding(.horizontal, 16)
                 }
             }
-            if keyboardHeight == 0 {
-                Spacer()
-            }
+            
+            Spacer()
             
             VStack {
                 CustomButton(
@@ -136,19 +136,22 @@ struct ConfigurationView: View {
                     }
                 }
             }
-            .padding(.top, 12)
+            .padding(.top, 8)
             .padding(.bottom, 24)
             
-            CustomButton(
-                title: "Saya belum memiliki VBeacon",
-                buttonType: .tertiary
-            ) {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                onBoardingDataSaved = true
+            if !hideHeader {
+                CustomButton(
+                    title: "Lewati",
+                    buttonType: .tertiary
+                ) {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    onBoardingDataSaved = true
+                }
+                .padding(.top, -52)
+                .padding(.bottom, keyboardHeight/2 + 10)
             }
-            .padding(.top, -52)
         }
-        .offset (y: -self.keyboardHeight)
+        
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
             DispatchQueue.main.async {
@@ -174,4 +177,3 @@ struct ConfigurationView: View {
         }
     }
 }
-
