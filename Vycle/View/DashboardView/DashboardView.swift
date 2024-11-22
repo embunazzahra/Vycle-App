@@ -391,6 +391,7 @@ struct DataSummaryCardView : View {
             }
             Spacer()
         }
+        .padding(.vertical, 8)
         .padding(.horizontal)
         
         ZStack{
