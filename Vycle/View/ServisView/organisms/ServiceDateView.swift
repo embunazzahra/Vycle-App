@@ -24,9 +24,9 @@ struct ServiceDateView: View {
                     .padding(.horizontal, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.neutral.shade300, lineWidth: 1)
+                            .stroke(showDatePicker ? Color.primary.tone100 : Color.neutral.shade300, lineWidth: 1)
                     )
-                    .foregroundStyle(.grayShade300)
+                    .foregroundStyle(showDatePicker ? Color.primary.tone100 : .grayShade300)
             }
             .sheet(isPresented: $showDatePicker) {
                 VStack {

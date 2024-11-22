@@ -43,6 +43,10 @@ struct SparepartName: View {
     }
 }
 
+#Preview {
+
+}
+
 
 
 

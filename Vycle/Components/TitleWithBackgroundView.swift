@@ -26,9 +26,10 @@ struct TitleWithBackgroundView: View {
     
     var body: some View {
         NavigationView {
-            Text("Navigtion Bar with different color")
+            Text("Navigation Bar with different color")
               .navigationTitle("Servis")
           }
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 

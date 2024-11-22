@@ -13,6 +13,7 @@ struct DashboardView: View {
     @ObservedObject var locationManager: LocationManager
     @Query var trips: [Trip]
     //    @Query var vehicles : [Vehicle]
+    @State private var scrollTop : Bool = false
     @Binding var tabReminder: Bool
     @State private var showSettingsAlert = false
     @Query var reminders : [Reminder]
@@ -38,7 +39,7 @@ struct DashboardView: View {
     }
     
     var body: some View {
-    
+        ScrollViewReader{ reader in
             ScrollView {
                 VStack{
                     ZStack {
@@ -49,12 +50,13 @@ struct DashboardView: View {
                                 .scaledToFill()
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .clipped()
+                                .id("topScrollPoint")
                         } else {
                             Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .clipped()
+                                .clipped().id("topScrollPoint")
                         }
                         VStack{
                             HStack{
@@ -97,12 +99,12 @@ struct DashboardView: View {
                             VStack(alignment: .leading, spacing: 4){
                                 Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
                                 if !locationHistory.isEmpty {
-                                    let totalDistance = calculateTotalDistance() ?? 0
+                                    //                                    let totalDistance = calculateTotalDistance() ?? 0
                                     Text("\(Int(totalDistance)) Kilometer")
                                         .headline()
                                         .foregroundStyle(.grayShade300)
                                 } else {
-                                    Text("\(Int(initialOdometer.first?.currentKM ?? 12)) Kilometer")
+                                    Text("\(Int(initialOdometer.last?.currentKM ?? 12)) Kilometer")
                                         .headline()
                                         .foregroundStyle(.grayShade300)
                                 }
@@ -174,7 +176,7 @@ struct DashboardView: View {
                             if !filteredReminders.isEmpty {
                                 VStack {
                                     HStack{
-                                        HaveReminderView(tabReminder: $tabReminder).padding(.horizontal, 16)
+                                        HaveReminderView(tabReminder: $tabReminder).padding(.horizontal, 18)
                                     }
                                     SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
                                     
@@ -182,9 +184,12 @@ struct DashboardView: View {
                                         SparepartReminderCard(reminder: $filteredReminders[index], currentKM: totalDistance)
                                             .contentShape(Rectangle())
                                     }
-
-                                    DataSummaryCardView()
-                                }
+                                    
+                                    
+                                    
+                                    DataSummaryCardView(scrollTop: $scrollTop)
+                                    
+                                }.padding(.horizontal, 2)
                                 .offset(y:-30)
                                 
                                 
@@ -204,6 +209,15 @@ struct DashboardView: View {
                     
                 }
             }
+            .navigationBarTitleDisplayMode(.large)
+            .onChange(of: scrollTop) {
+                print("berubah kok")
+                
+                withAnimation{
+                    reader.scrollTo("topScrollPoint", anchor: .top)
+                }
+                
+            }
             .onAppear {
                 updateFilteredReminders()
                 
@@ -211,6 +225,7 @@ struct DashboardView: View {
                     showSettingsAlert = true
                 }
             }
+            
             .onChange(of: reminders) { _ in
                 updateFilteredReminders()
             }
@@ -219,14 +234,14 @@ struct DashboardView: View {
             }
             .alert(isPresented: $showSettingsAlert) {
                 Alert(
-                    title: Text("We does not Have the Access to Your Location While in the Background"),
-                    message: Text("Tap Settings > Location and Select Always"),
+                    title: Text("Kami tidak memiliki akses ke lokasi Anda saat berada di latar belakang"),
+                    message: Text("Buka Pengaturan > Lokasi dan pilih Selalu"),
                     primaryButton: .default(Text("Settings"), action: openAppSettings),
                     secondaryButton: .cancel()
                 )
             }
-            
-        }
+        }.navigationBarTitleDisplayMode(.large)
+    }
     
     //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
     //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
@@ -362,7 +377,8 @@ struct NoReminderView : View {
 
 struct DataSummaryCardView : View {
     @EnvironmentObject var routes: Routes
-    
+//    let reader : ScrollViewProxy
+    @Binding var scrollTop: Bool
     var body: some View {
         //Data analytics
         HStack(alignment: .top){
@@ -392,13 +408,14 @@ struct DataSummaryCardView : View {
                         )
                         .offset(y:-12)
                         .onTapGesture{
+                            scrollTop.toggle()
                             routes.navigate(to: .DataSummaryView)
                         }
                     ,
                     alignment: .bottom
                 )
         }
-//        .padding(.bottom)
+        //        .padding(.bottom)
         
     }
 }
@@ -472,6 +489,7 @@ struct BluetoothSheet: View {
         }
     }
 }
+
 struct OdometerSheet: View {
     @Binding var showSheet: Bool
     @Binding var odometer: Float?

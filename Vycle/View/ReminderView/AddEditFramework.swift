@@ -132,26 +132,6 @@ struct AddEditFramework: View {
         }
     }
     
-//    func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
-//        guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
-//            return nil
-//        }
-//        
-//        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: Date()) ?? Date()
-//        
-//        return (interval, dueDate)
-//    }
-    
-//    func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
-//        guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
-//            return nil
-//        }
-//        
-//        let dueDate = Calendar.current.date(byAdding: .month, value: interval.month, to: Date()) ?? Date()
-//        
-//        return (interval, dueDate)
-//    }
-    
     func getReminderData(vehicle: Vehicle, sparepart: Sparepart) -> (interval: Interval, dueDate: Date)? {
         guard let interval = vehicle.brand.intervalForSparepart(sparepart) else {
             return nil
@@ -226,12 +206,15 @@ struct AddEditFramework: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
-                    .padding(.bottom, -16)
+//                    .padding(.bottom, -16)
                 }
+                
+                ReminderList(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart, isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
+                    .padding(.vertical, 16)
 
-                SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
-
-                NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
+//                SparepartName(isPartChosen: $isPartChosen, isMonthYearChosen: $isMonthYearChosen, selectedDate: $selectedDate, selectedSparepart: $selectedSparepart)
+//
+//                NextKilometer(isKilometerChosen: $isKilometerChosen, selectedNumber: $selectedNumber, showSheet: $showSheet)
                 
                 HStack {
                     (Text("Catatan: ").bold() +
@@ -247,51 +230,53 @@ struct AddEditFramework: View {
                 .padding(.horizontal, 16)
                 
                 if let reminderToEdit = reminderToEdit {
-                    if reminderToEdit.isDraft == false {
-                        if isDataUsed == false {
-                            VStack(alignment: .leading) {
-                                Text("Setelan awal")
-                                    .font(.headline)
-                                    .padding(.horizontal, 16)
-                                    .padding(.bottom, -4)
-                                
-                                ZStack {
-                                    Rectangle()
-                                        .frame(height: 56)
-                                        .cornerRadius(12)
-                                        .foregroundColor(Color.neutral.tint300)
+                    if reminderToEdit.isCustom == false {
+                        if reminderToEdit.isDraft == false {
+                            if isDataUsed == false {
+                                VStack(alignment: .leading) {
+                                    Text("Setelan awal")
+                                        .font(.headline)
                                         .padding(.horizontal, 16)
+                                        .padding(.bottom, -4)
                                     
-                                    HStack {
-                                        HStack {
-                                            Image("question_mark")
-                                                .padding(.bottom, 12)
-                                            Text("Ingin mengikuti rekomendasi pengingat suku cadang?")
-                                                .caption1(.regular)
-                                        }
-                                        .padding(.leading, 24)
-                                        Spacer()
+                                    ZStack {
+                                        Rectangle()
+                                            .frame(height: 56)
+                                            .cornerRadius(12)
+                                            .foregroundColor(Color.neutral.tint300)
+                                            .padding(.horizontal, 16)
                                         
-                                        Button(action: {
-                                            if reminders.contains(where: {$0.isDraft == true}) {
-                                                resetToDefault()
-                                            } else {
-                                                resetToData()
-                                            }
-                                        }) {
+                                        HStack {
                                             HStack {
-                                                Image("reset")
-                                                Text("Atur ulang")
+                                                Image("question_mark")
+                                                    .padding(.bottom, 12)
+                                                Text("Ingin mengikuti rekomendasi pengingat suku cadang?")
+                                                    .caption1(.regular)
                                             }
-                                            .foregroundColor(Color.primary.base)
-                                            .padding(.trailing, 24)
+                                            .padding(.leading, 24)
+                                            Spacer()
+                                            
+                                            Button(action: {
+                                                if reminders.contains(where: {$0.isDraft == true}) {
+                                                    resetToDefault()
+                                                } else {
+                                                    resetToData()
+                                                }
+                                            }) {
+                                                HStack {
+                                                    Image("reset")
+                                                    Text("Atur ulang")
+                                                }
+                                                .foregroundColor(Color.primary.base)
+                                                .padding(.trailing, 24)
+                                            }
                                         }
+                                        .padding(.horizontal, 8)
                                     }
-                                    .padding(.horizontal, 8)
                                 }
+                                .padding(.bottom, 8)
+                                .padding(.top, 12)
                             }
-                            .padding(.bottom, 8)
-                            .padding(.top, 12)
                         }
                     }
                 }
@@ -315,7 +300,8 @@ struct AddEditFramework: View {
                                 isHelperOn: true,
                                 reminderType: "Edited Reminder",
                                 isEdited: true,
-                                date: Date()
+                                date: Date(),
+                                isCustom: true
                                 )
                         } else {
                             swiftDataService.editReminder(
@@ -329,24 +315,54 @@ struct AddEditFramework: View {
                                 isHelperOn: false,
                                 reminderType: "Edited Reminder",
                                 isEdited: true,
-                                date: Date()
+                                date: Date(),
+                                isCustom: false
                                 )
                         }
 
                     } else {
-                        swiftDataService.insertReminder(
-                            sparepart: selectedSparepart,
-                            reminderOdo: reminderOdo,
-                            kmInterval: Float(selectedNumber),
-                            dueDate: selectedDate.startOfMonth(),
-                            timeInterval: monthInterval,
-                            vehicle: SwiftDataService.shared.getCurrentVehicle()!,
-                            isRepeat: true,
-                            isDraft: false,
-                            isHelperOn: false,
-                            reminderType: "Manual Reminder",
-                            isEdited: false
-                        )
+                        
+                        guard let vehicle = SwiftDataService.shared.getCurrentVehicle() else {
+                            print("No current vehicle found.")
+                            return
+                        }
+
+                        let sparepart = selectedSparepart
+                         
+                        let reminderData = getReminderData(vehicle: vehicle, sparepart: sparepart)
+
+                        if let interval = vehicle.brand.intervalForSparepart(sparepart) {
+                            swiftDataService.insertReminder(
+                                sparepart: sparepart,
+                                reminderOdo: reminderOdo,
+                                kmInterval: Float(selectedNumber),
+                                dueDate: selectedDate.startOfMonth(),
+                                timeInterval: monthInterval,
+                                vehicle: vehicle,
+                                isRepeat: true,
+                                isDraft: false,
+                                isHelperOn: false,
+                                reminderType: "Manual Reminder",
+                                isEdited: false,
+                                isCustom: true
+                            )
+                        } else {
+                            swiftDataService.insertReminder(
+                                sparepart: selectedSparepart,
+                                reminderOdo: reminderOdo,
+                                kmInterval: Float(selectedNumber),
+                                dueDate: selectedDate.startOfMonth(),
+                                timeInterval: monthInterval,
+                                vehicle: SwiftDataService.shared.getCurrentVehicle()!,
+                                isRepeat: true,
+                                isDraft: false,
+                                isHelperOn: false,
+                                reminderType: "Manual Reminder",
+                                isEdited: false,
+                                isCustom: true
+                            )
+                        }
+
                     }
                 }
                 

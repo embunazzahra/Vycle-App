@@ -13,6 +13,8 @@ struct OdometerServisTextField: View {
     var enable: Bool = true
     @FocusState var isInputActive: Bool
     @Binding var isOverLimit: Bool
+    @State private var valueWithSeparator: String = ""
+
     
     
     var body: some View {
@@ -23,7 +25,8 @@ struct OdometerServisTextField: View {
                 .frame(width: 22, height: 22) // Set your desired frame
                 .padding(.leading,12)
                 .padding(.trailing,9)
-            TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
+
+            TextField("", text: $valueWithSeparator, prompt: Text(placeholder).foregroundStyle(Color.neutral.tone100))
                 .keyboardType(.numberPad)
                 .tint(.grayShade300)
                 .focused($isInputActive)
@@ -34,6 +37,14 @@ struct OdometerServisTextField: View {
                         .fill(enable ? Color.white : Color.neutral.tint200) // Gray background
                     
                 )
+                .onChange(of: valueWithSeparator) { newValue in
+                    // Remove non-numeric characters to get the raw value
+                    let rawValue = newValue.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
+                    text = rawValue  // Update the raw value without the separator
+                    valueWithSeparator = rawValue.thousandSeparatorFormatting()
+                }
+            
+            
             Image("KM_text_logo")
                 .resizable()
                 .scaledToFit()
@@ -48,6 +59,10 @@ struct OdometerServisTextField: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(isOverLimit ? Color.persianRed500 : (enable ? Color.neutral.tone100 : Color.neutral.tint200), lineWidth: 1)
         )
+        .onAppear {
+            // Initialize the valueWithSeparator with the formatted value from `value`
+            valueWithSeparator = text.thousandSeparatorFormatting()
+        }
         
     }
 }

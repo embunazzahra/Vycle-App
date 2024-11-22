@@ -65,6 +65,7 @@ struct ConfigurationView: View {
                         isButtonEnabled = tempVBeaconID.count == 4
                     }
                     .onAppear() {
+                       
                         tempVBeaconID = vBeaconID
                         isButtonEnabled = tempVBeaconID.count == 4
                     }
@@ -150,6 +151,9 @@ struct ConfigurationView: View {
         .offset (y: -self.keyboardHeight)
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
+            DispatchQueue.main.async {
+                fieldFocusState = true
+            }
             NotificationCenter.default.addObserver(
                 forName: UIResponder.keyboardWillShowNotification,
                 object: nil,

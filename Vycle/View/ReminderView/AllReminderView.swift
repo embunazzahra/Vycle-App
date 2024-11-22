@@ -45,7 +45,7 @@ struct AllReminderView: View {
 
                 VStack {
                     VStack(alignment: .leading) {
-                        Text("Suku cadang sudah menanti di \(selectedOption)! 🗓️")
+                        Text("Suku cadang sudah menanti di \(selectedOption)!")
                             .subhead(.emphasized)
                             .foregroundColor(Color.neutral.shade300)
                         Text("Jangan Lupa! Pengingat suku cadang sudah ada")
