@@ -39,209 +39,212 @@ struct DashboardView: View {
     }
     
     var body: some View {
-        ScrollViewReader{ reader in
-            ScrollView {
-                VStack{
-                    ZStack {
-                        Color.pink
-                        if SwiftDataService.shared.fetchServices().isEmpty {
-                            Image("dashboard_empty")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .clipped()
-                                .id("topScrollPoint")
-                        } else {
-                            Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .clipped().id("topScrollPoint")
-                        }
-                        VStack{
-                            HStack{
-                                BTIndicator(locationManager: locationManager).onTapGesture {
-                                    //                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
-                                    //                                showBluetoothSheet.toggle()
-                                    routes.navigate(to: .BeaconConfigView)
-                                }
-                                Spacer()
-                            }.padding(.leading, 16).padding(.top, 24)
-                            Spacer()
-                            
-                            Spacer()
-                        }
-                    }.frame(height: 283)
-                    
+        VStack(spacing: 0){
+            Rectangle().frame(width: .infinity, height: 1).foregroundColor(Color.blueLoyaltyTone100)
+            ScrollViewReader{ reader in
+                ScrollView {
                     VStack{
-                        HStack(alignment: .center) {
-                            VStack {
-                                if SwiftDataService.shared.getCurrentVehicle()?.brand.isCustomBrand == true {
-                                    Image("merk_kendaraan")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(.orange)
-                                        .frame(height: 28)
-                                } else {
-                                    Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(.orange)
-                                        .frame(height: 28)
-                                }
-                                
-                                if let year = SwiftDataService.shared.getCurrentVehicle()?.year {
-                                    Text(String(year))
-                                        .caption2(.regular)
-                                        .foregroundStyle(Color.neutral.shade300)
-                                }
-                            }
-                            VStack(alignment: .leading, spacing: 4){
-                                Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
-                                if !locationHistory.isEmpty {
-                                    //                                    let totalDistance = calculateTotalDistance() ?? 0
-                                    Text("\(Int(totalDistance)) Kilometer")
-                                        .headline()
-                                        .foregroundStyle(.grayShade300)
-                                } else {
-                                    Text("\(Int(initialOdometer.last?.currentKM ?? 12)) Kilometer")
-                                        .headline()
-                                        .foregroundStyle(.grayShade300)
-                                }
-                                
-                                
-                            }.padding(.horizontal, 10)
-                            
-                            Spacer()
-                            
-                            VStack{
-                                Button(action: {
-                                    // Action for editing
-                                    _ = calculateTotalDistance()
-                                    showOdoSheet.toggle()
-                                    
-                                }) {
-                                    Image(systemName: "pencil").foregroundStyle(Color.primary.shade100)
-                                }.frame(width: 28, height: 28).background(Color.white).overlay( // Add the border
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.primary.shade100, lineWidth: 1)
-                                ).sheet(isPresented: $showOdoSheet) {
-                                    OdometerSheet(
-                                        showSheet: $showOdoSheet,
-                                        odometer: $odometer,
-                                        showOdoSheet: $showOdoSheet,
-                                        calculateTotalDistance: calculateTotalDistance // Pass the function here
-                                    )
-                                    
-                                }
-                                Text("Edit").caption2(.emphasized).foregroundStyle(Color.primary.shade100)
-                            }
-                        }
-                        .padding()
-                        .background(Color(.background))
-                        .cornerRadius(12)
-                        .shadow(radius: 4, y: 2)
-                    }.padding(.horizontal, 16).offset(y: -45)
-                    
-                    VStack {
-                        if SwiftDataService.shared.fetchServices().isEmpty{
-                            HStack(alignment: .top){
-                                VStack(alignment: .leading){
-                                    Text("Siap-siap servis berkala di \(getRoundedOdometer())!").headline().foregroundColor(.neutral.shade300)
-                                    Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
-                                }
-                                Spacer()
-                            }.padding(.horizontal, 16).offset(y: -30)
-                            ZStack{
-                                //                            Color.green
-                                Image("dashboard_card").resizable()
+                        ZStack {
+                            Color.pink
+                            if SwiftDataService.shared.fetchServices().isEmpty {
+                                Image("dashboard_empty")
+                                    .resizable()
                                     .scaledToFill()
-                                    .frame(width: 360, height: 200)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                                     .clipped()
-                                    .offset(y: -25)
-                                HStack{
-                                    Text("Lihat suku cadang lebih detail").foregroundStyle(Color.blueLoyaltyTone100)
-                                    Image(systemName: "chevron.right").foregroundStyle(Color.blueLoyaltyTone100)
-                                }.padding(.horizontal, 16).padding(.vertical, 8)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.blue, lineWidth: 1)
-                                    ).offset(y: 40)
-                                    .onTapGesture{
-                                        routes.navigate(to: .GuideView)
-                                    }
+                                    .id("topScrollPoint")
+                            } else {
+                                Image(filteredReminders.isEmpty ? "dashboard_normal" : "dashboard_rusak")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .clipped().id("topScrollPoint")
                             }
-                            
-                        } else {
-                            if !filteredReminders.isEmpty {
-                                VStack {
-                                    HStack{
-                                        HaveReminderView(tabReminder: $tabReminder).padding(.horizontal, 18)
+                            VStack{
+                                HStack{
+                                    BTIndicator(locationManager: locationManager).onTapGesture {
+                                        //                                BluetoothSheet(showBluetoothSheet: $showBluetoothSheet, locationManager: locationManager)
+                                        //                                showBluetoothSheet.toggle()
+                                        routes.navigate(to: .BeaconConfigView)
                                     }
-                                    SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
-                                    
-                                    ForEach(filteredReminders.indices, id: \.self) { index in
-                                        SparepartReminderCard(reminder: $filteredReminders[index], currentKM: totalDistance)
-                                            .contentShape(Rectangle())
-                                    }
-                                    
-                                    
-                                    
-                                    DataSummaryCardView(scrollTop: $scrollTop)
-                                    
-                                }.padding(.horizontal, 2)
-                                .offset(y:-30)
+                                    Spacer()
+                                }.padding(.leading, 16).padding(.top, 24)
+                                Spacer()
                                 
+                                Spacer()
+                            }
+                        }.frame(height: 283)
+                        
+                        VStack{
+                            HStack(alignment: .center) {
+                                VStack {
+                                    if SwiftDataService.shared.getCurrentVehicle()?.brand.isCustomBrand == true {
+                                        Image("merk_kendaraan")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(.orange)
+                                            .frame(height: 28)
+                                    } else {
+                                        Image(SwiftDataService.shared.getCurrentVehicle()?.brand.stringValue ?? "?")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(.orange)
+                                            .frame(height: 28)
+                                    }
+                                    
+                                    if let year = SwiftDataService.shared.getCurrentVehicle()?.year {
+                                        Text(String(year))
+                                            .caption2(.regular)
+                                            .foregroundStyle(Color.neutral.shade300)
+                                    }
+                                }
+                                VStack(alignment: .leading, spacing: 4){
+                                    Text("Jarak tempuh saat ini").caption1(NonTitleStyle.regular).foregroundStyle(.grayShade300)
+                                    if !locationHistory.isEmpty {
+                                        //                                    let totalDistance = calculateTotalDistance() ?? 0
+                                        Text("\(Int(totalDistance)) Kilometer")
+                                            .headline()
+                                            .foregroundStyle(.grayShade300)
+                                    } else {
+                                        Text("\(Int(initialOdometer.last?.currentKM ?? 12)) Kilometer")
+                                            .headline()
+                                            .foregroundStyle(.grayShade300)
+                                    }
+                                    
+                                    
+                                }.padding(.horizontal, 10)
+                                
+                                Spacer()
+                                
+                                VStack{
+                                    Button(action: {
+                                        // Action for editing
+                                        _ = calculateTotalDistance()
+                                        showOdoSheet.toggle()
+                                        
+                                    }) {
+                                        Image(systemName: "pencil").foregroundStyle(Color.primary.shade100)
+                                    }.frame(width: 28, height: 28).background(Color.white).overlay( // Add the border
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.primary.shade100, lineWidth: 1)
+                                    ).sheet(isPresented: $showOdoSheet) {
+                                        OdometerSheet(
+                                            showSheet: $showOdoSheet,
+                                            odometer: $odometer,
+                                            showOdoSheet: $showOdoSheet,
+                                            calculateTotalDistance: calculateTotalDistance // Pass the function here
+                                        )
+                                        
+                                    }
+                                    Text("Edit").caption2(.emphasized).foregroundStyle(Color.primary.shade100)
+                                }
+                            }
+                            .padding()
+                            .background(Color(.background))
+                            .cornerRadius(12)
+                            .shadow(radius: 4, y: 2)
+                        }.padding(.horizontal, 16).offset(y: -45)
+                        
+                        VStack {
+                            if SwiftDataService.shared.fetchServices().isEmpty{
+                                HStack(alignment: .top){
+                                    VStack(alignment: .leading){
+                                        Text("Siap-siap servis berkala di \(getRoundedOdometer())!").headline().foregroundColor(.neutral.shade300)
+                                        Text("Jaga performa kendaraan tetap prima!").footnote(.regular).foregroundColor(.neutral.tone300)
+                                    }
+                                    Spacer()
+                                }.padding(.horizontal, 16).offset(y: -30)
+                                ZStack{
+                                    //                            Color.green
+                                    Image("dashboard_card").resizable()
+                                        .scaledToFill()
+                                        .frame(width: 360, height: 200)
+                                        .clipped()
+                                        .offset(y: -25)
+                                    HStack{
+                                        Text("Lihat suku cadang lebih detail").foregroundStyle(Color.blueLoyaltyTone100)
+                                        Image(systemName: "chevron.right").foregroundStyle(Color.blueLoyaltyTone100)
+                                    }.padding(.horizontal, 16).padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(.blue, lineWidth: 1)
+                                        ).offset(y: 40)
+                                        .onTapGesture{
+                                            routes.navigate(to: .GuideView)
+                                        }
+                                }
                                 
                             } else {
-                                NoReminderView(tabReminder: $tabReminder)
-                                    .padding(.horizontal, 16)
-                                    .padding(.bottom, 24)
-                                    .offset(y: -30)
-                                DataSummaryCardView(scrollTop: $scrollTop)
-                                    .offset(y: -30)                                
+                                if !filteredReminders.isEmpty {
+                                    VStack {
+                                        HStack{
+                                            HaveReminderView(tabReminder: $tabReminder).padding(.horizontal, 18)
+                                        }
+                                        SparepartReminderListView(reminders: $filteredReminders, locationManager: locationManager)
+                                        
+                                        ForEach(filteredReminders.indices, id: \.self) { index in
+                                            SparepartReminderCard(reminder: $filteredReminders[index], currentKM: totalDistance)
+                                                .contentShape(Rectangle())
+                                        }
+                                        
+                                        
+                                        
+                                        DataSummaryCardView(scrollTop: $scrollTop)
+                                        
+                                    }.padding(.horizontal, 2)
+                                        .offset(y:-30)
+                                    
+                                    
+                                } else {
+                                    NoReminderView(tabReminder: $tabReminder)
+                                        .padding(.horizontal, 16)
+                                        .padding(.bottom, 24)
+                                        .offset(y: -30)
+                                    DataSummaryCardView(scrollTop: $scrollTop)
+                                        .offset(y: -30)
+                                }
+                                
                             }
                             
                         }
                         
+                        
+                    }
+                }
+                .navigationBarTitleDisplayMode(.large)
+                .onChange(of: scrollTop) {
+                    print("berubah kok")
+                    
+                    withAnimation{
+                        reader.scrollTo("topScrollPoint", anchor: .top)
                     }
                     
+                }
+                .onAppear {
+                    updateFilteredReminders()
                     
-                }
-            }
-            .navigationBarTitleDisplayMode(.large)
-            .onChange(of: scrollTop) {
-                print("berubah kok")
-                
-                withAnimation{
-                    reader.scrollTo("topScrollPoint", anchor: .top)
+                    if locationManager.checkAuthorizationStatus() != .authorizedAlways {
+                        showSettingsAlert = true
+                    }
                 }
                 
-            }
-            .onAppear {
-                updateFilteredReminders()
-                
-                if locationManager.checkAuthorizationStatus() != .authorizedAlways {
-                    showSettingsAlert = true
+                .onChange(of: reminders) { _ in
+                    updateFilteredReminders()
                 }
-            }
-            
-            .onChange(of: reminders) { _ in
-                updateFilteredReminders()
-            }
-            .onChange(of: Double(totalDistance)) { _ in
-                updateFilteredReminders()
-            }
-            .alert(isPresented: $showSettingsAlert) {
-                Alert(
-                    title: Text("Kami tidak memiliki akses ke lokasi Anda saat berada di latar belakang"),
-                    message: Text("Buka Pengaturan > Lokasi dan pilih Selalu"),
-                    primaryButton: .default(Text("Settings"), action: openAppSettings),
-                    secondaryButton: .cancel()
-                )
-            }
-        }.navigationBarTitleDisplayMode(.large)
-    }
+                .onChange(of: Double(totalDistance)) { _ in
+                    updateFilteredReminders()
+                }
+                .alert(isPresented: $showSettingsAlert) {
+                    Alert(
+                        title: Text("Kami tidak memiliki akses ke lokasi Anda saat berada di latar belakang"),
+                        message: Text("Buka Pengaturan > Lokasi dan pilih Selalu"),
+                        primaryButton: .default(Text("Settings"), action: openAppSettings),
+                        secondaryButton: .cancel()
+                    )
+                }
+            }.navigationBarTitleDisplayMode(.large)
+        }
+        }
     
     //    private func getProgress(currentKilometer: Double, targetKilometer: Float) -> Double {
     //        return min(Double(currentKilometer) / Double(targetKilometer), 1.0)
