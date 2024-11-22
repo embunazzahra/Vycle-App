@@ -198,7 +198,7 @@ struct DashboardView: View {
                                     .padding(.horizontal, 16)
                                     .padding(.bottom, 24)
                                     .offset(y: -30)
-                                DataSummaryCardView()
+                                DataSummaryCardView(scrollTop: $scrollTop)
                                     .offset(y: -30)                                
                             }
                             
