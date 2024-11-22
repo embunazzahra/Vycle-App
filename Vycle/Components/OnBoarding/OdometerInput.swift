@@ -65,6 +65,7 @@ struct OdometerInput: View {
                 // Sixth field for input
                 TextField("", text: $fieldSix)
                     .modifier(OdometerModifier(field: $fieldSix))
+                    .tint(Color.neutral.shade300)
                     .focused($fieldFocusState)
                     .onChange(of: fieldSix) { newVal in
                         handleInputChange(newVal) // Handle the input change

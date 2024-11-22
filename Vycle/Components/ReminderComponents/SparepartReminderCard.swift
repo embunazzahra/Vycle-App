@@ -81,7 +81,7 @@ struct SparepartReminderCard: View {
                 Spacer()
             }
         }
-        .padding(.bottom, 12)
+        .padding(.bottom, 8)
     }
 }
 

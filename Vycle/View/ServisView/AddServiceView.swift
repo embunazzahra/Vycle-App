@@ -121,7 +121,7 @@ struct AddServiceView: View {
     }
     
     func saveButton() -> some View {
-        CustomButton(title: service == nil ? "Simpan catatan" : "Simpan perubahan", iconName: "save_icon", iconPosition: .left, buttonType: isButtonDisabled ? .disabled : .primary, horizontalPadding: 0) {
+        CustomButton(title: service == nil ? "Simpan catatan" : "Simpan perubahan", iconName: "save_icon", iconPosition: .left, buttonType: isButtonDisabled ? .disabled : .primary) {
             if service == nil {
                 saveNewService()
                 

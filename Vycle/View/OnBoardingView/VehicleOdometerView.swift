@@ -11,6 +11,7 @@ struct VehicleOdometerView: View {
     @Binding var odometer: Float?
     @Binding var currentPage: Int
     @Binding var keyboardHeight: CGFloat
+    @State var odometerFilled: Bool = false
     
     var isButtonEnabled: Bool {
         odometer != nil
@@ -18,9 +19,10 @@ struct VehicleOdometerView: View {
     
     var body: some View {
         VStack (alignment: .leading) {
-            Text("Berapa angka\nodometermu sekarang?")
+            Text(odometerFilled ? "Pastikan Odometernya Tepat, ya!" : "Masukkan Angka Odometer Kendaraanmu")
                 .title1(.emphasized)
                 .foregroundStyle(Color.neutral.shade300)
+                .animation(.easeInOut,value: keyboardHeight)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 24)
             
@@ -57,6 +59,9 @@ struct VehicleOdometerView: View {
         .offset (y: -self.keyboardHeight)
         .animation(.smooth, value: keyboardHeight)
         .onAppear {
+            if odometer != nil {
+                odometerFilled = true
+            }
             NotificationCenter.default.addObserver(
                 forName: UIResponder.keyboardWillShowNotification,
                 object: nil,
@@ -73,6 +78,9 @@ struct VehicleOdometerView: View {
                 queue: .main
             ) { (notification) in
                 self.keyboardHeight = 0
+                if odometer != nil {
+                    odometerFilled = true
+                }
             }
         }
     }
