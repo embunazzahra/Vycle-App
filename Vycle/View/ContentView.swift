@@ -15,7 +15,7 @@ struct ContentView: View {
     @StateObject var locationManager = LocationManager() // @StateObject for lifecycle management
     @State private var isShowSplash = true
     enum Tab: String {
-        case dashboard = "Dashboard"
+        case dashboard = "Dasbor"
         case servis = "Servis"
         case pengingat = "Pengingat"
     }
