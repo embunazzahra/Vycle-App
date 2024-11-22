@@ -95,7 +95,7 @@ struct ShareSummaryView: View {
 extension ShareSummaryView {
     @MainActor
     func renderAsImage() async -> UIImage? {
-        let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost, vehicleIcon: vehicleBrandString, vehicleYear: 2024, dateRange: dateRange))
+        let renderer = ImageRenderer(content: ShareContentView(totalMileage: totalMileage, uniqueSpareParts: uniqueSpareParts, totalCost: totalCost, vehicleIcon: vehicleBrandString, vehicleYear: SwiftDataService.shared.getCurrentVehicle()?.year ?? 2024, dateRange: dateRange))
         renderer.scale = displayScale * 2
         return renderer.uiImage
     }

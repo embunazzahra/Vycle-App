@@ -107,10 +107,10 @@ struct ServiceDetailView: View {
                 }
                 .safeAreaInset(edge: .bottom, content: {
                     VStack {
-                        CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .primary, horizontalPadding: 0, verticalPadding: 0) {
+                        CustomButton(title: "Edit servis", iconName: "edit_vector_icon", iconPosition: .left, buttonType: .primary, verticalPadding: 0) {
                             routes.navigate(to: .AddServiceView(service: service))
                         }
-                        CustomButton(title: "Hapus Servis", iconName: "trash_icon", iconPosition: .left, buttonType: .destructive,horizontalPadding: 0, verticalPadding: 0) {
+                        CustomButton(title: "Hapus Servis", iconName: "trash_icon", iconPosition: .left, buttonType: .destructive,  verticalPadding: 0) {
                             popUpHelper.popUpType = .delete
                             popUpHelper.popUpAction = {
                                 deleteHistory(service)

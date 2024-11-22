@@ -183,20 +183,18 @@ struct DashboardView: View {
                                             .contentShape(Rectangle())
                                     }
 
-                                    
-                                    
                                     DataSummaryCardView()
-                                        
                                 }
                                 .offset(y:-30)
                                 
                                 
                             } else {
+                                NoReminderView(tabReminder: $tabReminder)
+                                    .padding(.horizontal, 16)
+                                    .padding(.bottom, 24)
+                                    .offset(y: -30)
                                 DataSummaryCardView()
-                                    .offset(y: -30)
-                                NoReminderView()
-                                    .offset(y: -30)
-                                
+                                    .offset(y: -30)                                
                             }
                             
                         }
@@ -336,10 +334,28 @@ struct DashboardView: View {
 
 
 struct NoReminderView : View {
+    @Binding var tabReminder: Bool
     var body: some View {
+        HStack{
+            VStack(alignment: .leading){
+                Text("Mobilmu masih aman!").headline().foregroundColor(.neutral.shade300)
+                Text("Belum ada suku cadang yang mendesak").footnote(.regular).foregroundColor(.neutral.tone300)
+            }
+            Spacer()
+            Button(action: {
+                tabReminder.toggle()
+            }){
+                ZStack{
+                    Color.primary.base
+                    Text("Lihat semua").foregroundStyle(Color.background)
+                        .subhead(.regular)
+                }.cornerRadius(14)
+            }.frame(width: 100, height: 28)
+        }
+        
         Image("no-service-dashboard")
-        Text("Belum ada suku cadang yang mendesak").headline().foregroundColor(.neutral.shade300)
-        Text("Saat ini aman, tapi pastikan siap sebelum waktunya tiba").footnote(.regular).foregroundColor(.neutral.tone300)
+//        Text("Belum ada suku cadang yang mendesak").headline().foregroundColor(.neutral.shade300)
+//        Text("Saat ini aman, tapi pastikan siap sebelum waktunya tiba").footnote(.regular).foregroundColor(.neutral.tone300)
         
     }
 }
@@ -351,7 +367,7 @@ struct DataSummaryCardView : View {
         //Data analytics
         HStack(alignment: .top){
             VStack(alignment: .leading){
-                Text("Ada ringkasan data, nih😉").headline().foregroundColor(.neutral.shade300)
+                Text("Ada ringkasan data, nih 😉").headline().foregroundColor(.neutral.shade300)
                 Text("Coba cek seluruh aktivitas kendaraanmu di sini").footnote(.regular).foregroundColor(.neutral.tone300)
             }
             Spacer()
@@ -392,7 +408,7 @@ struct HaveReminderView : View {
     var body: some View {
         HStack{
             VStack(alignment: .leading){
-                Text("Cek Pengingat Yuk!").headline().foregroundColor(.neutral.shade300)
+                Text("Cek pengingat yuk!").headline().foregroundColor(.neutral.shade300)
                 Text("Ada suku cadang yang harus diganti ").footnote(.regular).foregroundColor(.neutral.tone300)
             }
             Spacer()
@@ -401,11 +417,11 @@ struct HaveReminderView : View {
             }){
                 ZStack{
                     Color.primary.base
-                    Text("Lihat Semua").foregroundStyle(Color.background)
+                    Text("Lihat semua").foregroundStyle(Color.background)
+                        .subhead(.regular)
                 }.cornerRadius(14)
-            }.frame(width: 120, height: 35)
+            }.frame(width: 100, height: 28)
         }
-        
     }
 }
 

@@ -22,7 +22,7 @@ struct ConfigurationGuide: View {
                         showGuide = false
                     }
                 }) {
-                    Image("close")
+                    Image("close_grey")
                 }
                 .padding(.bottom, 16)
                 

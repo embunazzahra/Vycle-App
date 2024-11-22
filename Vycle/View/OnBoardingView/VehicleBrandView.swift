@@ -59,7 +59,7 @@ struct VehicleBrandView: View {
     var body: some View {
         
         VStack (alignment: .leading) {
-            Text("Pilih merk kendaraan milikmu")
+            Text("Pilih Merk Mobilmu")
                 .title1(.emphasized)
                 .foregroundStyle(Color.neutral.shade300)
                 .padding(.horizontal,16)
@@ -71,10 +71,11 @@ struct VehicleBrandView: View {
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .frame(width: 361, height: 64)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 64)
                         .foregroundStyle(Color.neutral.tint100)
                         .opacity(0.5)
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, 16)
                     
                     HStack {
                         Image("tambahkan")
@@ -135,6 +136,8 @@ struct AddBrandSheet: View {
     @Binding var year: Int?
     @State var otherBrandText: String = ""
     @State var yearText: String = ""
+    @FocusState private var otherBrandFocusState: Bool
+    @FocusState private var yearFocusState: Bool
     @State var showErrorBrand: Bool = false
     @State var showErrorYear: Bool = false
     @Binding var showBrandTextField: Bool
@@ -143,14 +146,27 @@ struct AddBrandSheet: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                Image("close")
-            }.padding(16)
+            ZStack (alignment: .leading) {
+                Color.primary.tone100
+                
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image("close")
+                }.padding(16)
+                
+                VStack (alignment: .center) {
+                    Text(showBrandTextField ? "Data Kendaraan" : "Tahun Kendaraan")
+                        .title3(.emphasized)
+                        .foregroundStyle(Color.neutral.tint300)
+                }
+                .frame(maxWidth:.infinity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: 56)
+            .padding(.bottom, 24)
             
             if showBrandTextField {
-                Text("Merk kendaraanmu")
+                Text("Merk Kendaraanmu")
                     .headline()
                     .foregroundColor(Color.neutral.shade300)
                     .padding(.horizontal, 16)
@@ -158,9 +174,12 @@ struct AddBrandSheet: View {
                 HStack {
                     Image("merk_kendaraan")
                         .foregroundColor(Color.neutral.tone200)
+                    
                     TextField("", text: $otherBrandText)
+                        .tint(Color.neutral.shade300)
                         .foregroundColor(Color.neutral.shade300)
-                        .placeholder(when: otherBrandText.isEmpty) {
+                        .focused($otherBrandFocusState)
+                        .placeholder(when: !otherBrandFocusState && otherBrandText.isEmpty) {
                             Text("Masukkan merk kendaraan")
                                 .body(.regular)
                                 .foregroundColor(Color.neutral.tone100)
@@ -183,11 +202,11 @@ struct AddBrandSheet: View {
                             .padding(.top, 2)
                     }
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 12)
                 } else {
                     Rectangle()
                         .foregroundStyle(.clear)
-                        .frame(height: 8)
+                        .frame(height: 30)
                 }
             }
             
@@ -198,6 +217,7 @@ struct AddBrandSheet: View {
         
             TextField("", text: $yearText)
                 .keyboardType(.numberPad)
+                .tint(Color.neutral.shade300)
                 .onChange(of: yearText) {
                     if yearText.count > 4 {
                         yearText = String(yearText.prefix(4))
@@ -205,7 +225,8 @@ struct AddBrandSheet: View {
                     yearText = yearText.filter { $0.isNumber }
                 }
                 .foregroundColor(Color.neutral.shade300)
-                .placeholder(when: yearText.isEmpty) {
+                .focused($yearFocusState)
+                .placeholder(when: !yearFocusState && yearText.isEmpty) {
                     Text("Contoh: 2000")
                         .body(.regular)
                         .foregroundColor(Color.neutral.tone100)
@@ -226,19 +247,12 @@ struct AddBrandSheet: View {
                         .foregroundColor(Color.persianRed.red500)
                         .padding(.top, 2)
                 }.padding(.horizontal, 16)
-            } else {
-                Text("Masukkan tahun manufaktur dari kendaraanmu")
-                    .footnote(.regular)
-                    .foregroundColor(Color.neutral.tone100)
-                    .padding(.top, 2)
-                    .padding(.horizontal, 16)
             }
        
             Spacer()
             
             CustomButton(
                 title: "Lanjutkan",
-                iconName: "lanjutkan",
                 buttonType: ((!otherBrandText.isEmpty || !showBrandTextField) && yearText.count == 4) ? .primary : .disabled
             ) {
                 if showBrandTextField {
@@ -249,7 +263,13 @@ struct AddBrandSheet: View {
                 
                 
             }
-        }.background(Color.background)
+        }
+        .background(Color.background)
+        .onAppear() {
+            if !showBrandTextField {
+                yearFocusState = true
+            }
+        }
     }
     
     private func isBrandDuplicate(_ brand: String) -> Bool {

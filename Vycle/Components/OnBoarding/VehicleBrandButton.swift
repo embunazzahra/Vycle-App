@@ -17,7 +17,8 @@ struct VehicleBrandButton: View {
         ZStack(alignment: .leading) {
             Rectangle()
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .frame(width: 361, height: 64)
+                .frame(maxWidth: .infinity)
+                .frame(height: 64)
                 .foregroundStyle(isSelected ? Color.primary.shade200 : Color.neutral.tint100)
                 .opacity(isSelected ? 1 : 0.5)
                 .padding(.horizontal, 16)
